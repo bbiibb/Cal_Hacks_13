@@ -20,6 +20,7 @@
     "test": "echo \"backend 테스트는 아직 없음\""
   },
   "dependencies": {
-    "@cal-hacks/shared": "workspace:*"
+    "@cal-hacks/shared": "workspace:*",
+    "convex": "^1.47.0"
   }
 }
