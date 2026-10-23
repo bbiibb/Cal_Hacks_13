@@ -1,26 +1,14 @@
 [
   {
-    "id": "grasper",
-    "name_en": "Grasper",
-    "name_ko": "파지 겸자",
-    "description": "조직을 잡고 당기는 기구."
+    "id": "guidewire",
+    "name_en": "Guidewire",
+    "name_ko": "가이드와이어",
+    "description": "혈관을 따라 판막까지 길을 만들어 주는 가느다란 철사."
   },
   {
-    "id": "hook_cautery",
-    "name_en": "Hook cautery",
-    "name_ko": "갈고리 전기소작기",
-    "description": "조직을 박리하고 지혈하는 기구."
-  },
-  {
-    "id": "clip_applier",
-    "name_en": "Clip applier",
-    "name_ko": "클립 적용기",
-    "description": "관이나 혈관에 클립을 걸어 막는 기구."
-  },
-  {
-    "id": "scissors",
-    "name_en": "Scissors",
-    "name_ko": "가위",
-    "description": "클립 사이의 관을 자르는 기구."
+    "id": "delivery_catheter",
+    "name_en": "Delivery catheter",
+    "name_ko": "전달 카테터",
+    "description": "접힌 새 판막을 싣고 혈관을 지나 판막 위치까지 운반하는 도관."
   }
 ]

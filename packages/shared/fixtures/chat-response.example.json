@@ -1,36 +1,36 @@
 {
-  "message": "담낭관은 담낭과 총간관을 이어주는 가느다란 관이에요. 화면에서 강조해 드렸어요. (더미 교육용 응답)",
+  "message": "새 판막이 펼쳐지면 지지틀이 판륜에 고정되고, 원래 판막의 딱딱한 첨판은 혈관 벽 쪽으로 밀려나요. 해당 장면으로 이동해서 강조해 드렸어요. (더미 교육용 응답)",
   "scene_actions": [
     {
       "type": "goto_step",
-      "procedure_slug": "laparoscopic_cholecystectomy",
-      "step_index": 1
+      "procedure_slug": "tavr",
+      "step_index": 2
     },
     {
       "type": "focus",
-      "structure_id": "cystic_duct",
+      "structure_id": "transcatheter_valve.frame",
       "duration_ms": 1200
     },
     {
       "type": "highlight",
       "structure_ids": [
-        "cystic_duct"
+        "transcatheter_valve.frame",
+        "aortic_annulus"
       ],
       "enabled": true
     },
     {
       "type": "set_opacity",
-      "structure_id": "liver",
+      "structure_id": "aortic_valve",
       "opacity": 0.4
     }
   ],
   "side_panel": {
-    "title": "담낭관 (Cystic duct)",
-    "body_markdown": "담낭에서 총간관으로 이어지는 관. 수술 중 클립을 걸고 절단하는 대상이다.",
+    "title": "인공판막 지지틀",
+    "body_markdown": "새 판막을 지지하고 판륜에 고정시키는 금속 틀. 좁게 접힌 채 전달된 뒤 확장된다.",
     "related_structure_ids": [
-      "cystic_duct",
-      "gallbladder",
-      "common_hepatic_duct"
+      "transcatheter_valve.frame",
+      "aortic_annulus"
     ]
   },
   "sources": [

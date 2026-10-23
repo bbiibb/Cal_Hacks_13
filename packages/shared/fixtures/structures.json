@@ -1,79 +1,107 @@
 [
   {
-    "id": "liver",
-    "name_en": "Liver",
-    "name_ko": "간",
+    "id": "aorta",
+    "name_en": "Aorta",
+    "name_ko": "대동맥",
     "parent_id": null,
-    "description": "상복부 오른쪽에 위치한 가장 큰 장기. 담즙을 만든다."
+    "description": "심장의 좌심실에서 나온 혈액을 온몸으로 보내는 가장 큰 동맥."
   },
   {
-    "id": "liver.right_lobe",
-    "name_en": "Right lobe of liver",
-    "name_ko": "간 우엽",
-    "parent_id": "liver",
-    "description": "간의 오른쪽 큰 부분. 담낭과 맞닿아 있다."
+    "id": "aorta.ascending",
+    "name_en": "Ascending aorta",
+    "name_ko": "상행대동맥",
+    "parent_id": "aorta",
+    "description": "대동맥판막 바로 위에서 위로 올라가는 대동맥 구간."
   },
   {
-    "id": "liver.left_lobe",
-    "name_en": "Left lobe of liver",
-    "name_ko": "간 좌엽",
-    "parent_id": "liver",
-    "description": "간의 왼쪽 부분."
+    "id": "aorta.root",
+    "name_en": "Aortic root",
+    "name_ko": "대동맥근부",
+    "parent_id": "aorta",
+    "description": "대동맥판막이 자리한 대동맥의 시작 부분."
   },
   {
-    "id": "gallbladder",
-    "name_en": "Gallbladder",
-    "name_ko": "담낭",
+    "id": "aortic_annulus",
+    "name_en": "Aortic annulus",
+    "name_ko": "대동맥판륜",
     "parent_id": null,
-    "description": "간 아래에 붙은 주머니. 담즙을 저장하고 농축한다."
+    "description": "대동맥판막이 붙어 있는 고리 모양 조직. 새 판막이 자리 잡는 기준 위치."
   },
   {
-    "id": "gallbladder.fundus",
-    "name_en": "Fundus of gallbladder",
-    "name_ko": "담낭 저부",
-    "parent_id": "gallbladder",
-    "description": "담낭의 가장 바깥쪽 둥근 끝부분."
-  },
-  {
-    "id": "cystic_duct",
-    "name_en": "Cystic duct",
-    "name_ko": "담낭관",
+    "id": "aortic_valve",
+    "name_en": "Native aortic valve",
+    "name_ko": "원래 대동맥판막",
     "parent_id": null,
-    "description": "담낭과 총간관을 연결하는 가느다란 관."
+    "description": "좌심실과 대동맥 사이에서 혈액이 거꾸로 흐르지 않게 하는 3엽 판막."
   },
   {
-    "id": "cystic_artery",
-    "name_en": "Cystic artery",
-    "name_ko": "담낭동맥",
-    "parent_id": null,
-    "description": "담낭에 혈액을 공급하는 동맥."
+    "id": "aortic_valve.leaflet_right",
+    "name_en": "Right leaflet",
+    "name_ko": "우관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
   },
   {
-    "id": "common_hepatic_duct",
-    "name_en": "Common hepatic duct",
-    "name_ko": "총간관",
-    "parent_id": null,
-    "description": "간에서 나온 담즙이 모이는 관."
+    "id": "aortic_valve.leaflet_left",
+    "name_en": "Left leaflet",
+    "name_ko": "좌관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
   },
   {
-    "id": "common_bile_duct",
-    "name_en": "Common bile duct",
-    "name_ko": "총담관",
-    "parent_id": null,
-    "description": "총간관과 담낭관이 합쳐져 십이지장으로 이어지는 관."
+    "id": "aortic_valve.leaflet_noncoronary",
+    "name_en": "Non-coronary leaflet",
+    "name_ko": "무관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
   },
   {
-    "id": "duodenum",
-    "name_en": "Duodenum",
-    "name_ko": "십이지장",
-    "parent_id": null,
-    "description": "위 다음에 이어지는 소장의 첫 부분."
+    "id": "aortic_valve.calcification",
+    "name_en": "Calcification",
+    "name_ko": "석회화",
+    "parent_id": "aortic_valve",
+    "description": "첨판에 칼슘이 쌓여 딱딱해진 부분. 판막이 잘 열리지 않는 대동맥판막 협착의 주된 원인."
   },
   {
-    "id": "stomach",
-    "name_en": "Stomach",
-    "name_ko": "위",
+    "id": "left_ventricle",
+    "name_en": "Left ventricle",
+    "name_ko": "좌심실",
     "parent_id": null,
-    "description": "음식물을 소화시키는 주머니 모양의 장기."
+    "description": "혈액을 대동맥으로 밀어내는 심장의 방."
+  },
+  {
+    "id": "left_coronary_artery",
+    "name_en": "Left coronary artery",
+    "name_ko": "좌관상동맥",
+    "parent_id": null,
+    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+  },
+  {
+    "id": "right_coronary_artery",
+    "name_en": "Right coronary artery",
+    "name_ko": "우관상동맥",
+    "parent_id": null,
+    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+  },
+  {
+    "id": "transcatheter_valve",
+    "name_en": "Transcatheter valve",
+    "name_ko": "경도관 인공판막",
+    "parent_id": null,
+    "description": "카테터로 전달해 원래 판막 안에 자리 잡는 새 인공 판막."
+  },
+  {
+    "id": "transcatheter_valve.frame",
+    "name_en": "Valve frame",
+    "name_ko": "인공판막 지지틀(스텐트)",
+    "parent_id": "transcatheter_valve",
+    "description": "새 판막을 지지하고 판륜에 고정되는 금속 틀. 좁게 접힌 채 전달되어 확장된다."
+  },
+  {
+    "id": "transcatheter_valve.leaflets",
+    "name_en": "Valve leaflets",
+    "name_ko": "인공판막 첨판",
+    "parent_id": "transcatheter_valve",
+    "description": "새 판막의 여닫이 막. (3D 모델 아직 없음 — docs/tavr-demo.md 참고)"
   }
 ]

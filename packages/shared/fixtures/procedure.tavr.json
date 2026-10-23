@@ -1,0 +1,511 @@
+{
+  "slug": "tavr",
+  "title": "경피적 대동맥판막 치환술 TAVR (더미)",
+  "summary": "협착된 대동맥판막 안에 카테터로 새 판막을 넣는 시술을 4개 장면으로 단순화한 교육용 더미 데이터.",
+  "steps": [
+    {
+      "index": 0,
+      "title": "협착된 원래 판막",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.15,
+            0.9
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "duration_ms": 1200
+        },
+        "structures": [
+          {
+            "id": "aorta",
+            "opacity": 0.25,
+            "highlight": false
+          },
+          {
+            "id": "aorta.ascending",
+            "opacity": 0.25,
+            "highlight": false
+          },
+          {
+            "id": "aorta.root",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "aortic_annulus",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "aortic_valve.leaflet_right",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_left",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_noncoronary",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.calcification",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "left_ventricle",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "left_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "right_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve",
+            "opacity": 0,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.frame",
+            "opacity": 0,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.leaflets",
+            "opacity": 0,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": {
+          "name": "native_valve_stenosis",
+          "loop": true
+        }
+      },
+      "side_panel": {
+        "title": "협착된 원래 판막",
+        "body_markdown": "대동맥판막 협착에서는 첨판이 딱딱해지고 석회가 쌓여 판막이 충분히 열리지 않는다. 좌심실이 좁은 입구로 혈액을 밀어내야 해서 심장에 부담이 커진다. (더미 교육용 콘텐츠)",
+        "related_structure_ids": [
+          "aortic_valve",
+          "aortic_valve.calcification",
+          "left_ventricle"
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "title": "새 판막 전달",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.25,
+            0.7
+          ],
+          "target": [
+            0,
+            0.05,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "aorta",
+            "opacity": 0.2,
+            "highlight": false
+          },
+          {
+            "id": "aorta.ascending",
+            "opacity": 0.2,
+            "highlight": false
+          },
+          {
+            "id": "aorta.root",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "aortic_annulus",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve",
+            "opacity": 0.6,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_right",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_left",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_noncoronary",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.calcification",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "left_ventricle",
+            "opacity": 0.3,
+            "highlight": false
+          },
+          {
+            "id": "left_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "right_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "transcatheter_valve.frame",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.leaflets",
+            "opacity": 1,
+            "highlight": false
+          }
+        ],
+        "instruments": [
+          {
+            "id": "guidewire",
+            "transform": {
+              "position": [
+                0,
+                0.2,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "id": "delivery_catheter",
+            "transform": {
+              "position": [
+                0,
+                0.35,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          }
+        ],
+        "animation_clip": {
+          "name": "deliver_valve",
+          "loop": false
+        }
+      },
+      "side_panel": {
+        "title": "새 판막 전달",
+        "body_markdown": "좁게 접힌 새 판막을 카테터에 싣고 혈관을 따라 원래 판막 위치까지 옮긴다. 가이드와이어가 먼저 길을 만든다. (더미 교육용 콘텐츠)",
+        "related_structure_ids": [
+          "transcatheter_valve",
+          "aortic_valve",
+          "aortic_annulus"
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "title": "새 판막 확장",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.1,
+            0.5
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "aorta",
+            "opacity": 0.2,
+            "highlight": false
+          },
+          {
+            "id": "aorta.ascending",
+            "opacity": 0.2,
+            "highlight": false
+          },
+          {
+            "id": "aorta.root",
+            "opacity": 0.3,
+            "highlight": false
+          },
+          {
+            "id": "aortic_annulus",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "aortic_valve",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_right",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_left",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_noncoronary",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.calcification",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "left_ventricle",
+            "opacity": 0.3,
+            "highlight": false
+          },
+          {
+            "id": "left_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "right_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.frame",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "transcatheter_valve.leaflets",
+            "opacity": 1,
+            "highlight": false
+          }
+        ],
+        "instruments": [
+          {
+            "id": "delivery_catheter",
+            "transform": {
+              "position": [
+                0,
+                0.3,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          }
+        ],
+        "animation_clip": {
+          "name": "expand_valve",
+          "loop": false
+        }
+      },
+      "side_panel": {
+        "title": "새 판막 확장",
+        "body_markdown": "새 판막이 펼쳐지면서 지지틀이 판륜에 고정되고, 원래 판막의 딱딱한 첨판은 혈관 벽 쪽으로 밀려난다. 이때 관상동맥 입구를 막지 않는 위치가 중요하다. (더미 교육용 콘텐츠)",
+        "related_structure_ids": [
+          "transcatheter_valve.frame",
+          "aortic_annulus",
+          "aortic_valve",
+          "left_coronary_artery",
+          "right_coronary_artery"
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "title": "전달 장비 제거 후 최종 위치",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.15,
+            0.8
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "aorta",
+            "opacity": 0.25,
+            "highlight": false
+          },
+          {
+            "id": "aorta.ascending",
+            "opacity": 0.25,
+            "highlight": false
+          },
+          {
+            "id": "aorta.root",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "aortic_annulus",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve",
+            "opacity": 0.3,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_right",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_left",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_noncoronary",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.calcification",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "left_ventricle",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "left_coronary_artery",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "right_coronary_artery",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "transcatheter_valve",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "transcatheter_valve.frame",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.leaflets",
+            "opacity": 1,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": {
+          "name": "valve_function",
+          "loop": true
+        }
+      },
+      "side_panel": {
+        "title": "최종 위치",
+        "body_markdown": "카테터와 가이드와이어를 빼내면 새 판막이 원래 판막 자리에서 혈액이 한 방향으로만 흐르게 한다. 관상동맥으로 가는 혈류가 유지되는지 함께 확인한다. (더미 교육용 콘텐츠)",
+        "related_structure_ids": [
+          "transcatheter_valve",
+          "left_coronary_artery",
+          "right_coronary_artery"
+        ]
+      }
+    }
+  ]
+}

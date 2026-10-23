@@ -7,7 +7,7 @@ export const StructureSchema = z.object({
   id: StructureIdSchema,
   name_en: z.string().min(1),
   name_ko: z.string().min(1),
-  /** 상위 구조물. 최상위면 null. `liver.right_lobe` 의 부모는 `liver` */
+  /** 상위 구조물. 최상위면 null. `aortic_valve.calcification` 의 부모는 `aortic_valve` */
   parent_id: StructureIdSchema.nullable(),
   description: z.string(),
 });

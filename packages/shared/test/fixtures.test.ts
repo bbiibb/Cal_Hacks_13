@@ -16,7 +16,7 @@ const load = (name: string): unknown =>
 describe("fixtures 는 계약 스키마를 따른다", () => {
   const structures = z.array(StructureSchema).parse(load("structures.json"));
   const instruments = z.array(InstrumentSchema).parse(load("instruments.json"));
-  const procedure = ProcedureSchema.parse(load("procedure.cholecystectomy.json"));
+  const procedure = ProcedureSchema.parse(load("procedure.tavr.json"));
   const chat = ChatResponseSchema.parse(load("chat-response.example.json"));
 
   const structureIds = new Set(structures.map((s) => s.id));
@@ -26,6 +26,16 @@ describe("fixtures 는 계약 스키마를 따른다", () => {
     for (const s of structures) {
       if (s.parent_id) expect(structureIds.has(s.parent_id)).toBe(true);
     }
+  });
+
+  it("TAVR 1차 버전은 4개 장면이다", () => {
+    expect(procedure.slug).toBe("tavr");
+    expect(procedure.steps.map((s) => s.title)).toEqual([
+      "협착된 원래 판막",
+      "새 판막 전달",
+      "새 판막 확장",
+      "전달 장비 제거 후 최종 위치",
+    ]);
   });
 
   it("step 이 참조하는 structure/instrument id 가 모두 존재한다", () => {
@@ -53,18 +63,18 @@ describe("fixtures 는 계약 스키마를 따른다", () => {
 
 describe("스키마 거부 케이스", () => {
   it("잘못된 structure_id 를 거부한다", () => {
-    for (const bad of ["Liver", "liver.", ".liver", "liver right", "1liver", ""]) {
+    for (const bad of ["Aorta", "aorta.", ".aorta", "aorta root", "1aorta", ""]) {
       expect(StructureIdSchema.safeParse(bad).success).toBe(false);
     }
   });
 
   it("알 수 없는 scene_action type 을 거부한다", () => {
-    expect(SceneActionSchema.safeParse({ type: "explode", structure_id: "liver" }).success).toBe(false);
+    expect(SceneActionSchema.safeParse({ type: "explode", structure_id: "aorta" }).success).toBe(false);
   });
 
   it("범위를 벗어난 opacity 를 거부한다", () => {
     expect(
-      SceneActionSchema.safeParse({ type: "set_opacity", structure_id: "liver", opacity: 1.5 }).success,
+      SceneActionSchema.safeParse({ type: "set_opacity", structure_id: "aorta", opacity: 1.5 }).success,
     ).toBe(false);
   });
 });
