@@ -8,9 +8,9 @@
 
 | 이름 | 규칙 | 예시 |
 |---|---|---|
-| `StructureId` | 소문자 snake_case 세그먼트를 `.` 로 이어 계층 표현. **GLB 메시 이름과 1:1로 일치** | `liver`, `liver.right_lobe`, `gallbladder` |
+| `StructureId` | 소문자 snake_case 세그먼트를 `.` 로 이어 계층 표현. **GLB 메시 이름과 1:1로 일치** | `aorta`, `aortic_valve`, `aortic_valve.calcification` |
 | `InstrumentId` | 소문자 snake_case | `grasper`, `clip_applier` |
-| `ProcedureSlug` | 소문자 snake_case | `laparoscopic_cholecystectomy` |
+| `ProcedureSlug` | 소문자 snake_case | `tavr` |
 
 ## 2. Scene (한 단계의 3D 장면 상태)
 
@@ -60,7 +60,7 @@ ChatResponse = {
 `packages/shared/fixtures/` 에 계약을 따르는 더미 데이터가 있고, `pnpm test` 가 스키마 준수와 id 참조 무결성을 검증합니다.
 
 - `structures.json`, `instruments.json`
-- `procedure.cholecystectomy.json` (담낭절제술 4단계)
+- `procedure.tavr.json` (TAVR 4개 장면. 장면 계획과 3D 에셋 현황은 [`docs/tavr-demo.md`](tavr-demo.md))
 - `chat-response.example.json`
 
 모든 내용은 **교육용 더미**이며 실제 환자 데이터가 아닙니다.
@@ -77,3 +77,4 @@ DB에는 계약과 같은 snake_case 키 형태로 `scene`, `sidePanel`, `sceneA
 | 날짜 | 변경 | 영향 |
 |---|---|---|
 | 2026-10-23 | 최초 초안 | - |
+| 2026-10-23 | 1차 시연 주제를 TAVR 로 확정. fixtures 와 예시 id 교체 (스키마 형식은 변경 없음) | 프론트: 기존 `procedure.cholecystectomy.json` 참조를 `procedure.tavr.json` 으로 변경 |

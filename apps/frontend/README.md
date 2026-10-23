@@ -23,7 +23,7 @@
 // 계약 타입 / 스키마
 import { ChatResponseSchema, type Scene } from "@cal-hacks/shared";
 // 예시 데이터
-import procedure from "@cal-hacks/shared/fixtures/procedure.cholecystectomy.json";
+import procedure from "@cal-hacks/shared/fixtures/procedure.tavr.json";
 // Convex generated api (백엔드 담당자가 `convex dev` 를 한 번 실행한 뒤 사용 가능)
 import { api } from "@cal-hacks/backend/api";
 ```
