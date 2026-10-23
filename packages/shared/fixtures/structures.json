@@ -1,0 +1,79 @@
+[
+  {
+    "id": "liver",
+    "name_en": "Liver",
+    "name_ko": "간",
+    "parent_id": null,
+    "description": "상복부 오른쪽에 위치한 가장 큰 장기. 담즙을 만든다."
+  },
+  {
+    "id": "liver.right_lobe",
+    "name_en": "Right lobe of liver",
+    "name_ko": "간 우엽",
+    "parent_id": "liver",
+    "description": "간의 오른쪽 큰 부분. 담낭과 맞닿아 있다."
+  },
+  {
+    "id": "liver.left_lobe",
+    "name_en": "Left lobe of liver",
+    "name_ko": "간 좌엽",
+    "parent_id": "liver",
+    "description": "간의 왼쪽 부분."
+  },
+  {
+    "id": "gallbladder",
+    "name_en": "Gallbladder",
+    "name_ko": "담낭",
+    "parent_id": null,
+    "description": "간 아래에 붙은 주머니. 담즙을 저장하고 농축한다."
+  },
+  {
+    "id": "gallbladder.fundus",
+    "name_en": "Fundus of gallbladder",
+    "name_ko": "담낭 저부",
+    "parent_id": "gallbladder",
+    "description": "담낭의 가장 바깥쪽 둥근 끝부분."
+  },
+  {
+    "id": "cystic_duct",
+    "name_en": "Cystic duct",
+    "name_ko": "담낭관",
+    "parent_id": null,
+    "description": "담낭과 총간관을 연결하는 가느다란 관."
+  },
+  {
+    "id": "cystic_artery",
+    "name_en": "Cystic artery",
+    "name_ko": "담낭동맥",
+    "parent_id": null,
+    "description": "담낭에 혈액을 공급하는 동맥."
+  },
+  {
+    "id": "common_hepatic_duct",
+    "name_en": "Common hepatic duct",
+    "name_ko": "총간관",
+    "parent_id": null,
+    "description": "간에서 나온 담즙이 모이는 관."
+  },
+  {
+    "id": "common_bile_duct",
+    "name_en": "Common bile duct",
+    "name_ko": "총담관",
+    "parent_id": null,
+    "description": "총간관과 담낭관이 합쳐져 십이지장으로 이어지는 관."
+  },
+  {
+    "id": "duodenum",
+    "name_en": "Duodenum",
+    "name_ko": "십이지장",
+    "parent_id": null,
+    "description": "위 다음에 이어지는 소장의 첫 부분."
+  },
+  {
+    "id": "stomach",
+    "name_en": "Stomach",
+    "name_ko": "위",
+    "parent_id": null,
+    "description": "음식물을 소화시키는 주머니 모양의 장기."
+  }
+]
