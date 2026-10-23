@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+*.tsbuildinfo
+coverage/
+
+# 환경변수 / 시크릿 (절대 커밋 금지)
+.env
+.env.*
+!.env.example
+
+# OS / 에디터
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Convex 생성 파일: 프론트 담당자가 `convex dev` 없이 타입을 쓰게 하려면
+# 아래 줄을 지우고 커밋한다 (논의 필요)
+packages/backend/convex/_generated/

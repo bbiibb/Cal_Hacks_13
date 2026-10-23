@@ -1,0 +1,16 @@
+{
+  "name": "cal-hacks-13",
+  "private": true,
+  "version": "0.0.0",
+  "description": "3D 인간 장기 + 수술 과정 시연 웹사이트 모노레포",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:backend": "pnpm --filter @cal-hacks/backend dev",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "test": "pnpm -r --if-present test"
+  }
+}
