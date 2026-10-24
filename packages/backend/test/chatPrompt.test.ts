@@ -37,9 +37,11 @@ describe("buildSystemPrompt", () => {
 
 describe("describeScreen", () => {
   it("names the current step and the selected part", () => {
-    const text = describeScreen(promptData({ currentStepIndex: 1, selectedStructureId: "aorta" }));
-    expect(text).toContain("Step 2 of 4");
-    expect(text).toContain("Delivering the new valve");
+    const data = promptData({ currentStepIndex: 1, selectedStructureId: "aorta" });
+    const text = describeScreen(data);
+    // Read from the content, so adding or renaming steps does not break the test
+    expect(text).toContain(`Step 2 of ${data.steps.length}`);
+    expect(text).toContain(data.steps[1]!.title);
     expect(text).toContain("Aorta (aorta)");
   });
 
