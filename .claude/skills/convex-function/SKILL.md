@@ -1,31 +1,33 @@
 ---
 name: convex-function
-description: packages/backend에 새 Convex 함수(query/mutation/action/internal/HTTP action)를 만들 때의 체크리스트. validator, 인덱스, 권한, 테스트를 빠뜨리지 않게 한다.
+description: Checklist for creating a new Convex function (query, mutation, action, internal function, or HTTP action) in packages/backend. It keeps validators, indexes, permissions, and tests from being forgotten.
 ---
 
-# 새 Convex 함수 체크리스트
+# New Convex function checklist
 
-만들기 전에 `packages/backend/CLAUDE.md`의 Convex 규칙을 다시 확인한다.
+Before you start, read the Convex rules in `packages/backend/CLAUDE.md` and `convex/_generated/ai/guidelines.md` again.
 
-## 종류 고르기
-- [ ] 읽기 → `query`, 쓰기 → `mutation`, **외부 API(LLM 등) 호출 → `action`**
-- [ ] 클라이언트에 노출하지 않을 함수는 `internalQuery`/`internalMutation`/`internalAction`
-- [ ] HTTP 엔드포인트가 정말 필요한 경우에만 `httpAction` (`convex/http.ts`)
+## Choosing the kind
+- [ ] Read: `query`. Write: `mutation`. **Calling an external API (LLM, speech-to-text, and so on): `action`.**
+- [ ] A function that must not be exposed to clients: `internalQuery`, `internalMutation`, or `internalAction`.
+- [ ] Use `httpAction` (`convex/http.ts`) only when an HTTP endpoint is really needed.
 
-## 작성
-- [ ] `args` validator 지정 (`v.*`). 식별자 문자열은 가능하면 `packages/shared` 규칙과 맞춘다.
-- [ ] `returns` validator 지정 (`v.null()` 포함, 생략 금지)
-- [ ] 계약 타입(Scene, SceneAction, ChatResponse 등)을 반환하면 `convex/validators.ts`의 validator를 재사용한다.
-- [ ] 쿼리는 `withIndex` 사용. 필요한 인덱스가 없으면 `schema.ts`에 추가한다. `filter()`로 전체 훑기 금지.
-- [ ] 무제한 `.collect()` 금지 → `.take(n)` 또는 페이지네이션
-- [ ] action에서 DB 접근은 `ctx.runQuery`/`ctx.runMutation`(internal 함수)로 한다.
+## Writing it
+- [ ] Declare the `args` validator (`v.*`). Keep identifier strings consistent with the `packages/shared` rules where possible.
+- [ ] Declare the `returns` validator (including `v.null()`; never omit it).
+- [ ] If it returns a contract type (Scene, SceneAction, ChatResponse, and so on), reuse the validators in `convex/validators.ts`.
+- [ ] Queries use `withIndex`. If the needed index does not exist, add it to `schema.ts`. Never scan whole tables with `filter()`.
+- [ ] No unbounded `.collect()`: use `.take(n)` or pagination.
+- [ ] An action accesses the database through `ctx.runQuery` or `ctx.runMutation` (internal functions).
+- [ ] Put logic that does not need the database or the network in `convex/lib/` so it can be unit tested.
 
-## 권한/보안
-- [ ] 인증은 아직 없다. 누가 호출해도 되는 함수인지 판단하고, 쓰기 함수는 입력을 엄격히 검증한다.
-- [ ] 시크릿은 `process.env`(Convex 환경변수)에서만 읽는다. 하드코딩 금지.
-- [ ] 에러 메시지에 시크릿/내부 정보를 넣지 않는다.
+## Permissions and security
+- [ ] There is no authentication yet. Decide whether anyone may call the function, and validate the input strictly in write functions.
+- [ ] Read secrets only from Convex environment variables, declared in `convex/convex.config.ts` and read through `env`. Never hard-code them.
+- [ ] Do not put secrets or internal details in error messages. Throw `ConvexError` with a stable `code` and a safe `message`.
+- [ ] Anything that handles patient data (such as a voice recording) must be deleted when it is no longer needed.
 
-## 검증
-- [ ] 테스트: 순수 로직은 `vitest`로 단위 테스트를 추가한다 (convex-test 도입은 필요할 때 논의).
+## Verification
+- [ ] Tests: add unit tests with `vitest` for the pure logic (discuss `convex-test` when it is needed).
 - [ ] `pnpm typecheck && pnpm lint && pnpm test`
-- [ ] `convex dev`가 필요한 확인은 사용자에게 안내한다 (로그인/배포는 대신 처리하지 않는다).
+- [ ] For checks that need `convex dev`, guide the user (do not handle logins or deployments on their behalf).

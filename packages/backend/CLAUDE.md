@@ -1,41 +1,42 @@
-# packages/backend — Convex 백엔드
+# packages/backend — Convex backend
 
-루트 `CLAUDE.md`의 규칙을 먼저 따른다. 이 파일은 백엔드에만 해당하는 규칙이다.
+Follow the rules in the root `CLAUDE.md` first. This file holds the rules that apply only to the backend.
 
-## Convex 규칙
-- **모든 함수에 `args`와 `returns` validator를 반드시 지정한다.** (`query`/`mutation`/`action`/`internal*` 모두)
-- 쿼리는 인덱스를 쓴다. `filter()`로 전체 테이블을 훑지 않고 `withIndex`를 사용하며, 필요한 인덱스는 `convex/schema.ts`에 정의한다.
-- **외부 API(LLM 등) 호출은 `action`에서만** 한다. query/mutation에서는 호출하지 않는다. DB 읽기/쓰기는 action에서 `ctx.runQuery`/`ctx.runMutation`으로 한다.
-- 외부에 노출하지 않을 함수는 `internalQuery`/`internalMutation`/`internalAction`으로 만든다.
-- 시크릿은 **Convex 환경변수로만** 관리한다 (`npx convex env set NAME value`, 코드에서는 `process.env`). 코드/`.env.local`/fixtures에 넣지 않는다.
-- `convex/_generated/`는 직접 수정하지 않는다.
-- 새 함수를 만들 때는 `convex-function` skill의 체크리스트를 따른다.
+## Convex rules
+- **Every function must declare `args` and `returns` validators.** (`query`, `mutation`, `action`, and all `internal*` functions)
+- Queries use indexes. Do not scan whole tables with `filter()`; use `withIndex`, and define the needed indexes in `convex/schema.ts`.
+- **Call external APIs (LLM, speech-to-text, and so on) only from an `action`.** Never from a query or mutation. An action reads and writes the database with `ctx.runQuery` and `ctx.runMutation`.
+- Make functions that must not be exposed publicly with `internalQuery`, `internalMutation`, or `internalAction`.
+- Manage secrets **only as Convex environment variables** (`npx convex env set NAME value`). Declare each one in `convex/convex.config.ts` and read it through `env` from `./_generated/server`. Never put secrets in code, `.env.local`, or fixtures.
+- Do not edit `convex/_generated/` by hand.
+- When you create a new function, follow the checklist in the `convex-function` skill.
 
-## 도메인 규칙
-- **`structure_id`는 GLB 메시 이름과 1:1로 일치하는 공통 키**다. 임의로 만들거나 이름을 바꾸지 않는다. 바꿔야 하면 프론트/3D 에셋 담당자와 합의하고 `contract-change` skill을 따른다.
-- **LLM이 만든 `scene_actions`는 (1) `packages/shared`의 zod 스키마 검증, (2) DB 존재 여부 검증(structure/instrument/procedure/step 등)을 모두 통과한 것만 프론트로 전달**한다. 실패한 항목은 버리고 로그를 남긴다. 새 action 타입이나 검증 규칙을 바꿀 때는 `chat-action-validation` skill을 따른다.
-- 의료 정보는 **교육용**이다. 근거 자료가 없으면 추측하지 말고 모른다고 답한다. 진단/치료 조언처럼 보이는 표현을 피하고, 응답에 교육용임을 알 수 있게 한다.
-- 더미 콘텐츠를 추가할 때는 `seed-content` skill을 따른다. 실제 환자 데이터는 쓰지 않는다.
+## Domain rules
+- **`structure_id` is the shared key that matches a GLB mesh name one to one.** Do not invent or rename it freely. If it must change, agree with the frontend and 3D asset owners and follow the `contract-change` skill.
+- **Pass `scene_actions` produced by the LLM to the frontend only if they pass both (1) the zod schema check in `packages/shared` and (2) the existence check in the database (structure, instrument, procedure, step, and so on).** Drop failed items and log them. When you add an action type or change the validation rules, follow the `chat-action-validation` skill.
+- Medical information is **educational**. If there is no source, do not guess; say you do not know. Avoid wording that looks like a diagnosis or treatment advice, and make it clear in responses that the content is educational.
+- When you add dummy content, follow the `seed-content` skill. Never use real patient data.
+- Patient voice recordings are deleted right after transcription (`convex/speech.ts`). Keep it that way.
 
-## 로드맵
-무엇이 구현됐고 무엇이 남았는지는 `docs/product-roadmap.md` 의 기능표(F1~F10)가 기준이다. 기능을 구현하면 그 표의 상태를 갱신한다.
+## Roadmap
+The feature table (F1 to F12) in `docs/product-roadmap.md` is the reference for what is implemented and what remains. When you implement a feature, update the status in that table.
 
-## 계약과의 관계
-- 프론트와 주고받는 형식의 기준은 `packages/shared`(zod)와 `docs/contracts.md`다.
-- `convex/validators.ts`는 그 계약을 Convex validator로 옮긴 것이다. 계약이 바뀌면 함께 맞춘다.
+## Relationship to the contract
+- The reference for the data exchanged with the frontend is `packages/shared` (zod) and `docs/contracts.md`.
+- `convex/validators.ts` is that contract expressed as Convex validators. Change it together with the contract.
 
-## 명령어
+## Commands
 ```bash
 pnpm --filter @cal-hacks/backend dev        # convex dev
 pnpm --filter @cal-hacks/backend typecheck
 pnpm --filter @cal-hacks/backend test
-pnpm --filter @cal-hacks/backend exec convex run seed:run    # fixtures 시드 (개발 배포 확인 후)
+pnpm --filter @cal-hacks/backend exec convex run seed:run    # seed the fixtures (after checking the target is a development deployment)
 ```
 
-## 구조
-- `convex/*.ts`: 함수 파일 (`structures`, `instruments`, `procedures`, `seed`, `sceneActions`). 프론트용 API 는 `docs/backend-api.md` 에 정리한다.
-- `convex/lib/`: DB 접근이 없는 순수 로직(`mappers`, `sceneActions`). 단위 테스트는 `test/` 에 둔다.
-- `convex/_generated/`: Convex 권장대로 커밋한다. `convex dev` 가 갱신하므로 직접 수정하지 않는다.
+## Layout
+- `convex/*.ts`: function files (`structures`, `instruments`, `conditions`, `procedures`, `seed`, `sceneActions`, `speech`). The API meant for the frontend is documented in `docs/backend-api.md`.
+- `convex/lib/`: pure logic that does not touch the database or the network by itself (`mappers`, `sceneActions`, `cartesia`, `multipart`). Unit tests live in `test/`.
+- `convex/_generated/`: committed, as Convex recommends. `convex dev` updates it, so do not edit it by hand.
 
 <!-- convex-ai-start -->
 

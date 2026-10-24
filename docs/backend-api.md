@@ -1,9 +1,9 @@
-# 백엔드 API (Convex)
+# Backend API (Convex)
 
-프론트엔드가 지금 쓸 수 있는 Convex 함수 목록입니다. 데이터 형태는 [`docs/contracts.md`](contracts.md)의 계약(snake_case)을 따릅니다.
-모두 **교육용 더미 데이터**를 돌려줍니다.
+The list of Convex functions the frontend can use today. The data shapes follow the contract in [`docs/contracts.md`](contracts.md) (snake_case).
+They all return **educational dummy data**.
 
-## 사용 방법
+## How to use
 
 ```ts
 import { useQuery } from "convex/react";
@@ -12,42 +12,66 @@ import { api } from "@cal-hacks/backend/api";
 const procedure = useQuery(api.procedures.getBySlug, { slug: "tavr" });
 ```
 
-- `useQuery` 결과는 로딩 중에는 `undefined`, 데이터가 없으면 `null` 입니다.
-- 배포 URL 은 환경변수(`.env.example` 참고)로 주입합니다.
+- The result of `useQuery` is `undefined` while loading and `null` when there is no data.
+- The deployment URL is injected through an environment variable (see `.env.example`).
 
-## 읽기 query (public)
+## Read queries (public)
 
-| 함수 | args | 반환 |
+| Function | args | Returns |
 |---|---|---|
-| `api.structures.list` | 없음 | `Structure[]` (id 순) |
+| `api.structures.list` | none | `Structure[]` (ordered by id) |
 | `api.structures.getById` | `{ id }` | `Structure \| null` |
-| `api.instruments.list` | 없음 | `Instrument[]` |
-| `api.conditions.list` | 없음 | `Condition[]` (심장 질환 목록) |
+| `api.instruments.list` | none | `Instrument[]` |
+| `api.conditions.list` | none | `Condition[]` (heart conditions) |
 | `api.conditions.getBySlug` | `{ slug }` | `Condition \| null` |
-| `api.procedures.list` | 없음 | `{ slug, title, summary, condition_slug, order }[]` |
-| `api.procedures.listByCondition` | `{ conditionSlug }` | 위와 같은 목록 (`order` 순) |
-| `api.procedures.getBySlug` | `{ slug }` | `{ slug, title, summary, condition_slug, order, steps: Step[] } \| null` (steps 는 index 순) |
+| `api.procedures.list` | none | `{ slug, title, summary, condition_slug, order }[]` |
+| `api.procedures.listByCondition` | `{ conditionSlug }` | The same list as above (ordered by `order`) |
+| `api.procedures.getBySlug` | `{ slug }` | `{ slug, title, summary, condition_slug, order, steps: Step[] } \| null` (steps ordered by index) |
 | `api.procedures.getStep` | `{ slug, index }` | `Step \| null` |
 
-`Structure`, `Instrument`, `Condition`, `Step` 은 `@cal-hacks/shared` 의 타입과 같은 모양입니다.
-`scene` 안의 좌표는 Convex 쪽에서 길이 3 검증을 하지 않으므로, 필요하면 프론트에서 `SceneSchema.parse` 로 확인하세요.
+`Structure`, `Instrument`, `Condition`, and `Step` have the same shape as the types in `@cal-hacks/shared`.
+Convex does not check that the coordinates inside `scene` have length 3, so check them with `SceneSchema.parse` in the frontend if needed.
 
-`Step.short_title` 은 타임라인 슬라이더 라벨용이다. 슬라이더를 어디까지 프론트가 하는지는 [`docs/frontend-backend-split.md`](frontend-backend-split.md) 참고.
+`Step.short_title` is the label for the timeline slider. See [`docs/frontend-backend-split.md`](frontend-backend-split.md) for how far the frontend's part of the slider goes.
 
-## 내부 함수 (프론트에서 호출 불가)
+## Voice input (speech-to-text with Cartesia)
 
-| 함수 | 용도 |
+Voice input takes two calls. The recording is always deleted right after transcription (success or failure), because it is a patient's voice.
+
+| Function | Kind | args | Returns |
+|---|---|---|---|
+| `api.speech.generateUploadUrl` | mutation | none | A one-time upload URL (string) |
+| `api.speech.transcribe` | action | `{ storageId, language? }` (`language` is a short code such as `"en"` or `"ko"`, default `"en"`) | `{ text, language, duration_seconds \| null }` |
+
+```ts
+// 1. Record with MediaRecorder, then ask for an upload URL
+const uploadUrl = await generateUploadUrl();
+// 2. Send the recording to that URL (the Content-Type must be the audio type, e.g. audio/webm)
+const response = await fetch(uploadUrl, { method: "POST", headers: { "Content-Type": blob.type }, body: blob });
+const { storageId } = await response.json();
+// 3. Transcribe it
+const { text } = await transcribe({ storageId, language: "en" });
+```
+
+- Accepted audio: webm, ogg, mp4, m4a, mp3, wav, flac. Up to 10 MB.
+- Errors are thrown as `ConvexError` and carry `{ code, message }` in `error.data`. Codes: `stt_not_configured`, `invalid_language`, `audio_not_found`, `audio_too_large`, `audio_empty`, `unsupported_audio_type`, `stt_timeout`, `stt_request_failed`, `stt_bad_response`.
+- The server needs the secret `CARTESIA_API_KEY` as a Convex environment variable (`npx convex env set CARTESIA_API_KEY <key>`). Without it the error code is `stt_not_configured`.
+- Not built yet: sending the transcript to the chatbot, and rate limiting. Until rate limiting exists, anyone who knows the deployment URL could use up the speech-to-text quota.
+
+## Internal functions (cannot be called from the frontend)
+
+| Function | Purpose |
 |---|---|
-| `internal.seed.run` | fixtures 를 DB 에 넣는다 (upsert, 여러 번 실행해도 안전). 백엔드 담당자가 `npx convex run seed:run` 으로 실행 |
-| `internal.sceneActions.validate` | LLM 이 만든 `scene_actions` 를 zod + DB 존재 여부로 검증해 통과한 것만 반환. 챗봇 action 이 사용 예정 |
+| `internal.seed.run` | Puts the fixtures into the database (upsert, safe to run many times). The backend owner runs it with `npx convex run seed:run` |
+| `internal.sceneActions.validate` | Validates the `scene_actions` produced by the LLM with zod and the database existence check, and returns only those that pass. The chatbot action will use it |
 
-## scene_action 검증 규칙
+## scene_action validation rules
 
-- 스키마(`SceneActionSchema`)에 맞지 않으면 거부
-- 참조하는 `structure_id`, `procedure_slug`+`step_index` 가 DB 에 없으면 거부 (`highlight` 는 id 하나라도 없으면 action 전체 거부)
-- 한 응답에서 최대 10개까지만 허용
-- 거부된 항목은 `rejected` 에 `index` 와 `reason` 으로 남는다
+- Reject anything that does not match the schema (`SceneActionSchema`)
+- Reject if the referenced `structure_id`, or `procedure_slug` plus `step_index`, is not in the database (a `highlight` action is rejected as a whole if even one id is missing)
+- At most 10 per response
+- Rejected items are kept in `rejected` with an `index` and a `reason`
 
-## 아직 없는 것
+## Not built yet
 
-챗봇(LLM 호출) 과 세션/메시지 저장, RAG, 인증은 구현하지 않았습니다.
+The chatbot (calling the LLM), session and message storage, RAG, and authentication are not implemented.
