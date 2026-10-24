@@ -10,11 +10,14 @@
 
 import type * as conditions from "../conditions.js";
 import type * as instruments from "../instruments.js";
+import type * as lib_cartesia from "../lib/cartesia.js";
 import type * as lib_mappers from "../lib/mappers.js";
+import type * as lib_multipart from "../lib/multipart.js";
 import type * as lib_sceneActions from "../lib/sceneActions.js";
 import type * as procedures from "../procedures.js";
 import type * as sceneActions from "../sceneActions.js";
 import type * as seed from "../seed.js";
+import type * as speech from "../speech.js";
 import type * as structures from "../structures.js";
 import type * as validators from "../validators.js";
 
@@ -27,11 +30,14 @@ import type {
 declare const fullApi: ApiFromModules<{
   conditions: typeof conditions;
   instruments: typeof instruments;
+  "lib/cartesia": typeof lib_cartesia;
   "lib/mappers": typeof lib_mappers;
+  "lib/multipart": typeof lib_multipart;
   "lib/sceneActions": typeof lib_sceneActions;
   procedures: typeof procedures;
   sceneActions: typeof sceneActions;
   seed: typeof seed;
+  speech: typeof speech;
   structures: typeof structures;
   validators: typeof validators;
 }>;
