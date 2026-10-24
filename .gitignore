@@ -5,6 +5,8 @@ build/
 .turbo/
 *.tsbuildinfo
 coverage/
+dist-ssr/
+.vite/
 
 # Environment variables and secrets (never commit)
 .env
