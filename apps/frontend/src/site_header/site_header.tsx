@@ -11,6 +11,7 @@ type NavItem = {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { label: 'Walkthroughs', to: '/walkthroughs-list' },
   { label: 'About us', to: '/about' },
   { label: 'FAQs', to: '/faqs' },
   { label: 'Contact', to: '/contact' },
