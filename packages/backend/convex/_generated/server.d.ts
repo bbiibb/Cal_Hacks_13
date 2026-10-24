@@ -31,6 +31,9 @@ type Env = {
   readonly CONVEX_CLOUD_URL: string;
   readonly CONVEX_SITE_URL: string;
   readonly CARTESIA_API_KEY: string | undefined;
+  readonly LLM_API_KEY: string | undefined;
+  readonly LLM_BASE_URL: string | undefined;
+  readonly LLM_MODEL: string | undefined;
 };
 
 /**

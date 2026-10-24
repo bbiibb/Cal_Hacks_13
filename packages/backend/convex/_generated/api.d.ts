@@ -8,9 +8,17 @@
  * @module
  */
 
+import type * as chat from "../chat.js";
+import type * as chatContext from "../chatContext.js";
+import type * as chatStore from "../chatStore.js";
 import type * as conditions from "../conditions.js";
 import type * as instruments from "../instruments.js";
 import type * as lib_cartesia from "../lib/cartesia.js";
+import type * as lib_chatActions from "../lib/chatActions.js";
+import type * as lib_chatParse from "../lib/chatParse.js";
+import type * as lib_chatPipeline from "../lib/chatPipeline.js";
+import type * as lib_chatPrompt from "../lib/chatPrompt.js";
+import type * as lib_llm from "../lib/llm.js";
 import type * as lib_mappers from "../lib/mappers.js";
 import type * as lib_multipart from "../lib/multipart.js";
 import type * as lib_sceneActions from "../lib/sceneActions.js";
@@ -28,9 +36,17 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  chat: typeof chat;
+  chatContext: typeof chatContext;
+  chatStore: typeof chatStore;
   conditions: typeof conditions;
   instruments: typeof instruments;
   "lib/cartesia": typeof lib_cartesia;
+  "lib/chatActions": typeof lib_chatActions;
+  "lib/chatParse": typeof lib_chatParse;
+  "lib/chatPipeline": typeof lib_chatPipeline;
+  "lib/chatPrompt": typeof lib_chatPrompt;
+  "lib/llm": typeof lib_llm;
   "lib/mappers": typeof lib_mappers;
   "lib/multipart": typeof lib_multipart;
   "lib/sceneActions": typeof lib_sceneActions;
