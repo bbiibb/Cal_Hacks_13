@@ -9,7 +9,9 @@
   position: relative;
   z-index: 2;
   box-sizing: border-box;
-  display: flex;
+  /* Logo on the left, links in the exact middle, buttons on the right */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 2.5rem;
   width: 100%;
@@ -43,13 +45,11 @@
   color: var(--accent-color);
 }
 
+/* The links sit together in the middle of the header, without a line under them */
 .nav {
-  flex: 1;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   gap: 2.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 
 .link {
@@ -88,8 +88,8 @@
 .auth {
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 1.25rem;
-  flex-shrink: 0;
 }
 
 .signUp {
@@ -133,6 +133,7 @@
 
 @media (max-width: 820px) {
   .header {
+    display: flex;
     flex-wrap: wrap;
     gap: 1.25rem;
     padding: 1rem 1.25rem;
@@ -145,7 +146,7 @@
   .nav {
     order: 3;
     flex-basis: 100%;
-    justify-content: space-around;
-    gap: 1rem;
+    justify-content: center;
+    gap: 1.5rem;
   }
 }
