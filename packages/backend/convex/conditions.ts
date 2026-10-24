@@ -5,7 +5,7 @@ import { vCondition } from "./validators";
 
 const MAX_CONDITIONS = 100;
 
-/** 모든 심장 질환 (slug 순) */
+/** All heart conditions (ordered by slug) */
 export const list = query({
   args: {},
   returns: v.array(vCondition),
@@ -18,7 +18,7 @@ export const list = query({
   },
 });
 
-/** slug 로 질환 하나 조회. 없으면 null */
+/** One condition by slug, or null if it does not exist */
 export const getBySlug = query({
   args: { slug: v.string() },
   returns: v.union(vCondition, v.null()),

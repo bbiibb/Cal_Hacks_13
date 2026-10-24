@@ -5,7 +5,7 @@ import { vInstrument } from "./validators";
 
 const MAX_INSTRUMENTS = 200;
 
-/** 모든 수술 기구 (instrument_id 순) */
+/** All surgical instruments (ordered by instrument_id) */
 export const list = query({
   args: {},
   returns: v.array(vInstrument),

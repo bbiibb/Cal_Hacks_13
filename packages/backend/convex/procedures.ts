@@ -13,7 +13,7 @@ async function findProcedure(ctx: QueryCtx, slug: string) {
     .unique();
 }
 
-/** 수술 과정 목록 (단계 제외) */
+/** List of procedures (without steps) */
 export const list = query({
   args: {},
   returns: v.array(vProcedureSummary),
@@ -26,7 +26,7 @@ export const list = query({
   },
 });
 
-/** 한 질환에 연결된 수술 과정 목록 (order 순) */
+/** Procedures linked to one condition (ordered by `order`) */
 export const listByCondition = query({
   args: { conditionSlug: v.string() },
   returns: v.array(vProcedureSummary),
@@ -41,7 +41,7 @@ export const listByCondition = query({
   },
 });
 
-/** slug 로 수술 과정과 모든 단계를 조회. 없으면 null */
+/** A procedure with all of its steps by slug, or null if it does not exist */
 export const getBySlug = query({
   args: { slug: v.string() },
   returns: v.union(vProcedure, v.null()),
@@ -58,7 +58,7 @@ export const getBySlug = query({
   },
 });
 
-/** 한 단계만 조회. 과정이나 단계가 없으면 null */
+/** A single step, or null if the procedure or step does not exist */
 export const getStep = query({
   args: { slug: v.string(), index: v.number() },
   returns: v.union(vStep, v.null()),

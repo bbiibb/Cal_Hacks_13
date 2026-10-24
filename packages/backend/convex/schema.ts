@@ -3,34 +3,31 @@ import { v } from "convex/values";
 import { vScene, vSceneAction, vSidePanel, vSource, vVec3 } from "./validators";
 
 export default defineSchema({
-  // 해부학적 구조물. structureId 는 GLB 메시 이름과 1:1로 일치하는 공통 키.
+  // Anatomical structures. structureId is the shared key that matches a GLB mesh name one to one.
   structures: defineTable({
     structureId: v.string(),
     nameEn: v.string(),
-    nameKo: v.string(),
-    parentId: v.optional(v.string()), // 부모의 structureId
+    parentId: v.optional(v.string()), // structureId of the parent
     description: v.string(),
   })
     .index("by_structure_id", ["structureId"])
     .index("by_parent_id", ["parentId"]),
 
-  // 수술 기구
+  // Surgical instruments
   instruments: defineTable({
     instrumentId: v.string(),
     nameEn: v.string(),
-    nameKo: v.string(),
     description: v.string(),
   }).index("by_instrument_id", ["instrumentId"]),
 
-  // 심장 질환. 새 질환은 이 테이블에 행만 추가하면 된다 (코드 변경 없음)
+  // Heart conditions. A new condition only needs a new row in this table (no code change).
   conditions: defineTable({
     slug: v.string(),
     nameEn: v.string(),
-    nameKo: v.string(),
     description: v.string(),
   }).index("by_slug", ["slug"]),
 
-  // 수술 과정. conditionSlug/order 는 기존 문서와의 호환을 위해 optional
+  // Procedures. conditionSlug and order are optional so that older documents stay valid.
   procedures: defineTable({
     slug: v.string(),
     title: v.string(),
@@ -41,17 +38,17 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_condition_slug_and_order", ["conditionSlug", "order"]),
 
-  // 수술 단계: 영상이 아니라 단계별 3D 장면 상태(scene)로 표현
+  // Procedure steps: represented as a 3D scene state per step, not as a video.
   steps: defineTable({
     procedureId: v.id("procedures"),
-    index: v.number(), // 0부터 시작
+    index: v.number(), // starts at 0
     title: v.string(),
-    shortTitle: v.optional(v.string()), // 타임라인 라벨용. 없으면 title 사용
+    shortTitle: v.optional(v.string()), // label for the timeline; title is used when missing
     scene: vScene,
     sidePanel: vSidePanel,
   }).index("by_procedure_and_index", ["procedureId", "index"]),
 
-  // 구조물에 붙는 주석(라벨/설명)
+  // Annotations (label and explanation) attached to a structure
   annotations: defineTable({
     structureId: v.string(),
     stepId: v.optional(v.id("steps")),
@@ -62,7 +59,7 @@ export default defineSchema({
     .index("by_structure_id", ["structureId"])
     .index("by_step_id", ["stepId"]),
 
-  // 챗봇 대화 세션 (인증 도입 전까지는 클라이언트가 만든 익명 키 사용)
+  // Chatbot conversation sessions (an anonymous key made by the client is used until authentication exists)
   chatSessions: defineTable({
     clientSessionId: v.string(),
     procedureSlug: v.optional(v.string()),
@@ -73,12 +70,12 @@ export default defineSchema({
     sessionId: v.id("chatSessions"),
     role: v.union(v.literal("user"), v.literal("assistant")),
     content: v.string(),
-    // assistant 메시지에만: 검증을 통과한 것만 저장/전달한다
+    // Assistant messages only: only items that passed validation are stored and delivered
     sceneActions: v.optional(v.array(vSceneAction)),
     sidePanel: v.optional(vSidePanel),
     sources: v.optional(v.array(vSource)),
   }).index("by_session_id", ["sessionId"]),
 
-  // TODO(RAG): 근거 문서 테이블(documents)과 임베딩(embeddings, vectorIndex)은
-  //   RAG 구현 단계에서 추가한다. 지금은 정의하지 않는다.
+  // TODO(RAG): the source document table (documents) and embeddings (embeddings, vectorIndex)
+  //   will be added when RAG is implemented. They are not defined yet.
 });

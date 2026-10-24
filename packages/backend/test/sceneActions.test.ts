@@ -8,7 +8,7 @@ import {
   type SceneActionLookup,
 } from "../convex/lib/sceneActions";
 
-// fixtures 를 DB 처럼 쓰는 가짜 lookup
+// A fake lookup that uses the fixtures like a database
 const structureIds = new Set(structures.map((s) => s.id));
 const lookup: SceneActionLookup = {
   structureExists: async (id) => structureIds.has(id),
@@ -17,13 +17,13 @@ const lookup: SceneActionLookup = {
 };
 
 describe("validateSceneActions", () => {
-  it("챗봇 예시 응답의 scene_actions 는 모두 통과한다", async () => {
+  it("all scene_actions in the chatbot example response pass", async () => {
     const result = await validateSceneActions(chatExample.scene_actions, lookup);
     expect(result.rejected).toEqual([]);
     expect(result.accepted).toHaveLength(chatExample.scene_actions.length);
   });
 
-  it("배열이 아니면 전부 거부한다", async () => {
+  it("rejects everything when the input is not an array", async () => {
     for (const bad of [null, undefined, "focus", { type: "focus" }, 3]) {
       const result = await validateSceneActions(bad, lookup);
       expect(result.accepted).toEqual([]);
@@ -31,7 +31,7 @@ describe("validateSceneActions", () => {
     }
   });
 
-  it("스키마에 맞지 않는 항목만 거부하고 나머지는 통과시킨다", async () => {
+  it("rejects only the items that do not match the schema and passes the rest", async () => {
     const result = await validateSceneActions(
       [
         { type: "focus", structure_id: "aorta" },
@@ -46,7 +46,7 @@ describe("validateSceneActions", () => {
     expect(result.rejected.map((r) => r.index)).toEqual([1, 2, 3, 4]);
   });
 
-  it("스키마는 맞지만 DB 에 없는 structure_id 는 거부한다", async () => {
+  it("rejects a structure_id that matches the schema but is not in the database", async () => {
     const result = await validateSceneActions(
       [
         { type: "focus", structure_id: "liver" },
@@ -59,7 +59,7 @@ describe("validateSceneActions", () => {
     expect(result.rejected[0]?.reason).toContain("liver");
   });
 
-  it("highlight 는 id 중 하나라도 없으면 action 전체를 거부한다", async () => {
+  it("rejects the whole highlight action if any id is missing", async () => {
     const result = await validateSceneActions(
       [{ type: "highlight", structure_ids: ["aorta", "liver"], enabled: true }],
       lookup,
@@ -68,7 +68,7 @@ describe("validateSceneActions", () => {
     expect(result.rejected[0]?.index).toBe(0);
   });
 
-  it("goto_step 은 존재하는 과정/단계만 통과한다", async () => {
+  it("goto_step only passes for procedures and steps that exist", async () => {
     const last = procedure.steps.length - 1;
     const result = await validateSceneActions(
       [
@@ -83,7 +83,7 @@ describe("validateSceneActions", () => {
     expect(result.rejected.map((r) => r.index)).toEqual([1, 2, 3]);
   });
 
-  it(`최대 ${MAX_SCENE_ACTIONS}개를 넘는 항목은 거부한다`, async () => {
+  it(`rejects items beyond the maximum of ${MAX_SCENE_ACTIONS}`, async () => {
     const actions = Array.from({ length: MAX_SCENE_ACTIONS + 2 }, () => ({
       type: "focus",
       structure_id: "aorta",
@@ -96,7 +96,7 @@ describe("validateSceneActions", () => {
     ]);
   });
 
-  it("빈 배열은 빈 결과를 낸다", async () => {
+  it("an empty array gives an empty result", async () => {
     expect(await validateSceneActions([], lookup)).toEqual({ accepted: [], rejected: [] });
   });
 });

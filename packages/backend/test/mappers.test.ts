@@ -21,36 +21,36 @@ import {
   toStructure,
 } from "../convex/lib/mappers";
 
-describe("mappers: DB 문서 <-> 계약 왕복", () => {
-  it("structures: fixtures -> DB -> 계약이 원본과 같다", () => {
+describe("mappers: round trip between database documents and the contract", () => {
+  it("structures: fixtures -> DB -> contract equals the original", () => {
     for (const raw of structures) {
       const s = StructureSchema.parse(raw);
       expect(toStructure(fromStructure(s))).toEqual(s);
     }
   });
 
-  it("parent_id 가 null 이면 DB 문서에서 parentId 를 생략한다", () => {
+  it("omits parentId in the database document when parent_id is null", () => {
     const root = StructureSchema.parse(structures.find((s) => s.parent_id === null));
     expect("parentId" in fromStructure(root)).toBe(false);
     const child = StructureSchema.parse(structures.find((s) => s.parent_id !== null));
     expect(fromStructure(child).parentId).toBe(child.parent_id);
   });
 
-  it("instruments 왕복", () => {
+  it("instruments round trip", () => {
     for (const raw of instruments) {
       const i = InstrumentSchema.parse(raw);
       expect(toInstrument(fromInstrument(i))).toEqual(i);
     }
   });
 
-  it("conditions 왕복", () => {
+  it("conditions round trip", () => {
     for (const raw of conditions) {
       const c = ConditionSchema.parse(raw);
       expect(toCondition(fromCondition(c))).toEqual(c);
     }
   });
 
-  it("이전 형식의 문서(shortTitle/conditionSlug/order 없음)도 읽는다", () => {
+  it("reads older documents (without shortTitle, conditionSlug, or order)", () => {
     const step = ProcedureSchema.parse(procedureJson).steps[0]!;
     const old = { index: 0, title: step.title, scene: step.scene, sidePanel: step.side_panel };
     expect(toStep(old).short_title).toBe(step.title);
@@ -63,7 +63,7 @@ describe("mappers: DB 문서 <-> 계약 왕복", () => {
     });
   });
 
-  it("steps 왕복", () => {
+  it("steps round trip", () => {
     const procedure = ProcedureSchema.parse(procedureJson);
     for (const step of procedure.steps) {
       expect(toStep(fromStep(step))).toEqual(step);

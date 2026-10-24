@@ -2,7 +2,7 @@
   "name": "@cal-hacks/backend",
   "version": "0.0.0",
   "private": true,
-  "description": "Convex 백엔드 (query/mutation/action, HTTP action, file storage, vector search)",
+  "description": "Convex backend (queries, mutations, actions, HTTP actions, file storage, vector search)",
   "type": "module",
   "exports": {
     "./api": {

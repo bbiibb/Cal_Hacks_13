@@ -4,9 +4,9 @@ import { validateSceneActions } from "./lib/sceneActions";
 import { vSceneAction } from "./validators";
 
 /**
- * LLM 이 만든 scene_actions 를 검증해 통과한 것만 돌려준다 (zod + DB 존재 여부).
- * 챗봇 action 이 ctx.runQuery(internal.sceneActions.validate, { actions }) 로 호출한다.
- * actions 는 신뢰할 수 없는 LLM 출력이라 any 로 받고 안에서 검증한다.
+ * Validates the scene_actions produced by the LLM and returns only the ones that pass (zod + existence in the database).
+ * The chatbot action calls it with ctx.runQuery(internal.sceneActions.validate, { actions }).
+ * `actions` is untrusted LLM output, so it is accepted as `any` and checked inside.
  */
 export const validate = internalQuery({
   args: { actions: v.any() },

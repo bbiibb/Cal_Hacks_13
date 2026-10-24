@@ -11,8 +11,7 @@ import { SidePanelSchema } from "./chat";
 export const StructureSchema = z.object({
   id: StructureIdSchema,
   name_en: z.string().min(1),
-  name_ko: z.string().min(1),
-  /** 상위 구조물. 최상위면 null. `aortic_valve.calcification` 의 부모는 `aortic_valve` */
+  /** Parent structure, or null for a top-level one. The parent of `aortic_valve.calcification` is `aortic_valve` */
   parent_id: StructureIdSchema.nullable(),
   description: z.string(),
 });
@@ -21,25 +20,23 @@ export type Structure = z.infer<typeof StructureSchema>;
 export const InstrumentSchema = z.object({
   id: InstrumentIdSchema,
   name_en: z.string().min(1),
-  name_ko: z.string().min(1),
   description: z.string(),
 });
 export type Instrument = z.infer<typeof InstrumentSchema>;
 
-/** 심장 질환. 하나의 질환에 여러 수술/시술이 연결될 수 있다. */
+/** A heart condition. Several procedures can be linked to one condition. */
 export const ConditionSchema = z.object({
   slug: ConditionSlugSchema,
   name_en: z.string().min(1),
-  name_ko: z.string().min(1),
   description: z.string(),
 });
 export type Condition = z.infer<typeof ConditionSchema>;
 
 export const StepSchema = z.object({
-  /** 0부터 시작하는 단계 순서. 타임라인 슬라이더의 눈금이 된다 */
+  /** Step order starting at 0. Each index is one tick on the timeline slider */
   index: z.number().int().min(0),
   title: z.string().min(1),
-  /** 타임라인 라벨용 짧은 이름 (좁은 화면에서 잘리지 않도록 짧게) */
+  /** Short name for the timeline label (kept short so it is not cut off on narrow screens) */
   short_title: z.string().min(1),
   scene: SceneSchema,
   side_panel: SidePanelSchema,
@@ -50,9 +47,9 @@ export const ProcedureSchema = z.object({
   slug: ProcedureSlugSchema,
   title: z.string().min(1),
   summary: z.string(),
-  /** 이 수술이 치료하는 질환. 아직 정해지지 않았으면 null */
+  /** The condition this procedure treats, or null if not decided yet */
   condition_slug: ConditionSlugSchema.nullable(),
-  /** 같은 질환 안에서 보여줄 순서 (작을수록 먼저) */
+  /** Display order within the same condition (smaller comes first) */
   order: z.number().int().min(0),
   steps: z.array(StepSchema).min(1),
 });

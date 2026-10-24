@@ -1,12 +1,12 @@
 import { v } from "convex/values";
 
 /**
- * packages/shared 의 zod 스키마(계약)를 Convex validator 로 옮긴 것.
- * DB에는 계약과 같은 snake_case 키 형태로 저장해서 변환 없이 주고받는다.
- * 계약(zod)을 바꾸면 이 파일도 함께 맞춰야 한다. (docs/contracts.md 참고)
+ * The zod schemas in packages/shared (the contract) expressed as Convex validators.
+ * The database stores the same snake_case keys as the contract, so no conversion is needed.
+ * When the contract (zod) changes, change this file too (see docs/contracts.md).
  */
 
-export const vVec3 = v.array(v.number()); // TODO: 길이 3 검증은 zod 쪽에서 수행
+export const vVec3 = v.array(v.number()); // TODO: the length-3 check is done on the zod side
 
 export const vTransform = v.object({
   position: vVec3,
@@ -73,12 +73,11 @@ export const vSource = v.object({
   url: v.union(v.string(), v.null()),
 });
 
-// --- 읽기 query 의 반환 형태: 프론트 계약(packages/shared)과 같은 snake_case ---
+// --- Return shapes of the read queries: same snake_case as the frontend contract (packages/shared) ---
 
 export const vStructure = v.object({
   id: v.string(),
   name_en: v.string(),
-  name_ko: v.string(),
   parent_id: v.union(v.string(), v.null()),
   description: v.string(),
 });
@@ -86,14 +85,12 @@ export const vStructure = v.object({
 export const vInstrument = v.object({
   id: v.string(),
   name_en: v.string(),
-  name_ko: v.string(),
   description: v.string(),
 });
 
 export const vCondition = v.object({
   slug: v.string(),
   name_en: v.string(),
-  name_ko: v.string(),
   description: v.string(),
 });
 

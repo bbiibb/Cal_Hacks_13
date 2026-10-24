@@ -3,10 +3,10 @@ import { query } from "./_generated/server";
 import { toStructure } from "./lib/mappers";
 import { vStructure } from "./validators";
 
-// 구조물은 수십 개 수준이라 한 번에 가져오되, 상한을 둔다
+// There are only a few dozen structures, so they are fetched at once, with an upper bound
 const MAX_STRUCTURES = 500;
 
-/** 모든 구조물 (structure_id 순) */
+/** All structures (ordered by structure_id) */
 export const list = query({
   args: {},
   returns: v.array(vStructure),
@@ -19,7 +19,7 @@ export const list = query({
   },
 });
 
-/** structure_id 로 하나 조회. 없으면 null */
+/** One structure by structure_id, or null if it does not exist */
 export const getById = query({
   args: { id: v.string() },
   returns: v.union(vStructure, v.null()),

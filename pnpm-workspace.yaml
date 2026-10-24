@@ -2,6 +2,6 @@ packages:
   - "apps/*"
   - "packages/*"
 
-# esbuild(convex dev 가 사용)의 postinstall 허용
+# Allow the esbuild postinstall script (used by convex dev)
 allowBuilds:
   esbuild: true

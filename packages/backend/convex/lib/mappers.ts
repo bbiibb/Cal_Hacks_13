@@ -9,14 +9,13 @@ import type {
 } from "../validators";
 
 /**
- * DB 문서(camelCase 최상위 필드)와 프론트 계약(snake_case)을 오가는 순수 함수들.
- * DB 접근이 없어서 단위 테스트가 쉽다.
+ * Pure functions that convert between database documents (camelCase top-level fields) and the frontend contract (snake_case).
+ * They do not touch the database, so they are easy to unit test.
  */
 
 type StructureDoc = {
   structureId: string;
   nameEn: string;
-  nameKo: string;
   parentId?: string;
   description: string;
 };
@@ -25,7 +24,6 @@ export function toStructure(doc: StructureDoc): Infer<typeof vStructure> {
   return {
     id: doc.structureId,
     name_en: doc.nameEn,
-    name_ko: doc.nameKo,
     parent_id: doc.parentId ?? null,
     description: doc.description,
   };
@@ -35,10 +33,9 @@ export function fromStructure(s: Structure): StructureDoc {
   const doc: StructureDoc = {
     structureId: s.id,
     nameEn: s.name_en,
-    nameKo: s.name_ko,
     description: s.description,
   };
-  // Convex 는 undefined 를 값으로 취급하지 않으므로 null 대신 필드를 생략한다
+  // Convex does not treat undefined as a value, so the field is omitted instead of being null
   if (s.parent_id !== null) doc.parentId = s.parent_id;
   return doc;
 }
@@ -46,7 +43,6 @@ export function fromStructure(s: Structure): StructureDoc {
 type InstrumentDoc = {
   instrumentId: string;
   nameEn: string;
-  nameKo: string;
   description: string;
 };
 
@@ -54,7 +50,6 @@ export function toInstrument(doc: InstrumentDoc): Infer<typeof vInstrument> {
   return {
     id: doc.instrumentId,
     name_en: doc.nameEn,
-    name_ko: doc.nameKo,
     description: doc.description,
   };
 }
@@ -63,7 +58,6 @@ export function fromInstrument(i: Instrument): InstrumentDoc {
   return {
     instrumentId: i.id,
     nameEn: i.name_en,
-    nameKo: i.name_ko,
     description: i.description,
   };
 }
@@ -71,7 +65,6 @@ export function fromInstrument(i: Instrument): InstrumentDoc {
 type ConditionDoc = {
   slug: string;
   nameEn: string;
-  nameKo: string;
   description: string;
 };
 
@@ -79,7 +72,6 @@ export function toCondition(doc: ConditionDoc): Infer<typeof vCondition> {
   return {
     slug: doc.slug,
     name_en: doc.nameEn,
-    name_ko: doc.nameKo,
     description: doc.description,
   };
 }
@@ -88,7 +80,6 @@ export function fromCondition(c: Condition): ConditionDoc {
   return {
     slug: c.slug,
     nameEn: c.name_en,
-    nameKo: c.name_ko,
     description: c.description,
   };
 }
@@ -105,7 +96,7 @@ export function toStep(doc: StepDoc): Infer<typeof vStep> {
   return {
     index: doc.index,
     title: doc.title,
-    // 이전에 저장된 문서에는 shortTitle 이 없을 수 있어 title 로 대신한다
+    // Documents saved earlier may not have shortTitle, so title is used instead
     short_title: doc.shortTitle ?? doc.title,
     scene: doc.scene,
     side_panel: doc.sidePanel,
