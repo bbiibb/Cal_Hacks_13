@@ -2,10 +2,11 @@ import { ChatRequestSchema, type ChatResponse } from "@cal-hacks/shared";
 import { ConvexError } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { env, type ActionCtx } from "../_generated/server";
+import type { ActionCtx } from "../_generated/server";
 import { runChat } from "./chatPipeline";
 import { MAX_HISTORY_TURNS } from "./chatPrompt";
-import { LlmError, completeChat, resolveLlmConfig } from "./llm";
+import { LlmError } from "./llm";
+import { prepareModel } from "./modelRoute";
 
 /** Minimum time between two questions of one session, in milliseconds. Protects the free quota. */
 const MIN_MS_BETWEEN_QUESTIONS = 1500;
@@ -29,8 +30,6 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
   const { message, context } = request.data;
 
   try {
-    const config = resolveLlmConfig(env);
-
     const data = await ctx.runQuery(internal.chatContext.get, {
       procedureSlug: context.procedure_slug,
       stepIndex: context.step_index,
@@ -54,11 +53,14 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
 
     // The context above already lists every real part and step, so existence checks need no more reads
     const structureIds = new Set(data.structures.map((s) => s.id));
+    // LLM_PROVIDER decides which model answers ("groq" or "local"); everything else stays the same
+    const route = await prepareModel(ctx, data, message);
     const result = await runChat({
       message,
       data,
       history,
-      callModel: (messages) => completeChat({ config, messages }),
+      callModel: route.callModel,
+      buildMessages: route.buildMessages,
       lookup: {
         structureExists: async (id) => structureIds.has(id),
         stepExists: async (slug, index) =>

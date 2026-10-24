@@ -16,6 +16,8 @@ export type LlmErrorCode =
   | "llm_rate_limited"
   | "llm_timeout"
   | "llm_request_failed"
+  | "llm_local_unavailable"
+  | "llm_model_missing"
   | "llm_bad_response";
 
 /** Error with a stable code. Messages never contain the API key or the provider's raw response. */
@@ -159,4 +161,15 @@ export async function completeChat(params: CompletionParams): Promise<string> {
   }
 
   throw new LlmError("llm_request_failed", "The assistant service rejected the request.", 400);
+}
+
+/** Which language model pipeline answers questions. */
+export type LlmProvider = "groq" | "local";
+
+/** Reads LLM_PROVIDER. "groq" (any OpenAI-compatible API) is the default; "local" is Llama through Ollama. */
+export function selectProvider(env: { LLM_PROVIDER?: string }): LlmProvider {
+  const value = (env.LLM_PROVIDER ?? "groq").trim().toLowerCase();
+  if (value === "groq" || value === "") return "groq";
+  if (value === "local") return "local";
+  throw new LlmError("llm_not_configured", 'LLM_PROVIDER must be "groq" or "local".');
 }

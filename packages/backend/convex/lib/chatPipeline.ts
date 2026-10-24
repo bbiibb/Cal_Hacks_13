@@ -21,6 +21,8 @@ export interface ChatPipelineInput {
   history: ChatTurn[];
   /** Sends messages to the model and returns its raw text. Injected so tests can use a fake. */
   callModel: (messages: LlmMessage[]) => Promise<string>;
+  /** Builds the prompt. Defaults to the cloud prompt; the local pipeline passes its own shorter one. */
+  buildMessages?: (data: PromptData, history: ChatTurn[], message: string) => LlmMessage[];
   lookup: SceneActionLookup;
 }
 
@@ -37,7 +39,7 @@ export interface ChatPipelineResult {
  * prompt -> model -> forgiving JSON parse (one retry) -> scene actions -> validation -> response.
  */
 export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineResult> {
-  const messages = buildMessages(input.data, input.history, input.message);
+  const messages = (input.buildMessages ?? buildMessages)(input.data, input.history, input.message);
   const urgentByRule = detectUrgent(input.message);
 
   let output = parseLlmOutput(await input.callModel(messages));

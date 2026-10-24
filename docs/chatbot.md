@@ -12,6 +12,8 @@ Yes, for this job, because the model is asked to do something narrow:
 
 What a small model will do worse than a large one: nuance in medical explanations, very long conversations, and non-English answers. That is why the answer text is kept short and tied to our own text. It was tried with a real free model (`openai/gpt-oss-20b` on Groq): replies take about 2 seconds, the JSON was valid every time, and zoom, rotate, step, highlight, emergency symptoms, and off-topic questions all behaved as intended. The unit tests use fake model replies; real answers still need review by someone with medical knowledge before patients see them.
 
+> A second, fully local pipeline (Llama 3.2 3B with Ollama and RAG) can answer instead of the cloud model. See [`docs/local-llm.md`](local-llm.md).
+
 ## Free options
 
 | Option | What it is | Notes |
