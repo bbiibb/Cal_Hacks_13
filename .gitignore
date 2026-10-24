@@ -17,9 +17,8 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 
-# Convex 생성 파일: 프론트 담당자가 `convex dev` 없이 타입을 쓰게 하려면
-# 아래 줄을 지우고 커밋한다 (논의 필요)
-packages/backend/convex/_generated/
+# convex/_generated 는 Convex 권장대로 커밋한다
+# (클론 직후 convex dev 없이 typecheck 가 되고, 프론트가 api 타입을 바로 import 할 수 있음)
 
 # `convex dev` 가 자동 생성하는 AI 보조 파일 (프로젝트 skills 와 섞이지 않게 제외)
 # 주의: 루트 .claude/skills 는 우리 프로젝트 skills 이므로 packages/backend 아래만 제외한다
