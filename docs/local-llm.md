@@ -38,7 +38,8 @@ answerQuestion -> prepareModel   reads LLM_PROVIDER
 ```
 
 - **Nothing changes for the frontend.** `chat.ask` and `chat.askByVoice` keep their arguments and their reply. The only visible difference is extra error codes (below).
-- Safety stays the same in both modes: the validator, the emergency-symptom rule, and a side panel taken from our own content.
+- Safety stays the same in both modes: the validator, the emergency-symptom rule, the safety layer ([`safety.md`](safety.md)), and a side panel taken from our own content.
+- In local mode, voice input through Cartesia is **off by default** (error `cloud_stt_disabled`), because it would send the patient's voice to a cloud service. Set `ALLOW_CLOUD_STT=true` to allow it.
 - Voice input still uses Cartesia (`CARTESIA_API_KEY`), which is a cloud service. For a fully offline setup, speech-to-text would also need a local model; that is not built.
 
 ## Set it up

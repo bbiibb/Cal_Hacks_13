@@ -4,6 +4,7 @@ import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { ActionCtx } from "../_generated/server";
 import { runChat } from "./chatPipeline";
+import { redactPersonalInfo } from "./safety";
 import { MAX_HISTORY_TURNS } from "./chatPrompt";
 import { LlmError } from "./llm";
 import { prepareModel } from "./modelRoute";
@@ -27,7 +28,11 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
   if (!request.success) {
     throw new ConvexError({ code: "invalid_message", message: "Please type a question of up to 500 characters." });
   }
-  const { message, context } = request.data;
+  const { context } = request.data;
+  // Privacy: personal details are removed before the question goes anywhere (model, logs, or storage)
+  const redaction = redactPersonalInfo(request.data.message);
+  const message = redaction.text;
+  if (redaction.found.length > 0) console.log("[safety] personal details removed from a question:", redaction.found.join(","));
 
   try {
     const data = await ctx.runQuery(internal.chatContext.get, {
@@ -72,6 +77,8 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
       console.log("Dropped scene actions:", JSON.stringify(result.rejected));
     }
     if (result.usedFallback) console.log("The model reply could not be parsed; used the fallback answer.");
+    // Only the kind of event is logged, never the patient's words
+    if (result.safetyEvents.length > 0) console.log("[safety]", result.safetyEvents.join(","));
 
     if (args.sessionId) {
       await ctx.runMutation(internal.chatStore.saveExchange, {

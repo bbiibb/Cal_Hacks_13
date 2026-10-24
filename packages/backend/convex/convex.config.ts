@@ -17,6 +17,8 @@ const app = defineApp({
     OLLAMA_BASE_URL: v.optional(v.string()), // default http://localhost:11434
     OLLAMA_MODEL: v.optional(v.string()), // default llama3.2:3b
     OLLAMA_EMBED_MODEL: v.optional(v.string()), // default nomic-embed-text (768 dimensions)
+    // Privacy: with LLM_PROVIDER=local, voice recordings are NOT sent to the Cartesia cloud unless this is "true".
+    ALLOW_CLOUD_STT: v.optional(v.string()),
   },
 });
 

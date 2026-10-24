@@ -21,6 +21,14 @@ export async function transcribeStoredAudio(
   try {
     const language = validateLanguage(args.language);
 
+    // Privacy by design: when the language model runs only on this computer, the voice must not leave it either
+    if (env.LLM_PROVIDER?.trim().toLowerCase() === "local" && env.ALLOW_CLOUD_STT !== "true") {
+      throw new SttError(
+        "cloud_stt_disabled",
+        "Voice input is off in local-only mode because it would send your voice to a cloud service. Type your question instead.",
+      );
+    }
+
     const apiKey = env.CARTESIA_API_KEY;
     if (!apiKey) {
       throw new SttError("stt_not_configured", "Speech-to-text is not configured on the server.");

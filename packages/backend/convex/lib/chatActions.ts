@@ -77,6 +77,19 @@ export function detectViewCommands(message: string): ViewCommands {
   return { zoom, rotate, resetView, step };
 }
 
+/** A plain confirmation of what the camera did. Used instead of the model's words for pure camera commands. */
+export function describeCameraCommands(commands: ViewCommands, stepCount: number): string {
+  const done: string[] = [];
+  if (commands.step !== null && commands.step >= 1 && commands.step <= stepCount) done.push(`moved to step ${commands.step}`);
+  if (commands.zoom) done.push(`zoomed ${commands.zoom.direction}`);
+  if (commands.rotate) {
+    const verb = commands.rotate.direction === "up" || commands.rotate.direction === "down" ? "tilted" : "turned";
+    done.push(`${verb} the view ${commands.rotate.direction} ${commands.rotate.degrees} degrees`);
+  }
+  if (commands.resetView) done.push("reset the view");
+  return done.length > 0 ? `Done: ${done.join(", ")}.` : "Done.";
+}
+
 // --- Actions for the 3D view -------------------------------------------------------------------
 
 export interface ActionContext {

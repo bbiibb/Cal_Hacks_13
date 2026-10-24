@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SceneActionSchema } from "@cal-hacks/shared";
-import { buildSceneActions, detectUrgent, detectViewCommands } from "../convex/lib/chatActions";
+import { buildSceneActions, describeCameraCommands, detectUrgent, detectViewCommands } from "../convex/lib/chatActions";
 import type { LlmOutput } from "../convex/lib/chatParse";
 
 const empty: LlmOutput = {
@@ -65,6 +65,18 @@ describe("detectViewCommands", () => {
   it("ignores ordinary questions", () => {
     const none = detectViewCommands("What is the aortic valve and why does it narrow?");
     expect(none).toEqual({ zoom: null, rotate: null, resetView: false, step: null });
+  });
+});
+
+describe("describeCameraCommands", () => {
+  it("confirms what was done in plain words", () => {
+    expect(describeCameraCommands(detectViewCommands("zoom in and rotate left 60 degrees"), 4)).toBe(
+      "Done: zoomed in, turned the view left 60 degrees.",
+    );
+    expect(describeCameraCommands(detectViewCommands("tilt it up 30 degrees"), 4)).toBe("Done: tilted the view up 30 degrees.");
+    expect(describeCameraCommands(detectViewCommands("reset the view"), 4)).toBe("Done: reset the view.");
+    expect(describeCameraCommands(detectViewCommands("take me to step 3"), 4)).toBe("Done: moved to step 3.");
+    expect(describeCameraCommands(detectViewCommands("take me to step 9"), 4)).toBe("Done.");
   });
 });
 

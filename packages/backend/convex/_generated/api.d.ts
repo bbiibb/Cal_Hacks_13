@@ -28,6 +28,7 @@ import type * as lib_ollama from "../lib/ollama.js";
 import type * as lib_rag from "../lib/rag.js";
 import type * as lib_ragConfig from "../lib/ragConfig.js";
 import type * as lib_ragRun from "../lib/ragRun.js";
+import type * as lib_safety from "../lib/safety.js";
 import type * as lib_sceneActions from "../lib/sceneActions.js";
 import type * as lib_speechRun from "../lib/speechRun.js";
 import type * as procedures from "../procedures.js";
@@ -65,6 +66,7 @@ declare const fullApi: ApiFromModules<{
   "lib/rag": typeof lib_rag;
   "lib/ragConfig": typeof lib_ragConfig;
   "lib/ragRun": typeof lib_ragRun;
+  "lib/safety": typeof lib_safety;
   "lib/sceneActions": typeof lib_sceneActions;
   "lib/speechRun": typeof lib_speechRun;
   procedures: typeof procedures;
