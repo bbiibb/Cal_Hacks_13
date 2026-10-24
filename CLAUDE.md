@@ -30,12 +30,14 @@ The app is called **Simple Surgeries**. A patient watches a procedure in 3D, sel
 ```bash
 pnpm install                 # install
 pnpm dev:backend             # = convex dev (first run needs a login and project creation; see Security below)
+pnpm dev:frontend            # the ask-ray website (Vite dev server)
+pnpm build:frontend          # type-check and build the website
 pnpm typecheck               # tsc in every package
-pnpm lint                    # eslint (excluding apps/frontend)
+pnpm lint                    # eslint for the packages, oxlint for apps/frontend
 pnpm test                    # vitest (packages/shared, packages/backend)
 pnpm --filter @cal-hacks/shared test   # run one package
 ```
-The frontend dev server command is defined by the frontend owner in `apps/frontend`.
+The frontend is a Vite app (React, TypeScript, three.js). See `apps/frontend/README.md`.
 
 ## Code and documentation rules
 - **Everything is written in English**: code, identifiers, comments, documentation (`*.md`), UI text, fixtures, and commit messages.
