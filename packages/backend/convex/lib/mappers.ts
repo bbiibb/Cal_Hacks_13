@@ -1,6 +1,7 @@
 import type { Infer } from "convex/values";
-import type { Instrument, Step, Structure } from "@cal-hacks/shared";
+import type { Condition, Instrument, Step, Structure } from "@cal-hacks/shared";
 import type {
+  vCondition,
   vInstrument,
   vProcedureSummary,
   vStep,
@@ -67,9 +68,35 @@ export function fromInstrument(i: Instrument): InstrumentDoc {
   };
 }
 
+type ConditionDoc = {
+  slug: string;
+  nameEn: string;
+  nameKo: string;
+  description: string;
+};
+
+export function toCondition(doc: ConditionDoc): Infer<typeof vCondition> {
+  return {
+    slug: doc.slug,
+    name_en: doc.nameEn,
+    name_ko: doc.nameKo,
+    description: doc.description,
+  };
+}
+
+export function fromCondition(c: Condition): ConditionDoc {
+  return {
+    slug: c.slug,
+    nameEn: c.name_en,
+    nameKo: c.name_ko,
+    description: c.description,
+  };
+}
+
 type StepDoc = {
   index: number;
   title: string;
+  shortTitle?: string;
   scene: Infer<typeof vStep>["scene"];
   sidePanel: Infer<typeof vStep>["side_panel"];
 };
@@ -78,6 +105,8 @@ export function toStep(doc: StepDoc): Infer<typeof vStep> {
   return {
     index: doc.index,
     title: doc.title,
+    // 이전에 저장된 문서에는 shortTitle 이 없을 수 있어 title 로 대신한다
+    short_title: doc.shortTitle ?? doc.title,
     scene: doc.scene,
     side_panel: doc.sidePanel,
   };
@@ -87,6 +116,7 @@ export function fromStep(s: Step): StepDoc {
   return {
     index: s.index,
     title: s.title,
+    shortTitle: s.short_title,
     scene: s.scene,
     sidePanel: s.side_panel,
   };
@@ -96,6 +126,14 @@ export function toProcedureSummary(doc: {
   slug: string;
   title: string;
   summary: string;
+  conditionSlug?: string;
+  order?: number;
 }): Infer<typeof vProcedureSummary> {
-  return { slug: doc.slug, title: doc.title, summary: doc.summary };
+  return {
+    slug: doc.slug,
+    title: doc.title,
+    summary: doc.summary,
+    condition_slug: doc.conditionSlug ?? null,
+    order: doc.order ?? 0,
+  };
 }

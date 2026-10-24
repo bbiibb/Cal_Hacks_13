@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as conditions from "../conditions.js";
 import type * as instruments from "../instruments.js";
 import type * as lib_mappers from "../lib/mappers.js";
 import type * as lib_sceneActions from "../lib/sceneActions.js";
@@ -24,6 +25,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  conditions: typeof conditions;
   instruments: typeof instruments;
   "lib/mappers": typeof lib_mappers;
   "lib/sceneActions": typeof lib_sceneActions;

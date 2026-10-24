@@ -1,15 +1,22 @@
 import { v } from "convex/values";
 import { z } from "zod";
 import {
+  ConditionSchema,
   InstrumentSchema,
   ProcedureSchema,
   StructureSchema,
 } from "@cal-hacks/shared";
+import conditionsJson from "@cal-hacks/shared/fixtures/conditions.json";
 import instrumentsJson from "@cal-hacks/shared/fixtures/instruments.json";
 import procedureJson from "@cal-hacks/shared/fixtures/procedure.tavr.json";
 import structuresJson from "@cal-hacks/shared/fixtures/structures.json";
 import { internalMutation } from "./_generated/server";
-import { fromInstrument, fromStep, fromStructure } from "./lib/mappers";
+import {
+  fromCondition,
+  fromInstrument,
+  fromStep,
+  fromStructure,
+} from "./lib/mappers";
 
 const MAX_STEPS = 200;
 
@@ -22,6 +29,7 @@ const MAX_STEPS = 200;
 export const run = internalMutation({
   args: {},
   returns: v.object({
+    conditions: v.number(),
     structures: v.number(),
     instruments: v.number(),
     procedure: v.string(),
@@ -30,9 +38,28 @@ export const run = internalMutation({
   }),
   handler: async (ctx) => {
     // fixtures 자체가 계약을 따르는지 먼저 확인한다
+    const conditions = z.array(ConditionSchema).parse(conditionsJson);
     const structures = z.array(StructureSchema).parse(structuresJson);
     const instruments = z.array(InstrumentSchema).parse(instrumentsJson);
     const procedure = ProcedureSchema.parse(procedureJson);
+
+    const conditionSlugs = new Set(conditions.map((c) => c.slug));
+    if (
+      procedure.condition_slug !== null &&
+      !conditionSlugs.has(procedure.condition_slug)
+    ) {
+      throw new Error(`알 수 없는 condition_slug: ${procedure.condition_slug}`);
+    }
+
+    for (const c of conditions) {
+      const doc = fromCondition(c);
+      const existing = await ctx.db
+        .query("conditions")
+        .withIndex("by_slug", (q) => q.eq("slug", c.slug))
+        .unique();
+      if (existing) await ctx.db.replace("conditions", existing._id, doc);
+      else await ctx.db.insert("conditions", doc);
+    }
 
     for (const s of structures) {
       const doc = fromStructure(s);
@@ -58,6 +85,11 @@ export const run = internalMutation({
       slug: procedure.slug,
       title: procedure.title,
       summary: procedure.summary,
+      order: procedure.order,
+      // Convex 는 undefined 를 값으로 취급하지 않으므로 null 이면 필드를 생략한다
+      ...(procedure.condition_slug !== null
+        ? { conditionSlug: procedure.condition_slug }
+        : {}),
     };
     const existingProcedure = await ctx.db
       .query("procedures")
@@ -99,6 +131,7 @@ export const run = internalMutation({
     }
 
     return {
+      conditions: conditions.length,
       structures: structures.length,
       instruments: instruments.length,
       procedure: procedure.slug,

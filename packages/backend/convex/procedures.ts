@@ -26,6 +26,21 @@ export const list = query({
   },
 });
 
+/** 한 질환에 연결된 수술 과정 목록 (order 순) */
+export const listByCondition = query({
+  args: { conditionSlug: v.string() },
+  returns: v.array(vProcedureSummary),
+  handler: async (ctx, args) => {
+    const docs = await ctx.db
+      .query("procedures")
+      .withIndex("by_condition_slug_and_order", (q) =>
+        q.eq("conditionSlug", args.conditionSlug),
+      )
+      .take(MAX_PROCEDURES);
+    return docs.map(toProcedureSummary);
+  },
+});
+
 /** slug 로 수술 과정과 모든 단계를 조회. 없으면 null */
 export const getBySlug = query({
   args: { slug: v.string() },

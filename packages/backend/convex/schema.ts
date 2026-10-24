@@ -22,18 +22,31 @@ export default defineSchema({
     description: v.string(),
   }).index("by_instrument_id", ["instrumentId"]),
 
-  // 수술 과정
+  // 심장 질환. 새 질환은 이 테이블에 행만 추가하면 된다 (코드 변경 없음)
+  conditions: defineTable({
+    slug: v.string(),
+    nameEn: v.string(),
+    nameKo: v.string(),
+    description: v.string(),
+  }).index("by_slug", ["slug"]),
+
+  // 수술 과정. conditionSlug/order 는 기존 문서와의 호환을 위해 optional
   procedures: defineTable({
     slug: v.string(),
     title: v.string(),
     summary: v.string(),
-  }).index("by_slug", ["slug"]),
+    conditionSlug: v.optional(v.string()),
+    order: v.optional(v.number()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_condition_slug_and_order", ["conditionSlug", "order"]),
 
   // 수술 단계: 영상이 아니라 단계별 3D 장면 상태(scene)로 표현
   steps: defineTable({
     procedureId: v.id("procedures"),
     index: v.number(), // 0부터 시작
     title: v.string(),
+    shortTitle: v.optional(v.string()), // 타임라인 라벨용. 없으면 title 사용
     scene: vScene,
     sidePanel: vSidePanel,
   }).index("by_procedure_and_index", ["procedureId", "index"]),

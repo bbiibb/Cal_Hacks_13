@@ -90,9 +90,17 @@ export const vInstrument = v.object({
   description: v.string(),
 });
 
+export const vCondition = v.object({
+  slug: v.string(),
+  name_en: v.string(),
+  name_ko: v.string(),
+  description: v.string(),
+});
+
 export const vStep = v.object({
   index: v.number(),
   title: v.string(),
+  short_title: v.string(),
   scene: vScene,
   side_panel: vSidePanel,
 });
@@ -101,11 +109,15 @@ export const vProcedureSummary = v.object({
   slug: v.string(),
   title: v.string(),
   summary: v.string(),
+  condition_slug: v.union(v.string(), v.null()),
+  order: v.number(),
 });
 
 export const vProcedure = v.object({
   slug: v.string(),
   title: v.string(),
   summary: v.string(),
+  condition_slug: v.union(v.string(), v.null()),
+  order: v.number(),
   steps: v.array(vStep),
 });
