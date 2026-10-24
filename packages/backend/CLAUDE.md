@@ -25,7 +25,14 @@
 ```bash
 pnpm --filter @cal-hacks/backend dev        # convex dev
 pnpm --filter @cal-hacks/backend typecheck
+pnpm --filter @cal-hacks/backend test
+pnpm --filter @cal-hacks/backend exec convex run seed:run    # fixtures 시드 (개발 배포 확인 후)
 ```
+
+## 구조
+- `convex/*.ts`: 함수 파일 (`structures`, `instruments`, `procedures`, `seed`, `sceneActions`). 프론트용 API 는 `docs/backend-api.md` 에 정리한다.
+- `convex/lib/`: DB 접근이 없는 순수 로직(`mappers`, `sceneActions`). 단위 테스트는 `test/` 에 둔다.
+- `convex/_generated/`: Convex 권장대로 커밋한다. `convex dev` 가 갱신하므로 직접 수정하지 않는다.
 
 <!-- convex-ai-start -->
 
