@@ -96,7 +96,7 @@ export async function chatOllama(params: OllamaChatParams): Promise<string> {
       format: schema ?? "json",
       // keep_alive keeps the model in memory between questions; num_predict stops a runaway answer
       keep_alive: "30m",
-      options: { temperature, num_ctx: 4096, num_predict: 300 },
+      options: { temperature, num_ctx: 2048, num_predict: 300 },
     },
     config.model,
     params,

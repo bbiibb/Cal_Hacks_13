@@ -3,8 +3,17 @@ import { ChatError } from './chat_types'
 import { followUpsForStep } from './follow_ups'
 import { normalizeChatResponse } from './normalize_response'
 
-/** How long to wait for an answer. Free model tiers can be slow when busy. */
-const REQUEST_TIMEOUT_MS = 30_000
+/** How long to wait for an answer by default. Free model tiers can be slow when busy. */
+const DEFAULT_TIMEOUT_MS = 30_000
+
+/**
+ * A model that runs on the patient's own computer can need more time, especially next to the 3D view.
+ * Set VITE_CHAT_TIMEOUT_MS (milliseconds, at least 5000) in apps/frontend/.env.local to wait longer.
+ */
+function requestTimeoutMs(): number {
+  const configured = Number(import.meta.env.VITE_CHAT_TIMEOUT_MS)
+  return Number.isFinite(configured) && configured >= 5_000 ? configured : DEFAULT_TIMEOUT_MS
+}
 
 type ConvexResult =
   | { status: 'success'; value: unknown }
@@ -55,7 +64,7 @@ export class ConvexChatClient implements ChatClient {
 
   private async call(kind: 'action' | 'mutation', path: string, args: Record<string, unknown>): Promise<unknown> {
     const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    const timer = setTimeout(() => controller.abort(), requestTimeoutMs())
 
     let httpResponse: Response
     try {

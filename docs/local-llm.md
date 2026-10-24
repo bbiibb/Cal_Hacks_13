@@ -112,6 +112,29 @@ Weak spots seen with the 3B model:
 - It sometimes adds general knowledge that is not in the context ("usually mild and temporary").
 - It once put a refusal sentence in the `doctor_question` field. A reply is now accepted in that field only if it ends with a question mark.
 
+## Use it from the website's chat panel
+
+The chat panel in `apps/frontend` already talks to `chat.createSession` and `chat.ask`, so the local model needs no frontend code change. Only settings:
+
+1. Start Ollama and the local backend as described above, with `LLM_PROVIDER=local`.
+2. Create `apps/frontend/.env.local`:
+
+```
+VITE_CHAT_BACKEND=convex
+VITE_CONVEX_URL=http://127.0.0.1:3210
+VITE_CHAT_TIMEOUT_MS=120000
+```
+
+3. Start the website and open the walkthrough page. The panel shows **Live** when it uses the backend.
+
+```bash
+pnpm dev:frontend
+```
+
+Tested on 2026-10-24 in this way (browser panel, local Convex, Llama 3.2 3B): the answer, the "Shown in 3D" part, the follow-up buttons, and the camera zoom all worked, and the browser's cross-origin check passed.
+
+**Speed when the 3D page is open.** On a 16 GB Apple M2 laptop, the 3D page (about 130 MB of models), the model (2 GB), and the backend share memory, and the computer started swapping. The same question that took 4 to 5 seconds alone took 10 to 40 seconds next to the 3D page. What helps: close other applications, use a computer with more memory, keep `VITE_CHAT_TIMEOUT_MS` high, and use smaller 3D models. The model's context window is set to 2048 tokens (enough for this prompt) to save memory.
+
 ## Files
 
 | File | Purpose |
