@@ -2,10 +2,13 @@
   "slug": "tavr",
   "title": "경피적 대동맥판막 치환술 TAVR (더미)",
   "summary": "협착된 대동맥판막 안에 카테터로 새 판막을 넣는 시술을 4개 장면으로 단순화한 교육용 더미 데이터.",
+  "condition_slug": "aortic_stenosis",
+  "order": 0,
   "steps": [
     {
       "index": 0,
       "title": "협착된 원래 판막",
+      "short_title": "협착",
       "scene": {
         "camera": {
           "position": [
@@ -116,6 +119,7 @@
     {
       "index": 1,
       "title": "새 판막 전달",
+      "short_title": "전달",
       "scene": {
         "camera": {
           "position": [
@@ -267,6 +271,7 @@
     {
       "index": 2,
       "title": "새 판막 확장",
+      "short_title": "확장",
       "scene": {
         "camera": {
           "position": [
@@ -400,6 +405,7 @@
     {
       "index": 3,
       "title": "전달 장비 제거 후 최종 위치",
+      "short_title": "최종 위치",
       "scene": {
         "camera": {
           "position": [

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
   ChatResponseSchema,
+  ConditionSchema,
   InstrumentSchema,
   ProcedureSchema,
   SceneActionSchema,
@@ -14,6 +15,7 @@ const load = (name: string): unknown =>
   JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), "utf-8"));
 
 describe("fixtures 는 계약 스키마를 따른다", () => {
+  const conditions = z.array(ConditionSchema).parse(load("conditions.json"));
   const structures = z.array(StructureSchema).parse(load("structures.json"));
   const instruments = z.array(InstrumentSchema).parse(load("instruments.json"));
   const procedure = ProcedureSchema.parse(load("procedure.tavr.json"));
@@ -25,6 +27,18 @@ describe("fixtures 는 계약 스키마를 따른다", () => {
   it("structure parent_id 가 존재하는 구조물을 가리킨다", () => {
     for (const s of structures) {
       if (s.parent_id) expect(structureIds.has(s.parent_id)).toBe(true);
+    }
+  });
+
+  it("procedure 의 condition_slug 가 존재하는 질환을 가리킨다", () => {
+    const slugs = new Set(conditions.map((c) => c.slug));
+    expect(procedure.condition_slug).not.toBeNull();
+    expect(slugs.has(procedure.condition_slug as string)).toBe(true);
+  });
+
+  it("타임라인 라벨(short_title)은 짧다", () => {
+    for (const step of procedure.steps) {
+      expect(step.short_title.length).toBeLessThanOrEqual(12);
     }
   });
 

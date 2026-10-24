@@ -25,3 +25,12 @@ export const ProcedureSlugSchema = z
   .string()
   .regex(INSTRUMENT_ID_PATTERN, "procedure slug 형식이 올바르지 않음");
 export type ProcedureSlug = z.infer<typeof ProcedureSlugSchema>;
+
+/**
+ * 질환(condition) 슬러그. 수술/시술(procedure)이 치료하는 심장 질환의 식별자.
+ * 예) `aortic_stenosis`. 새 질환은 이 규칙만 지키면 코드 변경 없이 콘텐츠로 추가할 수 있다.
+ */
+export const ConditionSlugSchema = z
+  .string()
+  .regex(INSTRUMENT_ID_PATTERN, "condition slug 형식이 올바르지 않음 (예: aortic_stenosis)");
+export type ConditionSlug = z.infer<typeof ConditionSlugSchema>;
