@@ -16,13 +16,11 @@ const DARK_LOOK: HeaderLook = {
   accentColor: '#b9b6ff',
   pastel: false,
 }
-const PLAIN_LOOK: HeaderLook = { backgroundColor: 'transparent', pastel: false }
 const PASTEL_LOOK: HeaderLook = { backgroundColor: 'transparent', pastel: true }
 
 /** How the header (and the page behind it) looks on each page. */
 function lookFor(pathname: string): HeaderLook {
   if (pathname === '/walkthrough') return DARK_LOOK
-  if (pathname === '/') return PLAIN_LOOK
   return PASTEL_LOOK
 }
 
