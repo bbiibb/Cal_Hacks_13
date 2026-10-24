@@ -281,7 +281,7 @@ describe("camera commands", () => {
   it("an emergency is never treated as a camera command", async () => {
     const callModel = vi.fn().mockResolvedValue(reply({ answer: "Call emergency services now." }));
     const result = await runChat({ message: "Zoom in, I have chest pain", data, history: [], callModel, lookup: fixtureLookup(data) });
-    expect(callModel).toHaveBeenCalled();
     expect(result.response.urgent).toBe(true);
+    expect(result.response.scene_actions).toEqual([]);
   });
 });

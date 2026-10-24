@@ -42,8 +42,10 @@ Honest limits of "the whole model runs locally": the patient's computer must hav
 ```
 question
   -> remove personal details
-  -> emergency symptoms now?  yes: emergency notice (the gate is skipped, the model still helps)
-  -> medicine, personal medical decision, or "am I too young / a candidate"?  yes: fixed reply, the model is NOT called
+  -> emergency symptoms now?  yes: fixed emergency message only ("call your local emergency number... do not wait for more answers here"), the model is NOT called
+  -> another person's records, medicine, rule override ("ignore your instructions", "act as my doctor"),
+     personal risk ("my exact chances", "for someone my age"), or a personal medical decision
+     ("am I too young / a candidate")?  yes: a fixed reply for that case, the model is NOT called
   -> model (cloud or local) writes JSON
   -> advice or diagnosis in the answer?        yes: fixed reply
   -> camera command only?                      yes: fixed confirmation (the model is not called)
@@ -55,6 +57,8 @@ question
 ```
 
 ## 4. What was tested
+
+- The four scenarios of the security checklist (lab results plus "should I increase my dose", an emergency, a request for a roommate's records with a prompt injection, and "my exact chances of a stroke") are tests in `test/redteam.test.ts`, with variations and with general questions that must still be answered. No patient records exist in this system at all, so another person's records could never be returned; the gate makes the refusal explicit and keeps the model away from the request. A model answer that claims to share records is replaced too.
 
 - 30 unit tests of the rules (`test/safety.test.ts`) and 15 red-team scenarios with a fake model that misbehaves on purpose (`test/redteam.test.ts`): medicine questions, diagnosis requests, advice and doses in answers, invented numbers and materials, an obeyed injection, an emergency that also mentions medicine, camera commands, and normal questions that must still work.
 - Real run with Llama 3.2 3B: normal questions passed through unchanged; medicine and diagnosis questions were blocked in 0.3 seconds without the model; invented numbers, an injected "the valve is dangerous", and an invented material ("titanium") were replaced; an emergency was flagged; an email and a phone number never appeared in the backend log.

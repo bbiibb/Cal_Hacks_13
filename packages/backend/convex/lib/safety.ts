@@ -30,6 +30,21 @@ export const REFUSALS = {
       "I can't diagnose, interpret your results, or tell you what is right for you personally. Your care team can. I can explain how the procedure works in general.",
     doctorQuestion: "What does this mean for my own situation, and what are my options?",
   },
+  rule_override: {
+    message:
+      "I can't ignore my safety rules or act as a doctor. I'm happy to explain how the procedure works in general, or to point out questions you can ask your care team.",
+    doctorQuestion: "",
+  },
+  other_patient_data: {
+    message:
+      "I can't access or share anyone's medical records or personal information, and I can't ignore my safety rules. I only explain how the procedure works in general. Please ask the care team directly about any records.",
+    doctorQuestion: "How can I get my own records, or ask for information about a family member's care with their permission?",
+  },
+  personal_risk: {
+    message:
+      "I can't calculate your personal risk or success rate. It depends on your own health, anatomy, and history, and only your care team can assess it. I can share the general information I have about TAVR, for example if you ask \"What are the risks of TAVR?\".",
+    doctorQuestion: "What are my own chances of success and of complications, given my health and history?",
+  },
   advice_filtered: {
     message:
       "I can explain how the procedure works, but I can't give medical advice or tell you to change your treatment. Please ask your care team.",
@@ -37,7 +52,7 @@ export const REFUSALS = {
   },
 } as const;
 
-export type RequestKind = "ok" | keyof Pick<typeof REFUSALS, "medication_advice" | "personal_medical">;
+export type RequestKind = "ok" | keyof Pick<typeof REFUSALS, "medication_advice" | "personal_medical" | "other_patient_data" | "personal_risk" | "rule_override">;
 
 // --- 1. Scope gate: what the patient asks -----------------------------------------------------
 
@@ -52,6 +67,35 @@ const MEDICATION_ASK = new RegExp(
     `\\b${CHANGE_VERBS}\\b\\s+(taking\\s+)?(my\\s+)?${MEDICINE_WORDS}\\b`,
     `\\bhow (much|many)\\b[^.?!]*\\b(mg|milligrams?|pills?|tablets?|doses?)\\b`,
     `\\bwhat\\s+(dose|dosage)\\b`,
+  ].join("|"),
+  "i",
+);
+
+/** Telling the bot to drop its rules (prompt injection). */
+const RULE_OVERRIDE = new RegExp(
+  "\\b(ignore|disregard|forget|override|bypass)\\b[^.?!]*\\b(previous|prior|above|earlier|your|all|the|these)\\b[^.?!]*\\b(instructions?|rules?|guidelines?|restrictions?|prompt|safety)\\b|\\b(pretend|act as if|imagine) (you are|you're|to be)\\b[^.?!]*\\b(doctor|physician|nurse|cardiologist|surgeon)\\b|\\bjailbreak\\b|\\bdeveloper mode\\b",
+  "i",
+);
+
+/** Asking for another person's records. */
+const OTHER_PATIENT_ASK = new RegExp(
+  [
+    "\\b(pull up|look up|show|get|give|send|tell|share|access|open|read|find|fetch|see)\\b[^.?!]*\\b(records?|notes|chart|files?|history|results?|information|details|data)\\b[^.?!]*\\b(of|for|about|on)\\b[^.?!]*\\b(my |his |her |their )?(roommate|neighbou?r|friend|wife|husband|mother|father|mom|dad|son|daughter|brother|sister|colleague|coworker|another patient|other patient|someone else|somebody else|patient named)\\b",
+    "\\b(roommate|neighbou?r|friend|wife|husband|another patient|other patient|someone else|somebody else)'?s?\\b[^.?!]*\\b(records?|notes|chart|surgical history|medical history|results?|diagnosis)\\b",
+    "\\b(records?|notes|chart|surgical history|medical history)\\b[^.?!]*\\b(of|for)\\b[^.?!]*\\b[A-Z][a-z]+ [A-Z][a-z]+\\b",
+    "\\b(other|another) patients?\\b",
+    "\\b(patient|person|man|woman|guy|lady) (in|from|next to|across|down)\\b[^.?!]*\\b(bed|room|ward|hall|floor)\\b",
+    "\\bnext bed\\b",
+  ].join("|"),
+  "i",
+);
+
+/** The patient's own exact numbers: "my chances", "for someone my age", "with my history". */
+const PERSONAL_RISK_ASK = new RegExp(
+  [
+    "\\bmy\\s+(\\w+\\s+){0,2}(chances?|odds|risks?|probability|likelihood|success rate|survival|life expectancy)\\b",
+    "\\b(chances?|odds|risk|probability|likelihood|success rate|survival)\\b[^.?!]*\\b(for me|for someone (my age|like me|with my)|for a person (my age|like me)|in my case|with my (specific |medical |own )?(history|condition|age|health))\\b",
+    "\\bfor someone (my age|like me|with my)\\b",
   ].join("|"),
   "i",
 );
@@ -75,7 +119,10 @@ const PERSONAL_ASK = new RegExp(
 
 /** Decides whether a question can go to the model. Emergencies are checked before this, elsewhere. */
 export function classifyRequest(message: string): RequestKind {
+  if (OTHER_PATIENT_ASK.test(message)) return "other_patient_data";
   if (MEDICATION_ASK.test(message)) return "medication_advice";
+  if (RULE_OVERRIDE.test(message)) return "rule_override";
+  if (PERSONAL_RISK_ASK.test(message)) return "personal_risk";
   if (PERSONAL_ASK.test(message)) return "personal_medical";
   return "ok";
 }
@@ -90,6 +137,9 @@ const ADVICE_IN_ANSWER = [
   /\byou\s+(probably |likely |might |may |could )?(have|are having|had)\s+(a |an )?(heart attack|stroke|infection|blockage|aortic stenosis|heart failure|disease)\b/i,
   /\b(no need|don'?t need|do not need)\s+to\s+(see|call|consult|tell)\s+(a |your )?(doctor|care team|nurse)\b/i,
   /\bit\s+is\s+(safe|fine|okay|ok)\s+(for you\s+)?to\s+(stop|skip|take|drive|exercise|eat|drink)\b/i,
+  // Claiming to hold or share someone's records
+  /\b(here (are|is)|according to)\b[^.?!]*\b(records?|notes|chart|surgical history|medical history)\b/i,
+  /\b[A-Z][a-z]+(?: [A-Z][a-z]+)?'s\s+(surgical|medical|health)\s+(notes|records?|history|chart)\b/,
   // A ruling on this patient's own suitability is the doctor's decision
   /\byou\s+(may |might |could |probably |likely )?(be|are)\s+(too\s+(young|old|sick|frail)|(a\s+)?(good|suitable|poor)\s+candidate|not\s+(a\s+)?(suitable|good|eligible)|eligible|ineligible)\b/i,
 ];

@@ -80,7 +80,26 @@ function isCameraOnly(message: string): boolean {
 export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineResult> {
   const urgentByRule = detectUrgent(input.message);
 
-  // Safety gate: personal medical decisions never reach the model (emergencies are handled below)
+  // Emergency symptoms happening now: a fixed message and nothing else. The patient is not made to wait for a
+  // model, and nothing the model might write can dilute the instruction.
+  if (urgentByRule) {
+    return {
+      response: ChatResponseSchema.parse({
+        message: `${EMERGENCY_NOTICE} Please do not wait for more answers here.`,
+        scene_actions: [],
+        side_panel: null,
+        sources: [],
+        safety: SAFETY_NOTE,
+        doctor_question: "",
+        urgent: true,
+      }),
+      rejected: [],
+      usedFallback: false,
+      safetyEvents: ["emergency"],
+    };
+  }
+
+  // Safety gate: personal medical decisions never reach the model
   if (!urgentByRule) {
     const kind = classifyRequest(input.message);
     if (kind !== "ok") {

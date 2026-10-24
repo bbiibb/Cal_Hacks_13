@@ -90,24 +90,19 @@ describe("runChat with a weaker model", () => {
 });
 
 describe("runChat safety", () => {
-  it("adds the emergency notice when symptoms are happening now, even if the model misses it", async () => {
-    const { result } = await run("I have chest pain right now", [
+  it("answers symptoms happening now with the fixed emergency message, without asking the model", async () => {
+    const { result, callModel } = await run("I have chest pain right now", [
       json({ answer: "Chest pain can have many causes.", urgent: false }),
     ]);
+    expect(callModel).not.toHaveBeenCalled();
     expect(result.response.urgent).toBe(true);
     expect(result.response.message.startsWith(EMERGENCY_NOTICE)).toBe(true);
+    expect(result.response.message).not.toContain("many causes");
+    expect(result.safetyEvents).toEqual(["emergency"]);
   });
 
-  it("does not repeat the notice when the model already mentions emergency help", async () => {
-    const { result } = await run("I am having trouble breathing", [
-      json({ answer: "Call 911 now.", urgent: true }),
-    ]);
-    expect(result.response.urgent).toBe(true);
-    expect(result.response.message).toBe("Call 911 now.");
-  });
-
-  it("gives the emergency notice even when the model fails", async () => {
-    const { result } = await run("I have chest pain right now", ["x", "y"]);
+  it("gives the emergency message even when the model would fail", async () => {
+    const { result } = await run("I am having trouble breathing", ["x", "y"]);
     expect(result.response.urgent).toBe(true);
     expect(result.response.message).toContain(EMERGENCY_NOTICE);
   });
