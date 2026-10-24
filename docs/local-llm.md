@@ -3,7 +3,7 @@
 A second way to answer questions that needs **no API key and no internet for the model**: Llama 3.2 3B runs on your own computer through [Ollama](https://ollama.com), and the answer is based on text snippets found with Convex vector search (RAG).
 The default pipeline (Groq, any OpenAI-compatible API) is unchanged. You choose with one environment variable.
 
-> Status: the code and unit tests are done and the routing was checked against the deployed backend. **It has not been run end to end with a real Ollama model yet**, because Ollama is not installed on this computer. Treat the first run as a test.
+> Status: **tested end to end** on an Apple M2 with 16 GB, using Llama 3.2 3B and nomic-embed-text through Ollama, a local Convex deployment, and Convex vector search. Results are in "What was tested" below.
 
 ## Is it feasible?
 
@@ -14,7 +14,7 @@ Yes, with these conditions:
 | Can a 3B model do this job? | Mostly, because the job is narrow. Two things make it reliable: Ollama **constrains the reply to a JSON schema** (the reply is always valid JSON, and `highlight` can only contain ids from the allowed list), and camera commands (zoom, rotate, step, reset) are **read from the patient's words by rules**, not asked from the model. Expect weaker wording and less nuance than the cloud model. |
 | Does the computer have enough power? | This computer is an Apple M2 with 16 GB of memory, which runs a 3B model comfortably. Disk is the tight part: about 13 GB are free, and the models need about 2.3 GB. |
 | Can the Convex cloud reach Ollama? | **No.** The cloud deployment cannot reach `http://localhost:11434` on your computer. The backend must run **locally** (`npx convex dev --local`, a beta feature) or Ollama must be exposed through a tunnel. |
-| Does vector search work on a local Convex deployment? | Not confirmed. Convex's documentation did not say. This must be tested; if it does not work, the pipeline still answers using only the step on screen and the selected part (it falls back automatically). |
+| Does vector search work on a local Convex deployment? | **Yes, tested.** The 768-dimension vector index is accepted and returns the closest document first. If a search ever fails, the pipeline still answers using only the step on screen and the selected part. |
 | Is RAG needed at this size? | Not strictly: there are about 20 snippets, which would fit in a prompt. RAG keeps the prompt short for a small model and lets the content grow (more procedures and conditions) without changing the code. |
 
 ## How it works
@@ -61,11 +61,13 @@ ollama pull llama3.2:3b
 ollama pull nomic-embed-text
 ```
 
-2. **Run the backend locally** so it can reach Ollama. This uses a separate local deployment with its own empty database.
+2. **Run the backend locally** so it can reach Ollama. This uses a separate local deployment with its own empty database. The command below needs no Convex login. Do it in a separate copy of the repository, because it writes its own `.env.local` and would replace the one that points to the cloud deployment. Keep it running: the local backend stops when the command stops.
 
 ```bash
-cd packages/backend && npx convex dev --local
+cd packages/backend && CONVEX_AGENT_MODE=anonymous npx convex dev
 ```
+
+(`npx convex dev --local` also works; it asks you to choose a project.) Add `CONVEX_AGENT_MODE=anonymous` in front of the `npx convex ...` commands below as well, so they reach the local deployment.
 
 3. **Fill it with content and build the index** (the local deployment starts empty).
 
@@ -95,6 +97,20 @@ To go back to Groq: `npx convex env remove LLM_PROVIDER`.
 
 **Alternative to a local backend:** keep the cloud deployment and expose Ollama with a tunnel (for example Cloudflare Tunnel or ngrok), then set `OLLAMA_BASE_URL` to the tunnel address. The tunnel is public, so protect it.
 
+## What was tested
+
+Tested on 2026-10-24 with `llama3.2:3b` (2.0 GB) and `nomic-embed-text` (274 MB):
+
+- Ollama returns a reply that follows the JSON schema, and embeddings have 768 dimensions. About 37 tokens per second on the M2.
+- Local Convex accepted the schema with the vector index. Indexing the TAVR content made 19 snippets. A search with a fake vector returned the matching document first.
+- Ten real questions through `chat.ask`: parts and definitions, "zoom in", "go to step 3 and rotate left 90 degrees", a part selected in the view, an emergency symptom, a question about the future, a question the content does not answer, an attempt to override the rules, an off-topic request, and a multi-part question. All returned valid replies with correct highlights, camera commands, and side panels.
+- Speed: the first question after starting Ollama takes about 10 seconds. Later simple questions take 4 to 5 seconds (the model stays in memory for 30 minutes). The cloud model answers in about 2 seconds.
+
+Weak spots seen with the 3B model:
+- It can word things loosely. For "Does the equipment you just put in stay in my body?" it began with "No", although the new valve stays; the cloud model handled this better.
+- It sometimes adds general knowledge that is not in the context ("usually mild and temporary").
+- It once put a refusal sentence in the `doctor_question` field. A reply is now accepted in that field only if it ends with a question mark.
+
 ## Files
 
 | File | Purpose |
@@ -110,6 +126,6 @@ To go back to Groq: `npx convex env remove LLM_PROVIDER`.
 ## Limits
 
 - The 3B model gives shorter, plainer answers and may be less accurate than the cloud model. Medical answers still need review by a clinician.
-- The first question after Ollama starts is slow (the model loads into memory).
+- The first question after Ollama starts is slow (the model loads into memory). The model download itself took about 30 minutes on a 1 to 2 MB/s connection.
 - If you change the embedding model, set the new vector size in `convex/lib/ragConfig.ts`, push the schema, and index again.
 - New error codes: `llm_local_unavailable` (Ollama not reachable) and `llm_model_missing` (run `ollama pull <model>`).

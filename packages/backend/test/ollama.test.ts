@@ -51,6 +51,8 @@ describe("chatOllama", () => {
     expect(body.format).toEqual(schema);
     expect(body.stream).toBe(false);
     expect(body.options.temperature).toBe(0.1);
+    expect(body.options.num_predict).toBe(300);
+    expect(body.keep_alive).toBe("30m");
   });
 
   it("falls back to plain JSON mode without a schema", async () => {

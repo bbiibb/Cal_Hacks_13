@@ -94,7 +94,9 @@ export async function chatOllama(params: OllamaChatParams): Promise<string> {
       stream: false,
       // A schema makes even a small model return valid JSON; plain "json" is the looser fallback
       format: schema ?? "json",
-      options: { temperature, num_ctx: 4096 },
+      // keep_alive keeps the model in memory between questions; num_predict stops a runaway answer
+      keep_alive: "30m",
+      options: { temperature, num_ctx: 4096, num_predict: 300 },
     },
     config.model,
     params,

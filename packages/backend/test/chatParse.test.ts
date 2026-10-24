@@ -108,6 +108,13 @@ describe("parseLlmOutput", () => {
     expect(out?.rotate).toBeNull();
   });
 
+  it("keeps a doctor question only when it is a question", () => {
+    const question = parseLlmOutput(JSON.stringify({ answer: "ok", doctor_question: "How long will the valve last?" }));
+    const notQuestion = parseLlmOutput(JSON.stringify({ answer: "ok", doctor_question: "None of your questions were about the procedure." }));
+    expect(question?.doctorQuestion).toBe("How long will the valve last?");
+    expect(notQuestion?.doctorQuestion).toBe("");
+  });
+
   it("clamps rotation degrees to the allowed range", () => {
     const big = parseLlmOutput(JSON.stringify({ answer: "ok", rotate: { direction: "up", degrees: 900 } }));
     const small = parseLlmOutput(JSON.stringify({ answer: "ok", rotate: { direction: "up", degrees: 1 } }));

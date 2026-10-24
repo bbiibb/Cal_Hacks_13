@@ -50,6 +50,12 @@ function asString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+/** A doctor question must read like a question. Small models sometimes put other text in this field. */
+function asQuestion(value: unknown): string {
+  const text = asString(value);
+  return text.endsWith("?") && text.length <= 240 ? text : "";
+}
+
 function asBoolean(value: unknown): boolean {
   return value === true || (typeof value === "string" && value.trim().toLowerCase() === "true");
 }
@@ -116,7 +122,7 @@ export function parseLlmOutput(text: string): LlmOutput | null {
     rotate: asRotate(obj.rotate),
     resetView: asBoolean(obj.reset_view),
     safety: asString(obj.safety),
-    doctorQuestion: asString(obj.doctor_question),
+    doctorQuestion: asQuestion(obj.doctor_question),
     urgent: asBoolean(obj.urgent),
   };
 }
