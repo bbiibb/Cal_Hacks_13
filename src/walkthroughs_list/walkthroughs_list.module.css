@@ -1,18 +1,65 @@
+/* Page theme: soft pastel gradient with translucent, rounded panels. */
 .main {
+  --ss-ink: #1d2233;
+  --ss-muted: #7a78b0;
+  --ss-accent: #5a58a6;
+
   position: fixed;
   inset: 0;
   overflow-y: auto;
-  background: #000000;
-  color: #fff;
-  text-align: left;
+  color: var(--ss-ink);
+  background:
+    radial-gradient(circle at 0% 0%, #eef4ff 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, #ffcfd0 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, #c8cdfa 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, #d9b8f0 0%, transparent 50%),
+    #efe9fb;
+}
+
+/* Decorative spheres, like the soft 3D shapes in the reference design */
+.main::before,
+.main::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.main::before {
+  top: 38%;
+  left: 3%;
+  width: 4.5rem;
+  height: 4.5rem;
+  background: radial-gradient(circle at 30% 28%, #d9f5ee 0%, #8fcfc6 55%, #5aa59c 100%);
+  box-shadow: 0 12px 24px rgba(90, 165, 156, 0.25);
+}
+
+.main::after {
+  top: 14%;
+  right: 6%;
+  width: 3rem;
+  height: 3rem;
+  background: radial-gradient(circle at 30% 28%, #fff4f6 0%, #f6c6d6 60%, #eba5be 100%);
+  box-shadow: 0 10px 20px rgba(235, 165, 190, 0.3);
 }
 
 .content {
+  position: relative;
+  z-index: 1;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 2rem 4rem;
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.5rem auto 3rem;
+  padding: 2rem 2.5rem 3rem;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 2.5rem;
+  box-shadow: 0 24px 60px rgba(125, 105, 190, 0.18);
+  backdrop-filter: blur(24px) saturate(1.3);
+
+  @media (max-width: 640px) {
+    padding: 1.5rem 1.25rem 2rem;
+    border-radius: 1.75rem;
+  }
 }
 
 /* Page title for screen readers; the design has no visible heading. */
@@ -27,9 +74,17 @@
   white-space: nowrap;
 }
 
+/* Three columns like the design; fewer on narrow screens */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 3rem;
-  margin-top: 5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 3.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
 }

@@ -2,32 +2,40 @@
   display: flex;
   flex-direction: column;
   padding: 0;
+  overflow: hidden;
   font: inherit;
-  color: #fff;
+  font-family: 'Sora', system-ui, sans-serif;
+  color: var(--ss-ink, #1d2233);
   text-align: left;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 1.75rem;
+  box-shadow: 0 10px 30px rgba(125, 105, 190, 0.14);
+  backdrop-filter: blur(14px);
 }
 
 .interactive {
   cursor: pointer;
   transition:
-    border-color 0.2s,
-    transform 0.2s;
+    transform 0.25s,
+    box-shadow 0.25s,
+    background 0.25s;
 
   &:hover {
-    border-color: #fff;
-    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 18px 40px rgba(125, 105, 190, 0.25);
+    transform: translateY(-6px);
   }
   &:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--ss-accent, #5a58a6);
     outline-offset: 4px;
   }
 }
 
 .disabled {
-  color: rgba(255, 255, 255, 0.7);
-  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--ss-muted, #7a78b0);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
 }
 
 .media {
@@ -35,7 +43,7 @@
   aspect-ratio: 1 / 0.8;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 1rem;
+  padding: 0.9rem;
   overflow: hidden;
 }
 
@@ -43,6 +51,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 1.2rem;
 }
 
 .imagePlaceholder {
@@ -51,16 +60,21 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px dashed rgba(255, 255, 255, 0.35);
+  color: var(--ss-muted, #7a78b0);
+  background: linear-gradient(135deg, #e6e9ff 0%, #f9dbe8 100%);
+  border-radius: 1.2rem;
 }
 
 .soon {
-  font-size: 1.5rem;
+  padding: 0.5rem 0.4rem;
+  font-size: 1.25rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .footer {
-  padding: 0.6rem 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0.85rem 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-top: 1px solid rgba(120, 110, 190, 0.18);
 }

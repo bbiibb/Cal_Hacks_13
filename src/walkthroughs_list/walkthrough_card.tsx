@@ -17,9 +17,7 @@ function WalkthroughCard({ title, imageSrc, imageAlt = '', comingSoon = false, o
       <div className={styles.media}>
         {comingSoon ? (
           <span className={styles.soon}>
-            Coming
-            <br />
-            Soon
+            Coming Soon
           </span>
         ) : imageSrc ? (
           <img className={styles.image} src={imageSrc} alt={imageAlt} />
