@@ -8,5 +8,10 @@
     "id": "delivery_catheter",
     "name_en": "Delivery catheter",
     "description": "A tube that carries the folded new valve through the blood vessels to the valve location."
+  },
+  {
+    "id": "balloon",
+    "name_en": "Balloon",
+    "description": "A small balloon inside the new valve. It is briefly inflated to expand the metal frame, then deflated and removed with the catheter."
   }
 ]

@@ -100,7 +100,7 @@ The frontend does not need this type. It is used by the backend and is described
 
 - `structures.json`, `instruments.json`
 - `conditions.json`
-- `procedure.tavr.json` (TAVR, four scenes; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
+- `procedure.tavr.json` (TAVR, five steps; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
 - `knowledge.tavr.json` (the chatbot's reference facts, see [`docs/knowledge-base.md`](knowledge-base.md))
 - `chat-response.example.json`, `chat-request.example.json`
 
@@ -121,5 +121,6 @@ The database stores `scene`, `sidePanel`, and `sceneActions` with the same snake
 | 2026-10-23 | Chose TAVR as the first demo procedure. Replaced fixtures and example ids (no change to the schema format) | Frontend: change references from `procedure.cholecystectomy.json` to `procedure.tavr.json` |
 | 2026-10-23 | Added `Condition`, added `condition_slug` and `order` to `Procedure`, added `short_title` to `Step` (fields only added; existing fields unchanged) | Frontend: `short_title` can be used as a timeline label. New functions to list conditions and procedures |
 | 2026-10-25 | Added the `zoom`, `rotate`, and `reset_view` scene actions, `ChatRequest`, and the `safety`, `doctor_question`, and `urgent` fields of `ChatResponse` (additions only) | Frontend: handle the three new actions in the 3D view and show `safety` and `urgent` in the chat. See `docs/chatbot.md` |
+| 2026-10-24 | Replaced the four dummy TAVR steps with the five steps of the team's patient explanation, and added the `balloon` instrument (content only; the schema format is unchanged) | Backend: re-run `seed:run`. The chatbot prompt test on the backend branches expects "Step 2 of 4" and "Delivering the new valve" and needs updating |
 | 2026-10-24 | Removed the Korean name field `name_ko` from `Structure`, `Instrument`, and `Condition`, and translated all fixtures to English | **Breaking**: frontend code must not read `name_ko`. Use `name_en` |
 | 2026-10-24 | Added `KnowledgeChunkSchema` and the fixture `knowledge.tavr.json` (the chatbot's reference facts). `ChatResponse.sources` is now filled with the facts an answer is based on (the field already existed) | Frontend: no change needed. Optionally show `sources` under an answer |

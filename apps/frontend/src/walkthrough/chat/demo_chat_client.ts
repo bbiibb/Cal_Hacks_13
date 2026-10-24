@@ -90,7 +90,7 @@ export class DemoChatClient implements ChatClient {
     const actions: SceneAction[] = [this.gotoStep(topic.step), ...topic.actions, ...commands.actions]
     return {
       response: emptyResponse({
-        message: topic.message,
+        message: topic.message ?? this.stepText(topic.step),
         scene_actions: actions,
         safety: topic.safety,
         doctor_question: topic.doctorQuestion,
@@ -127,11 +127,10 @@ export class DemoChatClient implements ChatClient {
   private stepReply(stepIndex: number, selectedId: string | null, commands: ViewCommands): ChatReply {
     const step = this.procedure.steps[stepIndex] ?? this.procedure.steps[0]!
     const selected = selectedId ? this.structures.get(selectedId) : undefined
-    const lead = `Step ${step.index + 1} of ${this.procedure.steps.length}: ${step.title}.`
     const about = selected ? `\n\nThe part you selected is the ${selected.name_en.toLowerCase()}. ${selected.description}` : ''
     return {
       response: emptyResponse({
-        message: `${lead}\n\n${step.side_panel.body_markdown}${about}`,
+        message: `${this.stepText(step.index)}${about}`,
         scene_actions: [
           { type: 'highlight', structure_ids: step.side_panel.related_structure_ids, enabled: true },
           ...commands.actions,
@@ -140,6 +139,13 @@ export class DemoChatClient implements ChatClient {
       }),
       followUps: followUpsForStep(step.index),
     }
+  }
+
+  /** A step's title and its explanation, word for word from the step data. */
+  private stepText(stepIndex: number): string {
+    const step = this.procedure.steps[stepIndex]
+    if (!step) return FALLBACK_MESSAGE
+    return `Step ${step.index + 1} of ${this.procedure.steps.length}: ${step.title}\n\n${step.side_panel.body_markdown}`
   }
 
   private gotoStep(stepIndex: number): SceneAction {
@@ -163,7 +169,7 @@ export class DemoChatClient implements ChatClient {
       if (target >= 0 && target <= lastStep) {
         const step = this.procedure.steps[target]!
         result.actions.push(this.gotoStep(target))
-        result.notes.push(`Here is step ${target + 1}: ${step.title}. ${step.side_panel.body_markdown}`)
+        result.notes.push(this.stepText(step.index))
         result.stepIndex = target
       } else {
         result.notes.push(`This walkthrough has steps 1 to ${lastStep + 1}.`)

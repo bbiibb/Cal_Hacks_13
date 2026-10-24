@@ -52,6 +52,32 @@ describe('demo answers', () => {
   })
 })
 
+describe("answers from the team's step explanations", () => {
+  it.each([
+    ['What does the guidewire do?', 0],
+    ['How is the valve compressed to fit?', 1],
+    ['How does the balloon work?', 2],
+    ['How is the catheter withdrawn?', 3],
+    ['How does my new valve work?', 4],
+    ['What happens in step 2?', 1],
+  ])('answers "%s" with step %i word for word', (question, index) => {
+    const reply = ask(question)
+    const step = TAVI_PROCEDURE.steps[index]!
+    expect(reply.response.message).toContain(step.side_panel.body_markdown)
+    expect(reply.response.message).toContain(`Step ${index + 1} of 5: ${step.title}`)
+    expect(ofType(reply, 'goto_step')[0]?.step_index).toBe(index)
+  })
+
+  it('has follow-up questions for every step', () => {
+    expect(STEP_FOLLOW_UPS).toHaveLength(TAVI_PROCEDURE.steps.length)
+  })
+
+  it('still answers risk questions with the side-effect answer, not a step', () => {
+    expect(ask('Can the balloon cause a stroke?').response.message).toContain('stroke')
+    expect(ask('Can the balloon cause a stroke?').response.safety).not.toBe('')
+  })
+})
+
 describe('emergency symptoms', () => {
   it.each(["I'm having chest pain", 'I have trouble breathing right now', 'my face is drooping'])(
     'flags symptoms happening now: %s',
@@ -85,12 +111,13 @@ describe('view commands', () => {
   it('moves between steps and stays inside the walkthrough', () => {
     expect(ofType(ask('go to step 3'), 'goto_step')[0]?.step_index).toBe(2)
     expect(ofType(ask('next step', 1), 'goto_step')[0]?.step_index).toBe(2)
-    expect(ofType(ask('next step', 3), 'goto_step')).toEqual([])
+    expect(ofType(ask('next step', 3), 'goto_step')[0]?.step_index).toBe(4)
+    expect(ofType(ask('next step', 4), 'goto_step')).toEqual([])
     expect(ofType(ask('go to step 9'), 'goto_step')).toEqual([])
   })
 
   it('does not mistake everyday phrases for commands', () => {
-    expect(ofType(ask('How long until I can go back to work?', 2), 'goto_step')[0]?.step_index).toBe(3)
+    expect(ofType(ask('How long until I can go back to work?', 2), 'goto_step')[0]?.step_index).toBe(4)
     expect(ofType(ask('turn off the highlights'), 'rotate')).toEqual([])
     expect(ofType(ask('What is this walkthrough?'), 'goto_step')).toEqual([])
   })
@@ -103,7 +130,7 @@ describe('view commands', () => {
 
   it('explains the current step and the selected part', () => {
     const reply = ask('What is happening in this step?', 2, 'aortic_annulus')
-    expect(reply.response.message).toContain('Step 3 of 4')
+    expect(reply.response.message).toContain('Step 3 of 5')
     expect(reply.response.message).toContain('aortic annulus')
   })
 })

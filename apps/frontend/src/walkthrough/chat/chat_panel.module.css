@@ -68,93 +68,81 @@
 
 /* Current step */
 .step {
+  flex-shrink: 0;
+  /* Never more than about half the panel, so the conversation keeps room; the card scrolls instead */
+  max-height: 40%;
+  overflow-y: auto;
   margin: 0 1.1rem;
-  padding: 0.75rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 0.75rem;
   background: var(--panel-surface);
   border: 1px solid var(--panel-line);
+  scrollbar-width: thin;
 }
 
-.stepNav {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.stepList {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.3rem;
+.stepLabel {
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.stepPill,
-.stepPillActive {
-  padding: 0.25rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--panel-line);
-  background: transparent;
   color: var(--panel-muted);
-  font: inherit;
-  font-size: 0.7rem;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.stepPill:hover {
-  color: var(--panel-ink);
-  border-color: rgba(185, 182, 255, 0.45);
-}
-
-.stepPillActive {
-  background: var(--panel-accent);
-  border-color: var(--panel-accent);
-  color: var(--panel-accent-ink);
+  font-size: 0.68rem;
   font-weight: 600;
-}
-
-.arrow {
-  flex-shrink: 0;
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 50%;
-  border: 1px solid var(--panel-line);
-  background: transparent;
-  color: var(--panel-ink);
-  font-size: 1.05rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.arrow:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.arrow:not(:disabled):hover {
-  border-color: var(--panel-accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .stepTitle {
-  margin: 0.65rem 0 0.25rem;
-  font-size: 0.85rem;
+  margin: 0.15rem 0 0.3rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--panel-ink);
 }
 
-.stepBody,
-.stepBodyClamped {
-  margin: 0;
-  color: var(--panel-muted);
-  font-size: 0.75rem;
+.stepBody {
+  margin: 0 0 0.55rem;
+  color: #d6d4e4;
+  font-size: 0.76rem;
 }
 
-/* Two lines by default, so the conversation keeps most of the room */
-.stepBodyClamped {
+.partChipActive {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #ffb347;
+  background: rgba(255, 179, 71, 0.25);
+  color: #ffe2bd;
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+/* What the patient is pointing at in the 3D view */
+.partBox {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.6rem;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  min-height: 2.4rem;
+}
+
+.partHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.partName {
+  color: #ffd29a;
+  font-weight: 600;
+  font-size: 0.76rem;
+}
+
+.partText,
+.partHint {
+  margin: 0.15rem 0 0;
+  color: var(--panel-muted);
+  font-size: 0.72rem;
+}
+
+.partText {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -162,15 +150,23 @@
   overflow: hidden;
 }
 
-.more {
-  margin-top: 0.2rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--panel-accent);
+.partHint {
+  margin: 0;
+}
+
+.unpin {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--panel-line);
+  background: transparent;
+  color: var(--panel-muted);
   font: inherit;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   cursor: pointer;
+}
+
+.unpin:hover {
+  color: var(--panel-ink);
 }
 
 /* Conversation */

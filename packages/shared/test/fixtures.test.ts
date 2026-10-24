@@ -44,14 +44,21 @@ describe("fixtures follow the contract schemas", () => {
     }
   });
 
-  it("the first TAVR version has four scenes", () => {
+  it("TAVR has the five steps of the team's patient explanation", () => {
     expect(procedure.slug).toBe("tavr");
     expect(procedure.steps.map((s) => s.title)).toEqual([
-      "The narrowed original valve",
-      "Delivering the new valve",
-      "Expanding the new valve",
-      "Final position after the equipment is removed",
+      "Guiding a wire to your heart",
+      "Bringing your new valve into position",
+      "Expanding your new valve",
+      "Removing the delivery equipment",
+      "How your new valve works",
     ]);
+  });
+
+  it("every instrument used in a step exists, including the balloon", () => {
+    const used = new Set(procedure.steps.flatMap((s) => s.scene.instruments.map((i) => i.id)));
+    expect(used.has("balloon")).toBe(true);
+    for (const id of used) expect(instrumentIds.has(id)).toBe(true);
   });
 
   it("every structure and instrument id referenced by a step exists", () => {
