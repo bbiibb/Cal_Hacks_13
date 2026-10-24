@@ -6,3 +6,5 @@ A patient-education website that shows 3D human organs and surgical procedures s
 - Parts: frontend (3D view and side panel), Convex backend, and a shared contract (zod schemas)
 
 > All content is educational dummy data and is not medical advice.
+
+- Repository structure, branches, and ownership: [docs/github-structure.md](docs/github-structure.md)
