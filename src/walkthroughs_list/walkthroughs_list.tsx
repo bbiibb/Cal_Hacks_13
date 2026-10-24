@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import SiteHeader from '../site_header/site_header'
 import WalkthroughCard from './walkthrough_card'
 import styles from './walkthroughs_list.module.css'
 
@@ -26,7 +25,6 @@ function WalkthroughsList() {
 
   return (
     <main className={styles.main}>
-      <SiteHeader backgroundColor="transparent" />
       <h1 className={styles.heading}>Interactive Walkthroughs</h1>
       <section className={styles.grid}>
         {WALKTHROUGHS.map((item) => (

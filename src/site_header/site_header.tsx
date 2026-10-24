@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 // Sora: open-source font (SIL Open Font License), bundled through @fontsource
 import '@fontsource/sora/400.css'
@@ -18,14 +19,28 @@ const NAV_ITEMS: NavItem[] = [
 type Props = {
   /** Any CSS color, e.g. "#000" or "rgba(255, 255, 255, 0.4)". Defaults to transparent. */
   backgroundColor?: string
+  /** Color of the header text and lines. Falls back to the page theme. */
+  textColor?: string
+  /** Color of the highlighted "X" in the logo. Falls back to the page theme. */
+  accentColor?: string
 }
 
 /** Site-wide header. It stretches across the whole width of the page. */
-function SiteHeader({ backgroundColor = 'transparent' }: Props) {
+function SiteHeader({ backgroundColor = 'transparent', textColor, accentColor }: Props) {
+  // Custom properties let one component work on light, dark, and transparent backgrounds
+  const style = {
+    backgroundColor,
+    ...(textColor ? { '--header-ink': textColor } : {}),
+    ...(accentColor ? { '--header-accent': accentColor } : {}),
+  } as CSSProperties
+
   return (
-    <header className={styles.header} style={{ backgroundColor }}>
+    <header className={styles.header} style={style}>
+      {/* The name is "ask-ray": the "k" is drawn as an "X", so it reads like "X-ray" */}
       <Link to="/" className={styles.logo} aria-label="ask-ray home">
-        ask-<span className={styles.accent}>ray</span>
+        <span aria-hidden="true">
+          as<span className={styles.x}>X</span>-ray
+        </span>
       </Link>
       <nav className={styles.nav} aria-label="Main">
         {NAV_ITEMS.map((item) => (

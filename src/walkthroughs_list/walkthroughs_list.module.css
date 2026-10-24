@@ -1,47 +1,10 @@
-/* Page theme: soft pastel gradient with translucent, rounded cards. */
+/* Fills the space under the header. The pastel background comes from the layout. */
 .main {
-  --ss-ink: #1d2233;
-  --ss-muted: #7a78b0;
-  --ss-accent: #5a58a6;
-
-  position: fixed;
+  position: absolute;
   inset: 0;
   overflow-y: auto;
   color: var(--ss-ink);
   text-align: left;
-  background:
-    radial-gradient(circle at 0% 0%, #eef4ff 0%, transparent 45%),
-    radial-gradient(circle at 100% 0%, #ffcfd0 0%, transparent 50%),
-    radial-gradient(circle at 0% 100%, #c8cdfa 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, #d9b8f0 0%, transparent 50%),
-    #efe9fb;
-}
-
-/* Decorative spheres, like the soft 3D shapes in the reference design */
-.main::before,
-.main::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.main::before {
-  top: 38%;
-  left: 3%;
-  width: 4.5rem;
-  height: 4.5rem;
-  background: radial-gradient(circle at 30% 28%, #d9f5ee 0%, #8fcfc6 55%, #5aa59c 100%);
-  box-shadow: 0 12px 24px rgba(90, 165, 156, 0.25);
-}
-
-.main::after {
-  top: 14%;
-  right: 6%;
-  width: 3rem;
-  height: 3rem;
-  background: radial-gradient(circle at 30% 28%, #fff4f6 0%, #f6c6d6 60%, #eba5be 100%);
-  box-shadow: 0 10px 20px rgba(235, 165, 190, 0.3);
 }
 
 /* Page title. The underline echoes the sketch of the design. */
