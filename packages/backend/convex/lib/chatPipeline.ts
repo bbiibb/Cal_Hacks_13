@@ -65,6 +65,7 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
   const candidates = buildSceneActions(output, {
     procedureSlug: input.data.procedureSlug,
     stepCount: input.data.steps.length,
+    currentStepIndex: input.data.currentStepIndex,
     message: input.message,
   });
   const { accepted, rejected } = await validateSceneActions(candidates, input.lookup);

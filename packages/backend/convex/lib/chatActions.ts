@@ -82,6 +82,8 @@ export function detectViewCommands(message: string): ViewCommands {
 export interface ActionContext {
   procedureSlug: string;
   stepCount: number;
+  /** The step the patient is already looking at (0-based). Going "to" it again is skipped. */
+  currentStepIndex: number;
   /** The patient's original message, used for the view-command fallback */
   message: string;
 }
@@ -95,7 +97,7 @@ export function buildSceneActions(output: LlmOutput, context: ActionContext): Sc
   const actions: SceneAction[] = [];
 
   const step = output.step ?? commands.step;
-  if (step !== null && step >= 1 && step <= context.stepCount) {
+  if (step !== null && step >= 1 && step <= context.stepCount && step - 1 !== context.currentStepIndex) {
     actions.push({ type: "goto_step", procedure_slug: context.procedureSlug, step_index: step - 1 });
   }
 

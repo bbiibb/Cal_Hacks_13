@@ -71,6 +71,32 @@ describe("completeChat", () => {
     expect(secondBody.response_format).toBeUndefined();
   });
 
+  it("waits out a short rate limit once and then succeeds", async () => {
+    const sleep = vi.fn().mockResolvedValue(undefined);
+    const limited = new Response("slow down", { status: 429, headers: { "retry-after": "2" } });
+    const fetchImpl = vi.fn().mockResolvedValueOnce(limited).mockResolvedValueOnce(reply("ok"));
+    await expect(completeChat({ config, messages, fetchImpl, sleep })).resolves.toBe("ok");
+    expect(sleep).toHaveBeenCalledWith(2250);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not wait for a long rate limit", async () => {
+    const sleep = vi.fn().mockResolvedValue(undefined);
+    const limited = new Response("slow down", { status: 429, headers: { "retry-after": "60" } });
+    const fetchImpl = vi.fn().mockResolvedValue(limited);
+    await expectLlmError(completeChat({ config, messages, fetchImpl, sleep }), "llm_rate_limited");
+    expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it("asks gpt-oss models for low reasoning effort and no other model", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(reply("ok"));
+    await completeChat({ config: { ...config, model: "openai/gpt-oss-20b" }, messages, fetchImpl });
+    expect(JSON.parse((fetchImpl.mock.calls[0] as [string, RequestInit])[1].body as string).reasoning_effort).toBe("low");
+    const other = vi.fn().mockResolvedValue(reply("ok"));
+    await completeChat({ config, messages, fetchImpl: other });
+    expect(JSON.parse((other.mock.calls[0] as [string, RequestInit])[1].body as string).reasoning_effort).toBeUndefined();
+  });
+
   it("reports rate limits so the UI can ask the patient to wait", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response("slow down test-key", { status: 429 }));
     const error = await expectLlmError(completeChat({ config, messages, fetchImpl }), "llm_rate_limited");

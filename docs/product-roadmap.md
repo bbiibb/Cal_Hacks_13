@@ -28,7 +28,7 @@ Screen layout (main page mockup): on the left the 3D image with a **timeline (sl
 | F1 | 3D scene per step with a side-panel explanation | Store and read structures, instruments, procedures, and steps; dummy seed | ✅ `procedures.*`, `structures.*`, `instruments.list`, `seed:run` |
 | F2 | **Select a part to see its explanation** | Give each part a variable (`structure_id`) and return the explanation of the selected part. Step-specific explanations use `annotations` | 🟡 Reading a part's explanation ✅ (`structures.getById`). Reading step-specific explanations ⬜ (only the `annotations` table exists) |
 | F3 | **Highlight parts to match the AI answer** | Validate the `scene_actions` (focus, highlight, set_opacity, goto_step) the AI produces and pass them to the frontend | ✅ Validator and the chatbot that produces `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, and `reset_view`. Frontend handling of these actions ⬜ |
-| F4 | Chatbot | See 3.1 below | 🟡 Backend built and unit tested (`chat.createSession`, `chat.ask`, free Llama through an OpenAI-compatible API, 3D commands, safety nets). Not yet tried with a real model key. Frontend chat UI ⬜ |
+| F4 | Chatbot | See 3.1 below | 🟡 Backend built, unit tested, and tried with a real free model (`chat.createSession`, `chat.ask`, `chat.askByVoice`, 3D commands, safety nets). Frontend chat UI ⬜ |
 | F5 | Choose the procedure name and approach (as guided by the hospital) | The same procedure is explained differently per approach, so store approach variants on the procedure and let the user choose | ⬜ Schema extension needed |
 | F6 | Move between steps with the timeline | Provide the step order and a short label (`short_title`). The slider UI is frontend (`docs/frontend-backend-split.md`) | ✅ Decided: step-based. Continuous time (seconds) would add `duration_ms` if needed |
 | F7 | Comprehension check and a list of "questions to ask the doctor in charge" | Build a short comprehension check and a question list from the conversation | ⬜ |
@@ -47,7 +47,7 @@ Chatbot behavior the planning note asks for:
 - Let the patient **ask in connection with the scene being watched**. Example: "Does the equipment you just put in remain in my body?"
 - At the end, briefly check what the patient understood and organize the questions to ask the doctor in charge.
 
-Decided building blocks: speech-to-text with **Cartesia** (F12, done on the backend) and answers from a **free Llama model through Groq** (any OpenAI-compatible endpoint works), using the JSON answer format of the Mana prototype (`answer`, `highlight`, `safety`, `doctorQuestion`, `urgent`) extended with `zoom`, `rotate`, `step`, and `reset_view`. See `docs/chatbot.md`.
+Decided building blocks: speech-to-text with **Cartesia** (F12, done on the backend) and answers from a **free open-weight model through Groq** (`openai/gpt-oss-20b`; Groq retired its Llama models; any OpenAI-compatible endpoint works), using the JSON answer format of the Mana prototype (`answer`, `highlight`, `safety`, `doctorQuestion`, `urgent`) extended with `zoom`, `rotate`, `step`, and `reset_view`. See `docs/chatbot.md`.
 
 Components needed:
 1. **Request contract** (`ChatRequest`): `{ message, context: { procedure_slug, step_index, selected_structure_id | null } }` ✅ in `packages/shared`.

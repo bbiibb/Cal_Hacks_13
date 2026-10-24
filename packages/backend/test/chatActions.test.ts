@@ -14,7 +14,7 @@ const empty: LlmOutput = {
   doctorQuestion: "",
   urgent: false,
 };
-const context = { procedureSlug: "tavr", stepCount: 4, message: "tell me about it" };
+const context = { procedureSlug: "tavr", stepCount: 4, currentStepIndex: 0, message: "tell me about it" };
 
 describe("detectUrgent", () => {
   it("flags symptoms happening now", () => {
@@ -94,6 +94,12 @@ describe("buildSceneActions", () => {
       { type: "rotate", direction: "right", degrees: 60 },
       { type: "reset_view" },
     ]);
+  });
+
+  it("does not go to the step the patient is already on", () => {
+    expect(buildSceneActions({ ...empty, step: 1 }, context)).toEqual([]);
+    expect(buildSceneActions({ ...empty, step: 3 }, { ...context, currentStepIndex: 2 })).toEqual([]);
+    expect(buildSceneActions({ ...empty, step: 4 }, { ...context, currentStepIndex: 2 })).toHaveLength(1);
   });
 
   it("ignores a step number outside the procedure", () => {

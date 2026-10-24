@@ -10,14 +10,15 @@ Yes, for this job, because the model is asked to do something narrow:
 - Its output is **checked by our code**, so a mistake cannot reach the screen: unknown part ids are dropped, step numbers outside the procedure are dropped, and numbers are clamped.
 - Simple 3D commands ("zoom in", "rotate left 90 degrees", "go to step 3") and emergency symptoms are also **detected by plain rules**, without the model.
 
-What a small model will do worse than a large one: nuance in medical explanations, very long conversations, and non-English answers. That is why the answer text is kept short and tied to our own text. This must be tried with a real key before it is shown to patients: the tests use fake model replies, not a real model.
+What a small model will do worse than a large one: nuance in medical explanations, very long conversations, and non-English answers. That is why the answer text is kept short and tied to our own text. It was tried with a real free model (`openai/gpt-oss-20b` on Groq): replies take about 2 seconds, the JSON was valid every time, and zoom, rotate, step, highlight, emergency symptoms, and off-topic questions all behaved as intended. The unit tests use fake model replies; real answers still need review by someone with medical knowledge before patients see them.
 
 ## Free options
 
 | Option | What it is | Notes |
 |---|---|---|
-| **Groq with a Llama model** (default) | Free API tier. OpenAI-compatible. `llama-3.1-8b-instant` or `llama-3.3-70b-versatile` | The free tier has limits per minute and per day (third-party pages list about 30 requests per minute, 6,000 to 12,000 tokens per minute, and 1,000 to 14,400 requests per day depending on the model). Check the limits in your Groq console, because they change. |
-| OpenRouter free models | Models with a `:free` suffix, for example a Llama 3.3 70B instruct model | Free but strictly rate limited. Model names change often. |
+| **Groq** (default) | Free API tier. OpenAI-compatible. Chat models available to us: `openai/gpt-oss-20b` (default), `openai/gpt-oss-120b`, `qwen/qwen3.8-27b` | Groq **retired its Llama chat models** (`llama-3.1-8b-instant`, `llama-3.3-70b-versatile`) on 2026-08-16 ([deprecations page](https://console.groq.com/docs/deprecations)), so Llama is no longer available there. The free tier limits requests and tokens per minute: in testing, about four questions in quick succession were enough to hit the limit. Check the limits in your Groq console, because they change. |
+| OpenRouter free models | Models with a `:free` suffix, some of them Llama | Free but strictly rate limited. Model names change often. |
+| Hugging Face Inference Providers | Llama 3.1 8B Instruct through `https://router.huggingface.co/v1` with a Hugging Face token | Free accounts get only a very small monthly credit. |
 | Grok (xAI) | API with promotional free credits that depend on the account | Not a stable free option. Check console.x.ai before relying on it. |
 | Llama on your own computer (Ollama) | Truly free | Works only if the backend can reach your computer. The Convex cloud cannot reach `localhost`, so it is not usable with the deployed backend. |
 
@@ -34,7 +35,7 @@ cd packages/backend
 pnpm exec convex env set LLM_API_KEY <your key>
 # Optional. These defaults are used when they are not set:
 pnpm exec convex env set LLM_BASE_URL https://api.groq.com/openai/v1
-pnpm exec convex env set LLM_MODEL llama-3.1-8b-instant
+pnpm exec convex env set LLM_MODEL openai/gpt-oss-20b
 ```
 
 For speech-to-text, set `CARTESIA_API_KEY` the same way (see `docs/backend-api.md`).
@@ -46,6 +47,7 @@ patient (typed or spoken)
    | voice: speech.generateUploadUrl -> upload -> speech.transcribe (Cartesia)  -> text
    v
 chat.ask({ message, context: { procedure_slug, step_index, selected_structure_id }, sessionId? })
+   (a spoken question uses chat.askByVoice, which does the speech-to-text step and then this same flow)
    1. check the message (1 to 500 characters)
    2. load the procedure, steps, and parts from the database  (what is on screen)
    3. build the prompt: rules + parts list + two worked examples + recent history
@@ -64,7 +66,8 @@ The pure logic is in `packages/backend/convex/lib/` (`chatPrompt`, `chatParse`, 
 - Short, numbered rules instead of long prose.
 - The list of allowed part ids is in the prompt, and ids not in the list are dropped afterwards.
 - **The exact JSON format is repeated at the very end of the system prompt** ("OUTPUT FORMAT"), and two worked examples are given as earlier turns.
-- Low temperature (0.2) and the provider's JSON mode (retried without it if the model rejects it).
+- Low temperature (0.2) and the provider's JSON mode (retried without it if the model rejects it). For gpt-oss models the reasoning effort is set to low, which keeps answers fast.
+- A rule that keeps the model on topic: other subjects get a polite "I can only help with the procedure, the heart, and the 3D model".
 - The screen state (`[Screen] Step 3 of 4 ... Selected part: ...`) is added to every question so "this valve" or "what you just put in" can be understood.
 - Prompt size is kept small because free tiers limit tokens per minute.
 
@@ -101,7 +104,7 @@ Animate these over about 0.5 to 1 second so the change is easy to follow.
 ## Limits and what is not built
 
 - **No rate limiting beyond one question per 1.5 seconds per session.** Anyone who knows the deployment URL could use up the free quota. Add a real limit before sharing the app.
-- The free providers can answer slowly or return "busy" (error code `llm_rate_limited`).
+- The free providers return "busy" (error code `llm_rate_limited`) when too many questions arrive in a minute. The server waits up to 8 seconds once when the provider says when to retry, then gives up. The UI should show a friendly message and let the patient try again.
 - Answers are only as good as the content in the database. The dummy content is not medical advice.
 - Conversation history is kept per session in `chatMessages`. There is no login, so sessions are anonymous.
 - Not built yet: sources and citations (RAG), the comprehension quiz, and the "questions for your doctor" summary.

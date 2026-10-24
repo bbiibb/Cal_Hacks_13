@@ -2,12 +2,13 @@ import type { LlmMessage } from "./chatPrompt";
 
 /**
  * Client for any OpenAI-compatible chat completions endpoint.
- * Free options that work with it: Groq (Llama models), OpenRouter (":free" models), and others.
+ * Free options that work with it: Groq (open-weight models such as gpt-oss), OpenRouter (":free" models), and others.
  * Nothing here is tied to one provider; the endpoint, key, and model come from environment variables.
  */
 
 export const DEFAULT_LLM_BASE_URL = "https://api.groq.com/openai/v1";
-export const DEFAULT_LLM_MODEL = "llama-3.1-8b-instant";
+// Groq retired its Llama chat models on 2026-08-16. openai/gpt-oss-20b is a small, fast, free open-weight model there.
+export const DEFAULT_LLM_MODEL = "openai/gpt-oss-20b";
 export const LLM_TIMEOUT_MS = 25_000;
 
 export type LlmErrorCode =
@@ -61,14 +62,42 @@ export interface CompletionParams {
   /** Injected for tests. Defaults to the global fetch. */
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
+  /** Injected for tests. Defaults to a real timer. */
+  sleep?: (ms: number) => Promise<void>;
+}
+
+/** The longest we wait before retrying a rate-limited request, in milliseconds. */
+export const MAX_RATE_LIMIT_WAIT_MS = 8000;
+
+const realSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** Reads the provider's Retry-After header (seconds). Null when it is missing or not a number. */
+function retryAfterMs(response: Response): number | null {
+  const seconds = Number(response.headers.get("retry-after"));
+  if (!Number.isFinite(seconds) || seconds < 0) return null;
+  return Math.ceil(seconds * 1000) + 250;
 }
 
 /** Asks the model for one reply and returns its text. */
 export async function completeChat(params: CompletionParams): Promise<string> {
-  const { config, messages, temperature = 0.2, maxTokens = 600, fetchImpl = fetch, timeoutMs = LLM_TIMEOUT_MS } = params;
+  const {
+    config,
+    messages,
+    temperature = 0.2,
+    maxTokens = 800,
+    fetchImpl = fetch,
+    timeoutMs = LLM_TIMEOUT_MS,
+    sleep = realSleep,
+  } = params;
 
   // JSON mode makes most providers return valid JSON. Some models reject it, so we retry once without it.
-  for (const jsonMode of [true, false]) {
+  let jsonMode = true;
+  // A short rate limit (for example "try again in 2 seconds") is waited out once.
+  let waitedForRateLimit = false;
+  // gpt-oss models think before they answer; a low effort keeps answers fast and cheap.
+  const reasoning = config.model.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" } : {};
+
+  for (let attempt = 0; attempt < 4; attempt++) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     let response: Response;
@@ -85,6 +114,7 @@ export async function completeChat(params: CompletionParams): Promise<string> {
           temperature,
           max_tokens: maxTokens,
           stream: false,
+          ...reasoning,
           ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
         }),
         signal: controller.signal,
@@ -98,8 +128,17 @@ export async function completeChat(params: CompletionParams): Promise<string> {
       clearTimeout(timer);
     }
 
-    if (response.status === 400 && jsonMode) continue;
+    if (response.status === 400 && jsonMode) {
+      jsonMode = false;
+      continue;
+    }
     if (response.status === 429) {
+      const wait = retryAfterMs(response);
+      if (!waitedForRateLimit && wait !== null && wait <= MAX_RATE_LIMIT_WAIT_MS) {
+        waitedForRateLimit = true;
+        await sleep(wait);
+        continue;
+      }
       throw new LlmError("llm_rate_limited", "The assistant is busy right now. Please try again in a minute.", 429);
     }
     if (!response.ok) {

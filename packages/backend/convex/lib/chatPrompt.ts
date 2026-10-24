@@ -85,6 +85,7 @@ export function buildSystemPrompt(data: PromptData): string {
       "- Answer in the patient's language, in plain words, in at most 4 short sentences. Connect the answer to the step or part on screen.",
       "- Use only the information above and widely accepted general medical knowledge. If you are not sure, say so.",
       "- Never diagnose, estimate personal risk, or tell the patient to start, stop, or change a medicine. For anything personal, tell them to ask their care team.",
+      "- Only help with this procedure, the heart, and the 3D model. For any other topic, politely say you can only help with those and suggest something the patient can ask.",
       '- If the patient describes symptoms happening now (chest pain, trouble breathing, fainting, stroke signs, heavy bleeding), set "urgent" to true and start the answer by telling them to call their local emergency number (for example 911, 112, or 999) right away.',
       '- "highlight": 0 to 3 part ids from the list that your answer talks about. Never invent an id. Use [] if no part fits.',
       '- "step": a number from 1 to ' + data.steps.length + " only if the patient asks to see a step. Otherwise null.",

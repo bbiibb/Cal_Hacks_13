@@ -68,7 +68,8 @@ const { text } = await transcribe({ storageId, language: "en" });
 - `scene_actions` are already validated against our content, so the frontend can apply them directly: `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, `reset_view`.
 - Errors are thrown as `ConvexError` with `{ code, message }` in `error.data`. Codes: `invalid_message`, `context_not_found`, `too_many_requests`, `llm_not_configured`, `llm_rate_limited`, `llm_timeout`, `llm_request_failed`, `llm_bad_response`.
 - The server needs `LLM_API_KEY` (and optionally `LLM_BASE_URL` and `LLM_MODEL`) as Convex environment variables. Free setup and the way it works are in [`docs/chatbot.md`](chatbot.md).
-- A voice question is `speech.transcribe` (above) followed by `chat.ask` with the returned text.
+- **Spoken question in one call**: `api.chat.askByVoice({ storageId, language?, context, sessionId? })` turns the uploaded recording into text with Cartesia (and deletes the recording), then answers it like a typed question. It returns `{ transcript, language, response }`, where `response` is the same `ChatResponse` as `chat.ask`. Show `transcript` so the patient sees what was heard. Extra error code: `no_speech_detected`, plus the speech codes listed above.
+- Flow for a microphone button: `speech.generateUploadUrl` -> upload the recording -> `chat.askByVoice`.
 
 ## Internal functions (cannot be called from the frontend)
 
