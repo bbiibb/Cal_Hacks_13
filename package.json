@@ -1,25 +1,25 @@
 {
-  "name": "cal-hacks-13",
+  "name": "simple-surgeries",
   "private": true,
   "version": "0.0.0",
-  "description": "3D 인간 장기 + 수술 과정 시연 웹사이트 모노레포",
   "type": "module",
-  "packageManager": "pnpm@12.15.0",
-  "engines": {
-    "node": ">=22"
-  },
   "scripts": {
-    "dev:backend": "pnpm --filter @cal-hacks/backend dev",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "lint": "eslint .",
-    "test": "pnpm -r --if-present test"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.5",
-    "eslint": "^10.13.0",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.0",
-    "vitest": "^5.0.5"
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.88.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
   }
 }
