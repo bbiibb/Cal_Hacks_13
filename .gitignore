@@ -6,12 +6,12 @@ build/
 *.tsbuildinfo
 coverage/
 
-# 환경변수 / 시크릿 (절대 커밋 금지)
+# Environment variables and secrets (never commit)
 .env
 .env.*
 !.env.example
 
-# OS / 에디터
+# OS and editors
 .DS_Store
 .idea/
 .vscode/*
