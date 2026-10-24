@@ -2,7 +2,7 @@
 
 A map of this repository: what each branch is for, who works where, how the code is laid out, and how the branches are meant to come together.
 
-> Snapshot taken on 2026-10-24. Branches change quickly. To see the current state, run `git fetch --all --prune && git branch -r`, or open the repository's branch list on GitHub.
+> Snapshot taken on 2026-10-24 (updated the same day). Branches change quickly. To see the current state, run `git fetch --all --prune && git branch -r`, or open the repository's branch list on GitHub.
 
 ## 1. Project in one paragraph
 
@@ -21,7 +21,7 @@ A map of this repository: what each branch is for, who works where, how the code
 | Branch | Purpose | Layout | Status |
 |---|---|---|---|
 | `main` (default) | Monorepo setup, shared contract, TAVR dummy content, docs | Monorepo (pnpm workspace) | Stable base. Contains no frontend app yet |
-| `backend/seed-and-validation` | Convex read queries, content seeding, `scene_actions` validator, API docs, product roadmap | Monorepo | Backend work in progress. Not merged into `main` yet |
+| `backend/seed-and-validation` | Convex read queries, content seeding, `scene_actions` validator, Cartesia speech-to-text, API docs, product roadmap. All text translated to English | Monorepo | Backend work in progress. Open as a pull request into `main` |
 | `chore/monorepo-setup` | Frontend app after the monorepo and backend files were removed | Vite app at the repository root | Frontend-only branch. The name is historical |
 | `website` | Initial React and TypeScript setup, router, 3D object system, orbit camera, favicon | Vite app at the repository root | Silas's main frontend line |
 | `3d_visualization` | Model loading and lighting on top of the 3D object system | Vite app at the repository root | Silas's active 3D work |
@@ -111,14 +111,14 @@ Until then, each person keeps working on their own line and pushes only to their
 - **No secrets in git.** API keys, tokens, and `.env*` files stay out of the repository. Server secrets live in Convex environment variables (`npx convex env set`). The variable names are listed in `.env.example`.
 - **No real patient data.** Use public or synthetic data only.
 - **Changing the contract** (`packages/shared`)? Update `docs/contracts.md` in the same change and tell the frontend owner what changed.
-- Code and identifiers are in English. Some internal notes are in Korean.
+- **Everything is written in English**: code, comments, documentation, fixtures, and commit messages.
 
 ## 8. Open items
 
 - The frontend app is not on `main` yet (see section 6).
 - The app is called **Ask-Ray** in the frontend `package.json` and page title, and **Simple Surgeries** in the design and planning notes. The final name is undecided.
 - `walkthroughs_list_page` still contains old monorepo files from before the cleanup.
-- The chatbot (speech-to-text with Cartesia, answers from OpenAI) is planned but not implemented.
+- The chatbot is partly built: speech-to-text with Cartesia is implemented in the backend (it needs the `CARTESIA_API_KEY` environment variable and a microphone button in the frontend). Answers from OpenAI are planned but not implemented.
 
 ## 9. Related documents
 
@@ -126,5 +126,6 @@ Until then, each person keeps working on their own line and pushes only to their
 |---|---|
 | [`contracts.md`](contracts.md) | Frontend-backend data contract |
 | [`tavr-demo.md`](tavr-demo.md) | TAVR scenes and 3D asset status |
-| `backend-api.md` (on `backend/seed-and-validation`) | Backend functions the frontend can call |
-| `product-roadmap.md` (on `backend/seed-and-validation`) | Planned features and implementation status |
+| [`frontend-backend-split.md`](frontend-backend-split.md) | Who builds what, with the timeline as an example |
+| [`backend-api.md`](backend-api.md) | Backend functions the frontend can call, including voice input |
+| [`product-roadmap.md`](product-roadmap.md) | Planned features and implementation status |
