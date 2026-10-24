@@ -6,3 +6,5 @@
 - 구성: 프론트엔드(3D 화면 + 사이드 패널), Convex 백엔드, 공용 계약(zod 스키마)
 
 > 모든 콘텐츠는 교육용 더미 데이터이며 의료 조언이 아닙니다.
+
+- Repository structure, branches, and ownership: [docs/github-structure.md](docs/github-structure.md)
