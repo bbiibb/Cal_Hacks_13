@@ -56,7 +56,22 @@ const { text } = await transcribe({ storageId, language: "en" });
 - Accepted audio: webm, ogg, mp4, m4a, mp3, wav, flac. Up to 10 MB.
 - Errors are thrown as `ConvexError` and carry `{ code, message }` in `error.data`. Codes: `stt_not_configured`, `invalid_language`, `audio_not_found`, `audio_too_large`, `audio_empty`, `unsupported_audio_type`, `stt_timeout`, `stt_request_failed`, `stt_bad_response`.
 - The server needs the secret `CARTESIA_API_KEY` as a Convex environment variable (`npx convex env set CARTESIA_API_KEY <key>`). Without it the error code is `stt_not_configured`.
-- Not built yet: sending the transcript to the chatbot, and rate limiting. Until rate limiting exists, anyone who knows the deployment URL could use up the speech-to-text quota.
+- Not built yet: rate limiting. Until it exists, anyone who knows the deployment URL could use up the speech-to-text quota.
+
+## Chatbot (free language model)
+
+| Function | Kind | args | Returns |
+|---|---|---|---|
+| `api.chat.createSession` | mutation | `{ procedureSlug? }` | A session id (keeps the conversation history) |
+| `api.chat.ask` | action | `{ message, context, sessionId? }` where `context` is `{ procedure_slug, step_index, selected_structure_id \| null }` | `ChatResponse`: `message`, `scene_actions`, `side_panel`, `sources`, `safety`, `doctor_question`, `urgent` |
+
+- `scene_actions` are already validated against our content, so the frontend can apply them directly: `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, `reset_view`.
+- Errors are thrown as `ConvexError` with `{ code, message }` in `error.data`. Codes: `invalid_message`, `context_not_found`, `too_many_requests`, `llm_not_configured`, `llm_rate_limited`, `llm_timeout`, `llm_request_failed`, `llm_bad_response`, and for the local model `llm_local_unavailable` and `llm_model_missing`. Which model answers (`LLM_PROVIDER`: cloud or local) never changes the arguments or the reply.
+- The server needs `LLM_API_KEY` (and optionally `LLM_BASE_URL` and `LLM_MODEL`) as Convex environment variables. Free setup and the way it works are in [`docs/chatbot.md`](chatbot.md).
+- **Safety behavior** (see [`safety.md`](safety.md)): questions asking for medicine or personal medical decisions get a fixed reply without the model; answers with advice or facts that are not in our content are replaced; replies about risks carry the standing note in `safety`; personal details in the question are removed. `doctor_question` is a suggested question for the doctor.
+- `api.chat.deleteSession({ sessionId })` erases a conversation and its messages.
+- **Spoken question in one call**: `api.chat.askByVoice({ storageId, language?, context, sessionId? })` turns the uploaded recording into text with Cartesia (and deletes the recording), then answers it like a typed question. It returns `{ transcript, language, response }`, where `response` is the same `ChatResponse` as `chat.ask`. Show `transcript` so the patient sees what was heard. Extra error code: `no_speech_detected`, plus the speech codes listed above. In local mode (`LLM_PROVIDER=local`) the speech code `cloud_stt_disabled` is returned unless `ALLOW_CLOUD_STT=true`.
+- Flow for a microphone button: `speech.generateUploadUrl` -> upload the recording -> `chat.askByVoice`.
 
 ## Internal functions (cannot be called from the frontend)
 
@@ -74,4 +89,4 @@ const { text } = await transcribe({ storageId, language: "en" });
 
 ## Not built yet
 
-The chatbot (calling the LLM), session and message storage, RAG, and authentication are not implemented.
+RAG (source material and citations), the comprehension quiz, rate limiting, and authentication are not implemented.

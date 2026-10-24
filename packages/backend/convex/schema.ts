@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { EMBEDDING_DIMENSIONS } from "./lib/ragConfig";
 import { vScene, vSceneAction, vSidePanel, vSource, vVec3 } from "./validators";
 
 export default defineSchema({
@@ -76,6 +77,22 @@ export default defineSchema({
     sources: v.optional(v.array(vSource)),
   }).index("by_session_id", ["sessionId"]),
 
-  // TODO(RAG): the source document table (documents) and embeddings (embeddings, vectorIndex)
-  //   will be added when RAG is implemented. They are not defined yet.
+  // Text snippets for retrieval (RAG), each with an embedding for vector search.
+  // Used by the local pipeline (LLM_PROVIDER=local). Filled by `npx convex run rag:indexContent`.
+  medicalDocs: defineTable({
+    docId: v.string(), // stable key, for example "structure:aortic_valve" or "step:tavr:2"
+    kind: v.union(v.literal("structure"), v.literal("step")),
+    structureId: v.optional(v.string()),
+    procedureSlug: v.optional(v.string()),
+    stepIndex: v.optional(v.number()),
+    title: v.string(),
+    text: v.string(),
+    embedding: v.array(v.float64()),
+  })
+    .index("by_doc_id", ["docId"])
+    .vectorIndex("by_embedding", {
+      vectorField: "embedding",
+      dimensions: EMBEDDING_DIMENSIONS,
+      filterFields: ["kind"],
+    }),
 });

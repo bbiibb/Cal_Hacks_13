@@ -27,16 +27,18 @@ Screen layout (main page mockup): on the left the 3D image with a **timeline (sl
 |---|---|---|---|
 | F1 | 3D scene per step with a side-panel explanation | Store and read structures, instruments, procedures, and steps; dummy seed | ✅ `procedures.*`, `structures.*`, `instruments.list`, `seed:run` |
 | F2 | **Select a part to see its explanation** | Give each part a variable (`structure_id`) and return the explanation of the selected part. Step-specific explanations use `annotations` | 🟡 Reading a part's explanation ✅ (`structures.getById`). Reading step-specific explanations ⬜ (only the `annotations` table exists) |
-| F3 | **Highlight parts to match the AI answer** | Validate the `scene_actions` (focus, highlight, set_opacity, goto_step) the AI produces and pass them to the frontend | 🟡 Validator ✅ (`internal.sceneActions.validate`). The part where the chatbot produces actions ⬜ |
-| F4 | Chatbot | See 3.1 below | ⬜ (only the `chatSessions` and `chatMessages` tables exist) |
+| F3 | **Highlight parts to match the AI answer** | Validate the `scene_actions` (focus, highlight, set_opacity, goto_step) the AI produces and pass them to the frontend | ✅ Validator and the chatbot that produces `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, and `reset_view`. Frontend handling of these actions ⬜ |
+| F4 | Chatbot | See 3.1 below | 🟡 Backend built, unit tested, and tried with a real free model (`chat.createSession`, `chat.ask`, `chat.askByVoice`, 3D commands, safety nets). Frontend chat UI ⬜ |
 | F5 | Choose the procedure name and approach (as guided by the hospital) | The same procedure is explained differently per approach, so store approach variants on the procedure and let the user choose | ⬜ Schema extension needed |
 | F6 | Move between steps with the timeline | Provide the step order and a short label (`short_title`). The slider UI is frontend (`docs/frontend-backend-split.md`) | ✅ Decided: step-based. Continuous time (seconds) would add `duration_ms` if needed |
 | F7 | Comprehension check and a list of "questions to ask the doctor in charge" | Build a short comprehension check and a question list from the conversation | ⬜ |
 | F8 | Expand to other organs and tumors | A data model that can hold many structures and procedures | ✅ The model is general. Add content with the `seed-content` skill |
-| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | ⬜ (only a TODO comment in `schema.ts`) |
-| F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | ⬜ |
+| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | 🟡 Retrieval exists for the local model (`medicalDocs`, `rag:indexContent`, `docs/local-llm.md`). Source citations in answers ⬜ |
+| F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | 🟡 Length limit and a short wait between questions exist. Real rate limits ⬜ |
+| F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`). Clinical review, UI disclaimer, citations, scheduled purge, authentication ⬜ |
 | F11 | **Add heart conditions** (more procedures per condition later) | Link conditions (`conditions`) and procedures (`procedures.condition_slug`) so the app grows by content, without code changes | ✅ Structure ready (only `aortic_stenosis` for now). Candidates to add: coronary artery disease (PCI, CABG) and others |
 | F12 | **Voice questions** (a microphone button in the chatbot) | Turn a recording into text with Cartesia speech-to-text and delete the recording right away | 🟡 Backend ✅ (`speech.generateUploadUrl`, `speech.transcribe`; needs the `CARTESIA_API_KEY` environment variable). Microphone button in the frontend ⬜. Rate limiting ⬜ |
+| F13 | **3D control by the chatbot** (zoom, rotate, highlight, go to a step) | Produce validated camera and step commands from the model's answer and from simple spoken commands | ✅ Backend (`zoom`, `rotate`, `reset_view`, `focus`, `highlight`, `goto_step`). Frontend handling ⬜ |
 
 ### 3.1 What the chatbot (F4) needs
 
@@ -46,14 +48,15 @@ Chatbot behavior the planning note asks for:
 - Let the patient **ask in connection with the scene being watched**. Example: "Does the equipment you just put in remain in my body?"
 - At the end, briefly check what the patient understood and organize the questions to ask the doctor in charge.
 
-Decided building blocks: speech-to-text with **Cartesia** (F12, done on the backend) and answers from **OpenAI** (the approach of the Mana prototype: a JSON answer with `answer`, `highlight`, `safety`, `doctorQuestion`, and `urgent`).
+Decided building blocks: speech-to-text with **Cartesia** (F12, done on the backend) and answers from a **free open-weight model through Groq** (`openai/gpt-oss-20b`; Groq retired its Llama models; any OpenAI-compatible endpoint works), using the JSON answer format of the Mana prototype (`answer`, `highlight`, `safety`, `doctorQuestion`, `urgent`) extended with `zoom`, `rotate`, `step`, and `reset_view`. See `docs/chatbot.md`.
 
 Components needed:
-1. **Request contract** (`ChatRequest`, proposed): `{ session_id, message, context: { procedure_slug, step_index, selected_structure_id | null } }`. The AI must know the current scene to answer questions like "the equipment you just put in". (⬜ not in `packages/shared` yet; add it with the `contract-change` skill)
-2. **Session and message functions**: create a session, store messages, load a conversation (⬜)
-3. **LLM-calling action**: call the LLM with the explanation of the current step in the prompt, built on the server (⬜. The API key only as a Convex environment variable)
-4. **Assembling and validating the response**: build a `ChatResponse` from the LLM output and use only the `scene_actions` that pass the validator (validator ✅)
-5. **Safety rules**: stay educational, say you do not know when there is no source, avoid wording that looks like a diagnosis or treatment advice, and flag urgent symptoms.
+1. **Request contract** (`ChatRequest`): `{ message, context: { procedure_slug, step_index, selected_structure_id | null } }` ✅ in `packages/shared`.
+2. **Session and message functions**: create a session, store messages, load history ✅
+3. **LLM-calling action**: the prompt is built on the server from the current step and the parts of the model ✅ (the API key is only a Convex environment variable)
+4. **Assembling and validating the response**: a `ChatResponse` is built from the model's JSON, and only `scene_actions` that pass the validator are used ✅
+5. **Safety rules**: educational tone, "I do not know" when unsure, no diagnosis or medicine advice, and urgent symptoms flagged by a rule-based safety net as well ✅
+6. **Still open**: try it with a real free key, add a real rate limit, and sources (RAG).
 
 ## 4. Feature proposed by a team member (original text)
 
@@ -101,9 +104,8 @@ Candidates to add when extending "a variable for each part of the heart" are lis
 
 ## 7. Suggested next work (in priority order)
 
-1. Add the `ChatRequest` contract (`contract-change` skill), agreeing with the frontend first
-2. Session and message storage functions (`chatSessions`, `chatMessages`)
+1. Try the chatbot with a real free key (Groq) and tune the prompt on real replies
+2. Frontend: chat panel, microphone button, and handling of the new 3D actions
 3. Reading step-specific part explanations (`annotations` seed and query)
-4. The LLM-calling action and the safety rules (needs the OpenAI API key)
-5. Rate limits and response length limits (this also protects the speech-to-text quota)
+4. Real rate limits (this also protects the free quota and the speech-to-text quota)
 6. Source material (RAG) and sources, the comprehension check, and organizing questions for the doctor

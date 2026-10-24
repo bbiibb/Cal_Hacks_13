@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
+  ChatRequestSchema,
   ChatResponseSchema,
   ConditionSchema,
   InstrumentSchema,
@@ -68,10 +69,36 @@ describe("fixtures follow the contract schemas", () => {
         expect(action.step_index).toBeLessThan(procedure.steps.length);
       } else if (action.type === "highlight") {
         for (const id of action.structure_ids) expect(structureIds.has(id)).toBe(true);
-      } else {
+      } else if (action.type === "focus" || action.type === "set_opacity") {
         expect(structureIds.has(action.structure_id)).toBe(true);
       }
     }
+  });
+});
+
+describe("chat contract", () => {
+  const request = ChatRequestSchema.parse(load("chat-request.example.json"));
+
+  it("accepts camera actions and rejects out-of-range values", () => {
+    expect(SceneActionSchema.safeParse({ type: "zoom", direction: "in", amount: "large" }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "up", degrees: 90 }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "reset_view" }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "zoom", direction: "sideways", amount: "small" }).success).toBe(false);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "left", degrees: 400 }).success).toBe(false);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "left", degrees: 1 }).success).toBe(false);
+  });
+
+  it("fills in the safety fields when a response omits them", () => {
+    const parsed = ChatResponseSchema.parse({ message: "Hi", scene_actions: [], side_panel: null, sources: [] });
+    expect(parsed.safety).toBe("");
+    expect(parsed.doctor_question).toBe("");
+    expect(parsed.urgent).toBe(false);
+  });
+
+  it("validates chat requests", () => {
+    expect(ChatRequestSchema.safeParse({ message: "  ", context: request.context }).success).toBe(false);
+    expect(ChatRequestSchema.safeParse({ message: "x".repeat(501), context: request.context }).success).toBe(false);
+    expect(ChatRequestSchema.safeParse({ message: "Is it safe?", context: { ...request.context, step_index: -1 } }).success).toBe(false);
   });
 });
 
