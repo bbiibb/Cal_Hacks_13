@@ -11,6 +11,7 @@
 | `StructureId` | 소문자 snake_case 세그먼트를 `.` 로 이어 계층 표현. **GLB 메시 이름과 1:1로 일치** | `aorta`, `aortic_valve`, `aortic_valve.calcification` |
 | `InstrumentId` | 소문자 snake_case | `grasper`, `clip_applier` |
 | `ProcedureSlug` | 소문자 snake_case | `tavr` |
+| `ConditionSlug` | 소문자 snake_case. 수술이 치료하는 심장 질환 | `aortic_stenosis` |
 
 ## 2. Scene (한 단계의 3D 장면 상태)
 
@@ -26,7 +27,9 @@ Scene = {
 ```
 
 - `structures` 에 없는 구조물은 프론트의 기본 상태(불투명, 강조 없음)로 취급합니다.
-- Step = `{ index, title, scene, side_panel }`, Procedure = `{ slug, title, summary, steps[] }`.
+- Step = `{ index, title, short_title, scene, side_panel }`. `short_title` 은 타임라인 라벨용 짧은 이름이고, `index` 가 슬라이더 눈금이 된다.
+- Procedure = `{ slug, title, summary, condition_slug, order, steps[] }`. `condition_slug` 는 치료하는 질환(없으면 null), `order` 는 같은 질환 안에서의 표시 순서.
+- Condition = `{ slug, name_en, name_ko, description }`. 새 심장 질환은 콘텐츠(fixtures/DB 행)만 추가하면 되고 코드 변경은 필요 없다.
 
 ## 3. SceneAction (챗봇이 3D 화면에 내리는 명령)
 
@@ -60,6 +63,7 @@ ChatResponse = {
 `packages/shared/fixtures/` 에 계약을 따르는 더미 데이터가 있고, `pnpm test` 가 스키마 준수와 id 참조 무결성을 검증합니다.
 
 - `structures.json`, `instruments.json`
+- `conditions.json`
 - `procedure.tavr.json` (TAVR 4개 장면. 장면 계획과 3D 에셋 현황은 [`docs/tavr-demo.md`](tavr-demo.md))
 - `chat-response.example.json`
 
@@ -77,4 +81,5 @@ DB에는 계약과 같은 snake_case 키 형태로 `scene`, `sidePanel`, `sceneA
 | 날짜 | 변경 | 영향 |
 |---|---|---|
 | 2026-10-23 | 최초 초안 | - |
+| 2026-10-23 | 질환(`Condition`) 추가, `Procedure` 에 `condition_slug`/`order`, `Step` 에 `short_title` 추가 (필드 추가만, 기존 필드는 그대로) | 프론트: `short_title` 을 타임라인 라벨로 사용 가능. 질환 목록/수술 목록 조회 함수 추가 |
 | 2026-10-23 | 1차 시연 주제를 TAVR 로 확정. fixtures 와 예시 id 교체 (스키마 형식은 변경 없음) | 프론트: 기존 `procedure.cholecystectomy.json` 참조를 `procedure.tavr.json` 으로 변경 |

@@ -22,12 +22,17 @@ const procedure = useQuery(api.procedures.getBySlug, { slug: "tavr" });
 | `api.structures.list` | 없음 | `Structure[]` (id 순) |
 | `api.structures.getById` | `{ id }` | `Structure \| null` |
 | `api.instruments.list` | 없음 | `Instrument[]` |
-| `api.procedures.list` | 없음 | `{ slug, title, summary }[]` |
-| `api.procedures.getBySlug` | `{ slug }` | `{ slug, title, summary, steps: Step[] } \| null` (steps 는 index 순) |
+| `api.conditions.list` | 없음 | `Condition[]` (심장 질환 목록) |
+| `api.conditions.getBySlug` | `{ slug }` | `Condition \| null` |
+| `api.procedures.list` | 없음 | `{ slug, title, summary, condition_slug, order }[]` |
+| `api.procedures.listByCondition` | `{ conditionSlug }` | 위와 같은 목록 (`order` 순) |
+| `api.procedures.getBySlug` | `{ slug }` | `{ slug, title, summary, condition_slug, order, steps: Step[] } \| null` (steps 는 index 순) |
 | `api.procedures.getStep` | `{ slug, index }` | `Step \| null` |
 
-`Structure`, `Instrument`, `Step` 은 `@cal-hacks/shared` 의 타입과 같은 모양입니다.
+`Structure`, `Instrument`, `Condition`, `Step` 은 `@cal-hacks/shared` 의 타입과 같은 모양입니다.
 `scene` 안의 좌표는 Convex 쪽에서 길이 3 검증을 하지 않으므로, 필요하면 프론트에서 `SceneSchema.parse` 로 확인하세요.
+
+`Step.short_title` 은 타임라인 슬라이더 라벨용이다. 슬라이더를 어디까지 프론트가 하는지는 [`docs/frontend-backend-split.md`](frontend-backend-split.md) 참고.
 
 ## 내부 함수 (프론트에서 호출 불가)
 
