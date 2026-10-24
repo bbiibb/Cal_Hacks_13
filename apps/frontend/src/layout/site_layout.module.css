@@ -1,0 +1,60 @@
+/* The layout fills the screen; only the area under the header scrolls. */
+.layout {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pages are positioned inside this area (position: absolute; inset: 0) or flow normally. */
+.content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+/* Soft pastel theme: gradient behind the header and the page */
+.pastel {
+  --ss-ink: #1d2233;
+  --ss-muted: #7a78b0;
+  --ss-accent: #5a58a6;
+
+  color: var(--ss-ink);
+  background:
+    radial-gradient(circle at 0% 0%, #eef4ff 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, #ffcfd0 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, #c8cdfa 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, #d9b8f0 0%, transparent 50%),
+    #efe9fb;
+}
+
+/* Decorative spheres, like the soft 3D shapes in the reference design */
+.pastel::before,
+.pastel::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.pastel::before {
+  top: 38%;
+  left: 3%;
+  width: 4.5rem;
+  height: 4.5rem;
+  background: radial-gradient(circle at 30% 28%, #d9f5ee 0%, #8fcfc6 55%, #5aa59c 100%);
+  box-shadow: 0 12px 24px rgba(90, 165, 156, 0.25);
+}
+
+.pastel::after {
+  top: 14%;
+  right: 6%;
+  width: 3rem;
+  height: 3rem;
+  background: radial-gradient(circle at 30% 28%, #fff4f6 0%, #f6c6d6 60%, #eba5be 100%);
+  box-shadow: 0 10px 20px rgba(235, 165, 190, 0.3);
+}

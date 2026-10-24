@@ -11,8 +11,10 @@
   "scripts": {
     "dev:backend": "pnpm --filter @cal-hacks/backend dev",
     "typecheck": "pnpm -r --if-present typecheck",
-    "lint": "eslint .",
-    "test": "pnpm -r --if-present test"
+    "lint": "eslint . && pnpm --filter @cal-hacks/frontend lint",
+    "test": "pnpm -r --if-present test",
+    "dev:frontend": "pnpm --filter @cal-hacks/frontend dev",
+    "build:frontend": "pnpm --filter @cal-hacks/frontend build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

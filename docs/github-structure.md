@@ -2,7 +2,7 @@
 
 A map of this repository: what each branch is for, who works where, how the code is laid out, and how the branches are meant to come together.
 
-> Snapshot taken on 2026-10-24 (updated the same day). Branches change quickly. To see the current state, run `git fetch --all --prune && git branch -r`, or open the repository's branch list on GitHub.
+> Snapshot taken on 2026-10-24 (updated the same day, and again when the frontend moved into `apps/frontend`). Branches change quickly. To see the current state, run `git fetch --all --prune && git branch -r`, or open the repository's branch list on GitHub.
 
 ## 1. Project in one paragraph
 
@@ -20,12 +20,13 @@ A map of this repository: what each branch is for, who works where, how the code
 
 | Branch | Purpose | Layout | Status |
 |---|---|---|---|
-| `main` (default) | Monorepo setup, shared contract, TAVR dummy content, docs | Monorepo (pnpm workspace) | Stable base. Contains no frontend app yet |
+| `main` (default) | Monorepo setup, shared contract, TAVR dummy content, docs | Monorepo (pnpm workspace) | Stable base. The frontend arrives with the pull request from `feat/frontend-integration` |
+| `feat/frontend-integration` | The ask-ray website moved into `apps/frontend`: header and layout, walkthrough list, and Silas's 3D organ models | Monorepo | Pull request into `main` |
 | `backend/seed-and-validation` | Convex read queries, content seeding, `scene_actions` validator, Cartesia speech-to-text, API docs, product roadmap. All text translated to English | Monorepo | Backend work in progress. Open as a pull request into `main` |
-| `chore/monorepo-setup` | Frontend app after the monorepo and backend files were removed | Vite app at the repository root | Frontend-only branch. The name is historical |
-| `website` | Initial React and TypeScript setup, router, 3D object system, orbit camera, favicon | Vite app at the repository root | Silas's main frontend line |
+| `chore/monorepo-setup` | Frontend app after the monorepo and backend files were removed | Vite app at the repository root | Old frontend-only branch. The name is historical |
+| `website` | The frontend line: React and TypeScript setup, router, 3D object system, glTF models, header and list page | Vite app at the repository root | Source of the frontend for `feat/frontend-integration` |
 | `3d_visualization` | Model loading and lighting on top of the 3D object system | Vite app at the repository root | Silas's active 3D work |
-| `walkthroughs_list_page` | Walkthroughs list page skeleton | Vite app at the repository root | Based on `website`. Still carries old monorepo files |
+| `walkthroughs_list_page` | Walkthroughs list page, header, and layout | Vite app at the repository root | Merged into `website` (PR #5) |
 | `feat/tavr-content` | TAVR dummy content, docs, initial README | Monorepo | Merged into `main` (PR #1). No longer used |
 
 ### How the branches relate
@@ -60,7 +61,7 @@ Two separate lines of work currently exist: the **monorepo line** (`main`, `back
 │   ├── contracts.md           Frontend-backend contract
 │   ├── tavr-demo.md           TAVR scenes and 3D asset status
 │   └── github-structure.md    This file
-├── apps/frontend/             Reserved for the frontend (README only on main)
+├── apps/frontend/             The ask-ray website (Vite, React, three.js)
 └── packages/
     ├── shared/                Contract: zod schemas, types, dummy fixtures, tests
     └── backend/               Convex project (schema, functions, seed, validator)
@@ -70,18 +71,22 @@ Two separate lines of work currently exist: the **monorepo line** (`main`, `back
 - **`packages/backend`** is a Convex project. The backend branch also adds read queries, a seed mutation, and a validator that only lets valid `scene_actions` through.
 - Tooling: pnpm workspace, TypeScript (strict), Vitest, ESLint.
 
-### 4.2 Frontend line (`website`, `3d_visualization`, `chore/monorepo-setup`)
+### 4.2 Frontend (`apps/frontend`; on the `website` line it sits at the repository root)
 
 ```
-.
+apps/frontend/
 ├── index.html
-├── package.json               App name: ask-ray
+├── package.json               @cal-hacks/frontend (shown to users as ask-ray)
 ├── vite.config.ts
+├── public/models/             glTF organ models
 └── src/
-    ├── main.tsx               Routes
-    ├── App.tsx                Landing page
-    └── walkthrough/           3D walkthrough page
-        └── visualization/     three.js scene, objects, camera controllers
+    ├── main.tsx               Routes, all inside SiteLayout
+    ├── layout/                SiteLayout: the header stays on every page
+    ├── site_header/           Header: logo, navigation, Sign up, Log in
+    ├── walkthroughs_list/     Walkthrough cards
+    ├── walkthrough/           3D page
+    │   └── visualization/     three.js scene, objects, camera controllers
+    └── coming_soon/           Placeholder page
 ```
 
 - Stack: React, TypeScript, Vite, three.js, React Router. Pages use CSS Modules, and folder and file names are `snake_case`.
@@ -94,15 +99,16 @@ Two separate lines of work currently exist: the **monorepo line** (`main`, `back
 | #1 | `feat/tavr-content` | `main` | Merged |
 | #2 | `website` | `chore/monorepo-setup` | Merged |
 | #3 | `3d_visualization` | `website` | Merged |
+| #4 | `backend/seed-and-validation` | `main` | Merged |
+| #5 | `walkthroughs_list_page` | `website` | Merged |
 
-## 6. Plan for bringing the lines together
+## 6. Bringing the frontend line into `main`
 
-1. Agree with the frontend owner to place the Vite app in `apps/frontend/` (the layout reserved in the monorepo), and to rename the package to match the monorepo (`@cal-hacks/frontend`).
-2. Move the frontend line into that layout and restore the monorepo root files.
-3. Merge `backend/seed-and-validation` into the result.
-4. Open one pull request into `main`.
+The frontend line used a different root layout than the monorepo, so it was moved into `apps/frontend/` (the place reserved for it) and the package was renamed to `@cal-hacks/frontend`. This is done in the pull request from `feat/frontend-integration`.
 
-Until then, each person keeps working on their own line and pushes only to their own branches.
+- The files come from `website`, which already contains Silas's 3D work and the header and list page.
+- The history of the frontend commits stays on the `website` branch. In `main` the app arrives as one change that credits Silas as a co-author.
+- Still open: `backend/seed-and-validation` (chatbot work) is a separate pull request.
 
 ## 7. Conventions
 
@@ -115,9 +121,9 @@ Until then, each person keeps working on their own line and pushes only to their
 
 ## 8. Open items
 
-- The frontend app is not on `main` yet (see section 6).
-- The app is called **Ask-Ray** in the frontend `package.json` and page title, and **Simple Surgeries** in the design and planning notes. The final name is undecided.
-- `walkthroughs_list_page` still contains old monorepo files from before the cleanup.
+- The frontend is on `main` once the pull request from `feat/frontend-integration` is merged (see section 6).
+- The 3D models are large (about 130 MB). Move them to Git LFS before any file reaches GitHub's 100 MB limit.
+- The website is called **ask-ray** (logo "asX-ray"), while the planning notes and some docs say **Simple Surgeries**. Align the names.
 - The chatbot is partly built: speech-to-text with Cartesia is implemented in the backend (it needs the `CARTESIA_API_KEY` environment variable and a microphone button in the frontend). Answers from OpenAI are planned but not implemented.
 
 ## 9. Related documents

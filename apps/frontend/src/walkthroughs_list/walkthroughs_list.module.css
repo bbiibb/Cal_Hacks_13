@@ -1,0 +1,45 @@
+/* Fills the space under the header. The pastel background comes from the layout. */
+.main {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  color: var(--ss-ink);
+  text-align: left;
+}
+
+/* Page title. The underline echoes the sketch of the design. */
+.heading {
+  display: inline-block;
+  margin: 2.5rem 2.5rem 0;
+  padding-bottom: 0.4rem;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ss-ink);
+  border-bottom: 2px solid var(--ss-accent);
+
+  @media (max-width: 640px) {
+    margin: 1.5rem 1.25rem 0;
+    font-size: 1.4rem;
+  }
+}
+
+/* Three columns across the full width of the page; fewer on narrow screens */
+.grid {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding: 2rem 2.5rem 4rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem 3rem;
+  }
+}
