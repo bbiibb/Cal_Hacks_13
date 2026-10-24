@@ -7,6 +7,10 @@
 - 백엔드는 Convex를 사용하고 별도 서버는 두지 않는 것이 기본이다 (query/mutation/action, HTTP action, file storage, vector search).
 - pnpm workspace 모노레포, TypeScript(strict).
 
+## 제품 맥락
+앱 이름은 **Simple Surgeries**. 환자가 수술 과정을 3D로 보고, 부위를 선택하면 설명이 나오고, 챗봇이 현재 장면과 연결해 답하며 관련 부위를 하이라이트한다.
+기능 목록, 백엔드 필요 사항, 구현 현황은 `docs/product-roadmap.md` 가 기준이다. 기능을 만들거나 기획이 바뀌면 그 문서를 함께 갱신한다.
+
 ## 폴더 구조와 소유권
 ```
 .
