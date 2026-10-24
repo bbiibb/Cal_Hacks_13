@@ -43,11 +43,12 @@ Honest limits of "the whole model runs locally": the patient's computer must hav
 question
   -> remove personal details
   -> emergency symptoms now?  yes: emergency notice (the gate is skipped, the model still helps)
-  -> medicine or personal medical decision?  yes: fixed reply, the model is NOT called
+  -> medicine, personal medical decision, or "am I too young / a candidate"?  yes: fixed reply, the model is NOT called
   -> model (cloud or local) writes JSON
   -> advice or diagnosis in the answer?        yes: fixed reply
-  -> camera command only?                      yes: fixed confirmation
-  -> numbers or terms not in our content?      yes: our own best snippet, or "I don't have a reliable answer"
+  -> camera command only?                      yes: fixed confirmation (the model is not called)
+  -> numbers (with their unit) or terms not in our content?  yes: our own best snippet (cited), or "I don't have a reliable answer"
+  -> a percentage in the answer?               add "these percentages describe groups of patients, not your personal risk"
   -> highlights and camera commands validated against our content
   -> standing safety note on risk topics
   -> reply
@@ -60,6 +61,7 @@ question
 
 ## 5. Limits you should know
 
+- The reference facts (the team's TAVR document) are described in [`knowledge-base.md`](knowledge-base.md). The grounding check compares an answer with those facts, numbers together with their unit. It still cannot tell that a correct number is attached to the wrong claim (a 3B model once gave the all-patients "2% to 5%" kidney figure to "patients with kidney disease").
 - The grounding check is a **word-level** check. It catches invented numbers and unfamiliar terms, but it cannot tell that a sentence built from correct words says something wrong. It also errs on the side of caution: some correct paraphrases may be replaced by our own text.
 - The gate uses patterns in English. A question that avoids those patterns can slip past it, and other languages are not covered. The advice filter and the grounding check are a second line of defense for the answer.
 - A 3B model words things loosely. For "does the equipment you just put in stay in my body?" it began with "No" although the new valve stays. Review real answers regularly.

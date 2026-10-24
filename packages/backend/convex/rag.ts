@@ -3,9 +3,11 @@ import { internal } from "./_generated/api";
 import { env, internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { embedOllama, resolveOllamaConfig } from "./lib/ollama";
 import { buildDocs } from "./lib/rag";
+import { knowledgeFor } from "./lib/knowledge";
+import { DOCUMENT_PREFIX } from "./lib/ragConfig";
 import { LlmError } from "./lib/llm";
 
-const vKind = v.union(v.literal("structure"), v.literal("step"));
+const vKind = v.union(v.literal("structure"), v.literal("step"), v.literal("knowledge"));
 
 /** How many texts are embedded per request to the local embedding model. */
 const EMBED_BATCH = 16;
@@ -68,8 +70,8 @@ export const getDocs = internalQuery({
 });
 
 /**
- * Builds the vector index for one procedure: every part and step becomes a snippet that is embedded
- * with the local embedding model. Run it after seeding or editing content:
+ * Builds the vector index for one procedure: every part, step, and knowledge fact becomes a snippet that is
+ * embedded with the local embedding model. Run it after seeding or editing content:
  *   npx convex run rag:indexContent '{"procedureSlug":"tavr"}'
  * It needs Ollama running with the embedding model installed (ollama pull nomic-embed-text).
  */
@@ -85,14 +87,26 @@ export const indexContent = internalAction({
     if (!data) throw new Error(`Unknown procedure: ${args.procedureSlug}`);
 
     const config = resolveOllamaConfig(env);
-    const docs = buildDocs(data);
+    const docs = buildDocs({ ...data, knowledge: knowledgeFor(args.procedureSlug) });
     let indexed = 0;
     try {
       for (let i = 0; i < docs.length; i += EMBED_BATCH) {
         const batch = docs.slice(i, i + EMBED_BATCH);
-        const embeddings = await embedOllama({ config, input: batch.map((d) => d.text) });
+        const embeddings = await embedOllama({
+          config,
+          input: batch.map((d) => `${DOCUMENT_PREFIX}${d.embedText ?? d.text}`),
+        });
         indexed += await ctx.runMutation(internal.rag.upsertDocs, {
-          docs: batch.map((d, j) => ({ ...d, embedding: embeddings[j] ?? [] })),
+          docs: batch.map((d, j) => ({
+            docId: d.docId,
+            kind: d.kind,
+            ...(d.structureId ? { structureId: d.structureId } : {}),
+            ...(d.procedureSlug ? { procedureSlug: d.procedureSlug } : {}),
+            ...(d.stepIndex !== undefined ? { stepIndex: d.stepIndex } : {}),
+            title: d.title,
+            text: d.text,
+            embedding: embeddings[j] ?? [],
+          })),
         });
       }
     } catch (error) {

@@ -7,6 +7,7 @@ import { runChat } from "./chatPipeline";
 import { redactPersonalInfo } from "./safety";
 import { MAX_HISTORY_TURNS } from "./chatPrompt";
 import { LlmError } from "./llm";
+import { knowledgeFor } from "./knowledge";
 import { prepareModel } from "./modelRoute";
 
 /** Minimum time between two questions of one session, in milliseconds. Protects the free quota. */
@@ -35,14 +36,16 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
   if (redaction.found.length > 0) console.log("[safety] personal details removed from a question:", redaction.found.join(","));
 
   try {
-    const data = await ctx.runQuery(internal.chatContext.get, {
+    const stored = await ctx.runQuery(internal.chatContext.get, {
       procedureSlug: context.procedure_slug,
       stepIndex: context.step_index,
       selectedStructureId: context.selected_structure_id,
     });
-    if (!data) {
+    if (!stored) {
       throw new ConvexError({ code: "context_not_found", message: "That procedure or step does not exist." });
     }
+    // The reference facts (patient-education knowledge) are bundled with the backend
+    const data = { ...stored, knowledge: knowledgeFor(stored.procedureSlug) };
 
     let history: { role: "user" | "assistant"; content: string }[] = [];
     if (args.sessionId) {
@@ -66,6 +69,7 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
       history,
       callModel: route.callModel,
       buildMessages: route.buildMessages,
+      contextDocs: route.contextDocs,
       lookup: {
         structureExists: async (id) => structureIds.has(id),
         stepExists: async (slug, index) =>

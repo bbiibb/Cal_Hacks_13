@@ -1,5 +1,6 @@
 import procedure from "@cal-hacks/shared/fixtures/procedure.tavr.json";
 import structures from "@cal-hacks/shared/fixtures/structures.json";
+import { knowledgeFor } from "../convex/lib/knowledge";
 import type { PromptData } from "../convex/lib/chatPrompt";
 import type { SceneActionLookup } from "../convex/lib/sceneActions";
 
@@ -12,6 +13,7 @@ export function promptData(overrides: Partial<PromptData> = {}): PromptData {
     currentStepIndex: 2,
     selectedStructureId: null,
     structures: structures.map((s) => ({ id: s.id, name: s.name_en, description: s.description })),
+    knowledge: knowledgeFor(procedure.slug),
     ...overrides,
   };
 }

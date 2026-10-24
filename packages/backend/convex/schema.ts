@@ -80,8 +80,8 @@ export default defineSchema({
   // Text snippets for retrieval (RAG), each with an embedding for vector search.
   // Used by the local pipeline (LLM_PROVIDER=local). Filled by `npx convex run rag:indexContent`.
   medicalDocs: defineTable({
-    docId: v.string(), // stable key, for example "structure:aortic_valve" or "step:tavr:2"
-    kind: v.union(v.literal("structure"), v.literal("step")),
+    docId: v.string(), // stable key, for example "structure:aortic_valve", "step:tavr:2" or "knowledge:risk.stroke"
+    kind: v.union(v.literal("structure"), v.literal("step"), v.literal("knowledge")),
     structureId: v.optional(v.string()),
     procedureSlug: v.optional(v.string()),
     stepIndex: v.optional(v.number()),

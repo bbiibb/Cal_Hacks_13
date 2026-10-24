@@ -111,4 +111,4 @@ Animate these over about 0.5 to 1 second so the change is easy to follow.
 - The free providers return "busy" (error code `llm_rate_limited`) when too many questions arrive in a minute. The server waits up to 8 seconds once when the provider says when to retry, then gives up. The UI should show a friendly message and let the patient try again.
 - Answers are only as good as the content in the database. The dummy content is not medical advice.
 - Conversation history is kept per session in `chatMessages`. There is no login, so sessions are anonymous.
-- Not built yet: sources and citations (RAG), the comprehension quiz, and the "questions for your doctor" summary.
+- Sources are built (the reference facts and how they are found: [`knowledge-base.md`](knowledge-base.md)). Not built yet: the comprehension quiz and the "questions for your doctor" summary.

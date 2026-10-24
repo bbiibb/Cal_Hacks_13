@@ -14,8 +14,8 @@ Yes, with these conditions:
 | Can a 3B model do this job? | Mostly, because the job is narrow. Two things make it reliable: Ollama **constrains the reply to a JSON schema** (the reply is always valid JSON, and `highlight` can only contain ids from the allowed list), and camera commands (zoom, rotate, step, reset) are **read from the patient's words by rules**, not asked from the model. Expect weaker wording and less nuance than the cloud model. |
 | Does the computer have enough power? | This computer is an Apple M2 with 16 GB of memory, which runs a 3B model comfortably. Disk is the tight part: about 13 GB are free, and the models need about 2.3 GB. |
 | Can the Convex cloud reach Ollama? | **No.** The cloud deployment cannot reach `http://localhost:11434` on your computer. The backend must run **locally** (`npx convex dev --local`, a beta feature) or Ollama must be exposed through a tunnel. |
-| Does vector search work on a local Convex deployment? | **Yes, tested.** The 768-dimension vector index is accepted and returns the closest document first. If a search ever fails, the pipeline still answers using only the step on screen and the selected part. |
-| Is RAG needed at this size? | Not strictly: there are about 20 snippets, which would fit in a prompt. RAG keeps the prompt short for a small model and lets the content grow (more procedures and conditions) without changing the code. |
+| Does vector search work on a local Convex deployment? | **Yes, tested.** The 768-dimension vector index is accepted and returns the closest document first. If the vector search ever fails, the pipeline still answers with the keyword results plus the step on screen and the selected part. |
+| Is RAG needed at this size? | Yes now: there are about 100 snippets (15 parts, 4 steps, 80 patient-education facts from the team's TAVR document, see [`knowledge-base.md`](knowledge-base.md)). RAG keeps the prompt short for a small model and lets the content grow without changing the code. |
 
 ## How it works
 
@@ -80,6 +80,8 @@ npx convex run seed:run
 npx convex run rag:indexContent '{"procedureSlug":"tavr"}'
 ```
 
+This embeds the parts, the steps, and the knowledge facts (99 documents). Run it again after changing the content.
+
 4. **Switch to the local model.** No API key is needed.
 
 ```bash
@@ -141,8 +143,9 @@ Tested on 2026-10-24 in this way (browser panel, local Convex, Llama 3.2 3B): th
 |---|---|
 | `convex/schema.ts` | `medicalDocs` table with a vector index (768 dimensions) |
 | `convex/rag.ts` | `rag:indexContent` (build the index), plus the internal save and read functions |
-| `convex/lib/rag.ts` | Pure helpers: snippets from content, pinned context, merging, allowed ids |
-| `convex/lib/ragRun.ts` | Embeds the question and runs the vector search |
+| `convex/lib/rag.ts` | Pure helpers: snippets from content and knowledge, pinned context, merging, rank fusion, allowed ids, sources |
+| `convex/lib/knowledge.ts` | Loads the knowledge facts and searches them by keyword (BM25) |
+| `convex/lib/ragRun.ts` | Embeds the question, runs the vector search, and fuses it with the keyword search |
 | `convex/lib/ollama.ts` | Ollama client: chat with a JSON schema, and embeddings |
 | `convex/lib/localPrompt.ts` | The short prompt for the 3B model and the JSON schema |
 | `convex/lib/modelRoute.ts` | Chooses the pipeline from `LLM_PROVIDER` |

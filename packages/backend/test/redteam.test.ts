@@ -109,10 +109,18 @@ describe("what must still work", () => {
   });
 
   it("does not attach an unrelated snippet when only a common word matches", async () => {
-    const { r } = await ask("How many years will the new valve last?", reply({ answer: "It lasts about 15 years." }));
+    const { r } = await ask("Where is the hospital cafeteria located?", reply({ answer: "It is on the second floor, open until 8 pm." }));
     expect(r.message).toBe("I don't have a reliable answer to that in the information I have. Please ask your care team.");
     expect(r.scene_actions).toEqual([]);
     expect(r.side_panel).toBeNull();
+    expect(r.sources).toEqual([]);
+  });
+
+  it("never repeats an invented lifetime for the valve, and cites the reference text it offers instead", async () => {
+    const { r } = await ask("How many years will the new valve last?", reply({ answer: "It lasts about 15 years." }));
+    expect(r.message).not.toContain("15");
+    expect(r.message).toContain("I don't have a reliable answer");
+    expect(r.sources.length).toBe(1);
   });
 
   it("lets the model decline and send the patient to the care team", async () => {

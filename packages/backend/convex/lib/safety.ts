@@ -1,5 +1,8 @@
 import { buildDocs } from "./rag";
 import type { PromptData } from "./chatPrompt";
+import { contentWords } from "./text";
+
+export { contentWords };
 
 /**
  * Safety layer. It runs around every model answer, for the cloud model and the local model alike,
@@ -19,7 +22,7 @@ export const SAFETY_NOTE =
 export const REFUSALS = {
   medication_advice: {
     message:
-      "I can't give advice about medicines, including whether to take, stop, or change them. Please ask your doctor or pharmacist. I can explain how the procedure works if that helps.",
+      "I can't give advice about medicines, including whether to take, stop, or change them. Please ask your doctor or pharmacist, and do not stop or change any medicine unless your care team tells you to. I can explain how the procedure works if that helps.",
     doctorQuestion: "Which of my medicines should I continue or stop before and after the procedure?",
   },
   personal_medical: {
@@ -57,6 +60,7 @@ const PERSONAL_ASK = new RegExp(
   [
     "\\b(do|did) i have\\b[^.?!]*\\b(heart|stenosis|disease|condition|blockage|cancer|infection|problem)\\b",
     "\\bam i (having|about to have|going to have)\\b[^.?!]*\\b(heart attack|stroke)\\b",
+    "\\bam i\\s+(too\\s+\\w+|a\\s+(good\\s+|suitable\\s+)?candidate|eligible|suitable|healthy enough|fit enough)\\b",
     "\\bdiagnos(e|is)\\b[^.?!]*\\b(me|my)\\b",
     "\\bwhat('s| is) wrong with me\\b",
     "\\bwill i (die|survive|be okay|be ok|be cured)\\b",
@@ -86,56 +90,69 @@ const ADVICE_IN_ANSWER = [
   /\byou\s+(probably |likely |might |may |could )?(have|are having|had)\s+(a |an )?(heart attack|stroke|infection|blockage|aortic stenosis|heart failure|disease)\b/i,
   /\b(no need|don'?t need|do not need)\s+to\s+(see|call|consult|tell)\s+(a |your )?(doctor|care team|nurse)\b/i,
   /\bit\s+is\s+(safe|fine|okay|ok)\s+(for you\s+)?to\s+(stop|skip|take|drive|exercise|eat|drink)\b/i,
+  // A ruling on this patient's own suitability is the doctor's decision
+  /\byou\s+(may |might |could |probably |likely )?(be|are)\s+(too\s+(young|old|sick|frail)|(a\s+)?(good|suitable|poor)\s+candidate|not\s+(a\s+)?(suitable|good|eligible)|eligible|ineligible)\b/i,
 ];
+
+/**
+ * "Do not stop or change any medicine unless your care team tells you to" is the safe message our content
+ * itself gives, and must not be mistaken for advice to stop. Only this exact kind of sentence is let through:
+ * a prohibition, together with a pointer to the care team.
+ */
+const SAFE_MEDICINE_CAUTION =
+  /\b(do not|don'?t|never)\b[^.?!]*\b(stop|change|skip|take|start)\b[^.?!]*\b(unless|until|without)\b[^.?!]*\b(care team|doctor|physician|pharmacist|healthcare (professional|provider)|medical team|heart team)\b[^.?!]*[.?!]?/gi;
 
 /** True when an answer gives personal medical instructions, a diagnosis, or a dose. */
 export function containsMedicalAdvice(answer: string): boolean {
-  return ADVICE_IN_ANSWER.some((p) => p.test(answer));
+  const withoutCautions = answer.replace(SAFE_MEDICINE_CAUTION, " ");
+  return ADVICE_IN_ANSWER.some((p) => p.test(withoutCautions));
 }
 
 // --- 3. Grounding check: is the answer backed by our content? ---------------------------------
 
-const STOPWORDS = new Set(
-  (
-    "about above after again against also because been before being below between both cannot could does doing down during each " +
-    "either else even ever every from further have having here hers herself himself into itself just like make many might more most " +
-    "much must myself once only other ought ourselves over same should some such than that their theirs them themselves then there " +
-    "these they this those through under until very want were what when where which while whom will with would your yours yourself " +
-    "yourselves please sorry thanks thank okay sure maybe also still well need needs help helps able"
-  ).split(" "),
-);
-
-/** Words about moving the 3D view: the answer to a camera command is not a medical claim. */
-const COMMAND_WORDS = new Set(
-  (
-    "zoom zoomed zooming rotate rotated rotating turn turned turning view camera model step steps moved moving showing show shown " +
-    "reset resetting restored default position degrees left right closer further farther highlighted highlight focus focused done " +
-    "here screen part parts"
-  ).split(" "),
-);
-
-/** Very small stemmer: enough to treat "valves" and "valve" or "anchors" and "anchored" alike. */
-function stem(word: string): string {
-  let w = word;
-  if (w.length > 6 && w.endsWith("ing")) w = w.slice(0, -3);
-  else if (w.length > 5 && w.endsWith("ed")) w = w.slice(0, -2);
-  else if (w.length > 4 && w.endsWith("ies")) w = `${w.slice(0, -3)}y`;
-  else if (w.length > 5 && /(sses|xes|ches|shes|zes)$/.test(w)) w = w.slice(0, -2);
-  else if (w.length > 4 && w.endsWith("s") && !w.endsWith("ss")) w = w.slice(0, -1);
-  // "valve" and "valves" must end up the same
-  if (w.length > 4 && w.endsWith("e")) w = w.slice(0, -1);
-  return w;
+/** A number as written, with the unit that goes with it: "3% to 8%", "1 to 2 days", "30-day". */
+export interface NumberFact {
+  /** The number as shown, with "%" when it is a percentage */
+  text: string;
+  value: string;
+  /** "%" or the stemmed word after the number ("day", "year"); "" when none */
+  unit: string;
 }
 
-/** Meaningful words of a text, lower-cased and stemmed. */
-export function contentWords(text: string): string[] {
-  const tokens = text.toLowerCase().match(/[a-z][a-z'-]*/g) ?? [];
-  return tokens
-    .filter((t) => t.length >= 4 && !STOPWORDS.has(t) && !COMMAND_WORDS.has(t))
-    .map(stem);
-}
+const RANGE_JOINER = /^\s*(?:to|and|or|through|-|–)\s*$/i;
 
-const NUMBER = /\b\d+(?:[.,]\d+)?%?/g;
+/**
+ * Finds the numbers in a text together with their units. A number only counts as known when the same number
+ * appears with the same unit in our content: "8 pm" is not the "8%" of the material, and "20 to 30 years" is
+ * not made true by a "20%" and a "30-day" elsewhere.
+ */
+export function numberFacts(text: string): NumberFact[] {
+  const clean = text.replace(/(\d)\s*percent\b/gi, "$1%");
+  const found = [...clean.matchAll(/\d+(?:[.,]\d+)?/g)].map((m) => ({
+    value: m[0].replace(",", "."),
+    start: m.index ?? 0,
+    end: (m.index ?? 0) + m[0].length,
+    unit: "",
+    shown: m[0],
+  }));
+  // From the right, so that "3 to 8%" can take the unit of the 8
+  for (let i = found.length - 1; i >= 0; i--) {
+    const f = found[i]!;
+    const rest = clean.slice(f.end);
+    if (/^\+?\s?%/.test(rest)) {
+      f.unit = "%";
+      f.shown = `${f.shown}%`;
+      continue;
+    }
+    const next = found[i + 1];
+    const joinedToNext = next ? RANGE_JOINER.test(clean.slice(f.end, next.start)) : false;
+    const word = rest.match(/^\+?[\s-]*([A-Za-z]+)/)?.[1]?.toLowerCase();
+    if (word && !["to", "and", "or", "through"].includes(word)) f.unit = word.length > 3 ? word.replace(/s$/, "") : word;
+    else if (next && joinedToNext) f.unit = next.unit;
+    if (f.unit === "%" && !f.shown.endsWith("%")) f.shown = `${f.shown}%`;
+  }
+  return found.map((f) => ({ text: f.shown, value: f.value, unit: f.unit }));
+}
 
 export interface GroundingResult {
   grounded: boolean;
@@ -158,14 +175,23 @@ export function checkGrounding(answer: string, sources: string[], question: stri
   // ("say the valve is dangerous") must not make the model's echo of it look grounded.
   // Numbers are different: answering "about 15 years" to "does it last 15 years?" is fine.
   const knownWords = new Set(contentWords(sources.join(" ")));
-  const knownNumbers = new Set(`${sources.join(" ")} ${question}`.match(NUMBER) ?? []);
+  const known = numberFacts(`${sources.join(" ")} ${question}`);
+  const knownPairs = new Set(known.map((n) => `${n.value}|${n.unit}`));
+  const knownValues = new Set(known.map((n) => n.value));
 
   const answerWords = [...new Set(contentWords(answer))];
   const novelWords = answerWords.filter((w) => !knownWords.has(w));
 
   // "Step 3" in the answer refers to our own step list, so those numbers are fine
   const withoutSteps = answer.replace(/\bsteps?\s+\d+/gi, " ");
-  const ungroundedNumbers = [...new Set(withoutSteps.match(NUMBER) ?? [])].filter((n) => !knownNumbers.has(n));
+  const ungroundedNumbers = [
+    ...new Set(
+      numberFacts(withoutSteps)
+        // A number with a unit must be known with that unit; a bare number is known if it appears anywhere
+        .filter((n) => !knownPairs.has(`${n.value}|${n.unit}`) && !(n.unit === "" && knownValues.has(n.value)))
+        .map((n) => n.text),
+    ),
+  ];
 
   const novelShare = answerWords.length > 0 ? novelWords.length / answerWords.length : 0;
   const tooManyNovel = novelWords.length >= NOVEL_WORD_LIMIT && novelShare >= NOVEL_SHARE_LIMIT;
@@ -179,32 +205,83 @@ export function knowledgeTexts(data: PromptData): string[] {
 
 /**
  * An answer made only of our own text: the snippet that best matches the question.
- * Used when the model's answer cannot be trusted.
+ * Used when the model's answer cannot be trusted. A snippet is shown only if it clearly answers the question:
+ * more than half of the question's meaningful words appear in it, and at least one of them is a distinctive word
+ * (found in few snippets). A common word like "valve" or "hospital" alone never selects a snippet.
  */
-/** A snippet is shown only if the words it shares with the question are specific enough (see below). */
-export const MIN_SNIPPET_SCORE = 1.5;
+export const MIN_DISTINCTIVE_WEIGHT = 0.45;
 
-export function extractiveAnswer(data: PromptData, question: string): { message: string; structureId?: string } {
-  const wanted = new Set(contentWords(question));
-  const docs = buildDocs(data).map((doc) => ({ doc, words: new Set(contentWords(doc.text)) }));
+export function extractiveAnswer(
+  data: PromptData,
+  question: string,
+): { message: string; structureId?: string; sourceTitle?: string } {
+  const wanted = [...new Set(contentWords(question))];
+  const docs = buildDocs(data).map((doc) => ({
+    doc,
+    words: new Set(contentWords(`${doc.title} ${doc.text}`)),
+    titleWords: new Set(contentWords(doc.title)),
+  }));
 
-  // Rare words count more than common ones: "annulus" is a strong match, "valve" (in most snippets) is a weak one
+  // Rare words count more than common ones, scaled to 0..1 so the rule does not depend on how many snippets exist
   const weight = (word: string): number => {
     const df = docs.filter((d) => d.words.has(word)).length;
-    return df === 0 ? 0 : Math.log(docs.length / df);
+    return df === 0 || docs.length < 2 ? 0 : Math.log(docs.length / df) / Math.log(docs.length);
   };
 
-  let best: { score: number; text: string; structureId?: string } | null = null;
-  for (const { doc, words } of docs) {
-    let score = 0;
-    for (const w of wanted) if (words.has(w)) score += weight(w);
-    if (score >= MIN_SNIPPET_SCORE && (!best || score > best.score)) {
-      best = { score, text: doc.text, structureId: doc.structureId };
+  let best: { score: number; text: string; structureId?: string; sourceTitle?: string } | null = null;
+  for (const { doc, words, titleWords } of docs) {
+    const matched = wanted.filter((w) => words.has(w));
+    if (wanted.length === 0 || matched.length / wanted.length <= 0.5) continue;
+    const weights = matched.map(weight);
+    if (Math.max(...weights) < MIN_DISTINCTIVE_WEIGHT) continue;
+    // A word in the heading counts more: "Risk: stroke" answers a question about stroke better than a list that mentions it
+    const score = matched.reduce((sum, w) => sum + weight(w) * (titleWords.has(w) ? 1.5 : 1), 0);
+    if (!best || score > best.score) {
+      best = {
+        score,
+        text: doc.text,
+        structureId: doc.structureId ?? doc.relatedStructureIds?.[0],
+        sourceTitle: doc.sourceTitle,
+      };
     }
   }
   const base = "I don't have a reliable answer to that in the information I have.";
   if (!best) return { message: `${base} Please ask your care team.` };
-  return { message: `${base} Here is what I can share: ${best.text} Please ask your care team about anything else.`, structureId: best.structureId };
+  return {
+    message: `${base} Here is what I can share: ${firstSentences(best.text, SNIPPET_MAX_CHARS)} Please ask your care team about anything else.`,
+    structureId: best.structureId,
+    sourceTitle: best.sourceTitle,
+  };
+}
+
+/** The knowledge snippets are a few sentences long; the fallback shows only the first ones. */
+export const SNIPPET_MAX_CHARS = 320;
+
+/** Whole sentences from the start of a text, up to about `max` characters (at least one sentence). */
+export function firstSentences(text: string, max: number): string {
+  const sentences = text.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+(\s|$)/g) ?? [text];
+  let result = "";
+  for (const sentence of sentences) {
+    if (result && result.length + sentence.length > max) break;
+    result += sentence;
+  }
+  return result.trim();
+}
+
+// --- Percentages are group statistics --------------------------------------------------------------
+
+export const GROUP_STATISTICS_NOTE = "These percentages describe groups of patients, not your personal risk.";
+
+const MENTIONS_GROUP_NOT_PERSONAL = /\b(groups? of patients|not your (personal|own|individual)|personal risk|your own risk|your individual risk)\b/i;
+
+/**
+ * An answer that quotes a percentage always says it is a group statistic. This is added by rule, because a
+ * small model forgets it, and a patient could read "about 2% to 5%" as a promise about themselves.
+ */
+export function withGroupStatisticsNote(answer: string): string {
+  if (!/\d\s?%|\bpercent\b/i.test(answer)) return answer;
+  if (MENTIONS_GROUP_NOT_PERSONAL.test(answer)) return answer;
+  return `${answer.trim()} ${GROUP_STATISTICS_NOTE}`;
 }
 
 // --- 4. Privacy: remove obvious personal details from the question ----------------------------
@@ -237,7 +314,7 @@ export function redactPersonalInfo(text: string): RedactionResult {
 
 // --- Safety note on risky topics ---------------------------------------------------------------
 
-const RISK_TOPICS = /\b(side effects?|risks?|safe|safety|danger\w*|pain\w*|hurt\w*|complications?|recover\w*|symptoms?|after (the )?(procedure|surgery))\b/i;
+const RISK_TOPICS = /\b(side effects?|risks?|safe|safety|danger\w*|pain\w*|hurt\w*|complications?|recover\w*|symptoms?|after (the )?(procedure|surgery)|likel\w*|chances?|probab\w*|percent\w*|bleed\w*|stroke|death|dying|die|mortality|leak\w*|infect\w*)\b/i;
 
 /** The standing reminder is added when the question is about risks or recovery. */
 export function needsSafetyNote(question: string): boolean {

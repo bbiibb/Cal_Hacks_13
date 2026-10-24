@@ -10,8 +10,10 @@ describe("buildDocs", () => {
   const docs = buildDocs(data);
 
   it("makes one document per part and per step with stable ids", () => {
-    expect(docs).toHaveLength(data.structures.length + data.steps.length);
+    expect(docs).toHaveLength(data.structures.length + data.steps.length + (data.knowledge?.length ?? 0));
     expect(docs.filter((d) => d.kind === "structure")).toHaveLength(data.structures.length);
+    expect(docs.filter((d) => d.kind === "knowledge")).toHaveLength(data.knowledge?.length ?? 0);
+    expect(docs.find((d) => d.docId === "knowledge:risk.stroke")?.sourceTitle).toContain("TAVR patient information guide");
     expect(docs.find((d) => d.docId === "structure:aortic_valve")?.text).toContain("Native aortic valve");
     expect(docs.find((d) => d.docId === "step:tavr:2")?.stepIndex).toBe(2);
     expect(new Set(docs.map((d) => d.docId)).size).toBe(docs.length);

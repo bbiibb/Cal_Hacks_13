@@ -112,7 +112,7 @@ describe("checkGrounding", () => {
 
   it("rejects answers full of terms that are not in our content", () => {
     const result = checkGrounding(
-      "The lifespan varies between patients depending on durability, calcium turnover, and anticoagulation therapy.",
+      "The longevity depends on hemodynamic gradients, leaflet thrombosis, and echocardiographic surveillance.",
       sources,
       "How long will it last?",
     );
@@ -137,9 +137,16 @@ describe("extractiveAnswer", () => {
   });
 
   it("does not use a snippet that shares only a common word", () => {
-    const result = extractiveAnswer(data, "How many years will the new valve last?");
+    const result = extractiveAnswer(data, "Where is the hospital cafeteria located?");
     expect(result.structureId).toBeUndefined();
     expect(result.message).not.toContain("Here is what I can share");
+  });
+
+  it("offers a short, cited snippet from the reference material when the match is on topic", () => {
+    const result = extractiveAnswer(data, "How long does it take to recover and when can I go home?");
+    expect(result.message).toContain("Here is what I can share");
+    expect(result.sourceTitle).toContain("TAVR patient information guide");
+    expect(result.message.length).toBeLessThan(560);
   });
 
   it("admits it does not know when nothing matches", () => {

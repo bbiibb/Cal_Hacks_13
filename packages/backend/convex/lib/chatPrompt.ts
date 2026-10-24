@@ -1,3 +1,6 @@
+import type { KnowledgeChunk } from "@cal-hacks/shared";
+import type { RetrievedDoc } from "./rag";
+
 /**
  * Builds the messages sent to the language model.
  *
@@ -25,6 +28,8 @@ export interface PromptData {
   /** structure_id of the part the patient selected, if any */
   selectedStructureId: string | null;
   structures: PromptStructure[];
+  /** Patient-education facts about the procedure (the reference material). Added by the caller, not stored with the procedure. */
+  knowledge?: KnowledgeChunk[];
 }
 
 export interface ChatTurn {
@@ -67,7 +72,12 @@ export function describeScreen(data: PromptData): string {
   return `[Screen] ${stepText}. Selected part: ${partText}.`;
 }
 
-export function buildSystemPrompt(data: PromptData): string {
+/** The reference facts found for this question, as a numbered list. */
+export function formatReference(reference: RetrievedDoc[]): string {
+  return reference.map((d, i) => `[${i + 1}] ${d.title}: ${d.text}`).join("\n");
+}
+
+export function buildSystemPrompt(data: PromptData, reference: RetrievedDoc[] = []): string {
   const steps = data.steps
     .map((s) => `${s.index + 1}. ${s.title}: ${shorten(s.summary, MAX_STEP_SUMMARY)}`)
     .join("\n");
@@ -80,10 +90,14 @@ export function buildSystemPrompt(data: PromptData): string {
     `PROCEDURE: ${data.procedureTitle}`,
     `STEPS:\n${steps}`,
     `PARTS YOU CAN POINT AT (use the ids exactly as written):\n${parts}`,
+    ...(reference.length > 0
+      ? [`REFERENCE (patient-education facts; answer from these first):\n${formatReference(reference)}`]
+      : []),
     [
       "RULES:",
       "- Answer in the patient's language, in plain words, in at most 4 short sentences. Connect the answer to the step or part on screen.",
-      "- Use only the information above and widely accepted general medical knowledge. If you are not sure, say so.",
+      "- Use only the information above. Do not add facts, numbers, or percentages that are not written above. If the information does not contain the answer, say you are not sure and suggest asking the care team.",
+      "- When you give a percentage, copy it exactly and say it describes groups of patients, not the patient's own risk.",
       "- Never diagnose, estimate personal risk, or tell the patient to start, stop, or change a medicine. For anything personal, tell them to ask their care team.",
       "- Only help with this procedure, the heart, and the 3D model. For any other topic, politely say you can only help with those and suggest something the patient can ask.",
       '- If the patient describes symptoms happening now (chest pain, trouble breathing, fainting, stroke signs, heavy bleeding), set "urgent" to true and start the answer by telling them to call their local emergency number (for example 911, 112, or 999) right away.',
@@ -145,13 +159,14 @@ export function buildMessages(
   data: PromptData,
   history: ChatTurn[],
   userMessage: string,
+  reference: RetrievedDoc[] = [],
 ): LlmMessage[] {
   const recent = history.slice(-MAX_HISTORY_TURNS).map((turn) => ({
     role: turn.role,
     content: cleanUserText(turn.content),
   }));
   return [
-    { role: "system", content: buildSystemPrompt(data) },
+    { role: "system", content: buildSystemPrompt(data, reference) },
     ...buildExamples(data),
     ...recent,
     { role: "user", content: `${describeScreen(data)}\nQuestion: ${cleanUserText(userMessage)}` },

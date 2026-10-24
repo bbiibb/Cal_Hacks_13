@@ -63,7 +63,7 @@ const { text } = await transcribe({ storageId, language: "en" });
 | Function | Kind | args | Returns |
 |---|---|---|---|
 | `api.chat.createSession` | mutation | `{ procedureSlug? }` | A session id (keeps the conversation history) |
-| `api.chat.ask` | action | `{ message, context, sessionId? }` where `context` is `{ procedure_slug, step_index, selected_structure_id \| null }` | `ChatResponse`: `message`, `scene_actions`, `side_panel`, `sources`, `safety`, `doctor_question`, `urgent` |
+| `api.chat.ask` | action | `{ message, context, sessionId? }` where `context` is `{ procedure_slug, step_index, selected_structure_id \| null }` | `ChatResponse`: `message`, `scene_actions`, `side_panel`, `sources` (the reference facts the answer is based on, see [`knowledge-base.md`](knowledge-base.md)), `safety`, `doctor_question`, `urgent` |
 
 - `scene_actions` are already validated against our content, so the frontend can apply them directly: `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, `reset_view`.
 - Errors are thrown as `ConvexError` with `{ code, message }` in `error.data`. Codes: `invalid_message`, `context_not_found`, `too_many_requests`, `llm_not_configured`, `llm_rate_limited`, `llm_timeout`, `llm_request_failed`, `llm_bad_response`, and for the local model `llm_local_unavailable` and `llm_model_missing`. Which model answers (`LLM_PROVIDER`: cloud or local) never changes the arguments or the reply.
@@ -89,4 +89,4 @@ const { text } = await transcribe({ storageId, language: "en" });
 
 ## Not built yet
 
-RAG (source material and citations), the comprehension quiz, rate limiting, and authentication are not implemented.
+The comprehension quiz, rate limiting, and authentication are not implemented.

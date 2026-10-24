@@ -1,12 +1,13 @@
 import { ChatResponseSchema, type ChatResponse } from "@cal-hacks/shared";
 import { EMERGENCY_NOTICE, buildSceneActions, describeCameraCommands, detectUrgent, detectViewCommands } from "./chatActions";
-import { parseLlmOutput } from "./chatParse";
+import { parseLlmOutput, type LlmOutput } from "./chatParse";
 import {
   buildMessages,
   type ChatTurn,
   type LlmMessage,
   type PromptData,
 } from "./chatPrompt";
+import { pickSources, type RetrievedDoc } from "./rag";
 import {
   REFUSALS,
   SAFETY_NOTE,
@@ -16,6 +17,7 @@ import {
   extractiveAnswer,
   knowledgeTexts,
   needsSafetyNote,
+  withGroupStatisticsNote,
 } from "./safety";
 import { validateSceneActions, type SceneActionLookup, type RejectedSceneAction } from "./sceneActions";
 
@@ -33,6 +35,8 @@ export interface ChatPipelineInput {
   callModel: (messages: LlmMessage[]) => Promise<string>;
   /** Builds the prompt. Defaults to the cloud prompt; the local pipeline passes its own shorter one. */
   buildMessages?: (data: PromptData, history: ChatTurn[], message: string) => LlmMessage[];
+  /** The reference documents the model was given. Used to cite sources in the reply. */
+  contextDocs?: RetrievedDoc[];
   lookup: SceneActionLookup;
 }
 
@@ -45,6 +49,19 @@ export interface ChatPipelineResult {
   /** What the safety layer did, for example "blocked:medication_advice" or "ungrounded". Never contains text. */
   safetyEvents: string[];
 }
+
+/** What stands in for the model's reply when the model is not asked. */
+const NO_MODEL_OUTPUT: LlmOutput = {
+  answer: "",
+  highlight: [],
+  step: null,
+  zoom: null,
+  rotate: null,
+  resetView: false,
+  safety: "",
+  doctorQuestion: "",
+  urgent: false,
+};
 
 /** An answer where the model itself declines or defers to the care team is fine as it is. */
 const DECLINES = /\b(can'?t|cannot|can not|unable to|not able to|don'?t have|do not have|not sure)\b[^.?!]*\b(care team|doctor|pharmacist|medical team|provide|help|advice|information)\b/i;
@@ -86,7 +103,10 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
 
   const messages = (input.buildMessages ?? buildMessages)(input.data, input.history, input.message);
 
-  let output = parseLlmOutput(await input.callModel(messages));
+  // A pure camera command ("zoom in") is read from the patient's words and answered with a fixed sentence,
+  // so the model is not needed. On a local 3B model this saves a whole generation (about ten seconds).
+  let output: LlmOutput | null = !urgentByRule && isCameraOnly(input.message) ? NO_MODEL_OUTPUT : null;
+  if (!output) output = parseLlmOutput(await input.callModel(messages));
   if (!output) {
     // One retry with a reminder: cheap, and fixes many format slips of small models.
     output = parseLlmOutput(
@@ -116,6 +136,8 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
   let highlight = output.highlight;
   let doctorQuestion = output.doctorQuestion;
   let safety = output.safety;
+  let sourceTitle: string | undefined;
+  let modelAnswerUsed = false;
 
   if (!urgent && isCameraOnly(input.message)) {
     // A pure camera command gets a fixed confirmation; the model's wording and highlights are not used
@@ -132,10 +154,16 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
       const own = extractiveAnswer(input.data, input.message);
       answer = own.message;
       highlight = own.structureId ? [own.structureId] : [];
-      doctorQuestion = doctorQuestion || "Can you tell me more about this?";
+      // A suggested question only makes sense when we found something relevant to ask about
+      doctorQuestion = own.sourceTitle || own.structureId ? doctorQuestion || "Can you tell me more about this?" : "";
+      sourceTitle = own.sourceTitle;
       safetyEvents.push("ungrounded");
+    } else {
+      modelAnswerUsed = true;
     }
   }
+  // A percentage is always presented as a group statistic, whatever the model wrote
+  answer = withGroupStatisticsNote(answer);
   if (safetyEvents.length > 0 || needsSafetyNote(input.message)) safety = safety || SAFETY_NOTE;
 
   const candidates = buildSceneActions({ ...output, highlight }, {
@@ -167,7 +195,11 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
             related_structure_ids: [firstPart.id],
           }
         : null,
-      sources: [],
+      sources: sourceTitle
+        ? [{ title: sourceTitle, url: null }]
+        : modelAnswerUsed
+          ? pickSources(answer, input.contextDocs ?? [])
+          : [],
       safety,
       doctor_question: doctorQuestion,
       urgent,

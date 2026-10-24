@@ -76,6 +76,24 @@ ChatRequest = {
 
 Medical information is educational, and when there is no source the chatbot says it does not know (`sources` can be empty).
 
+### KnowledgeChunk (reference material for the chatbot)
+
+```ts
+KnowledgeChunk = {
+  id: string,              // "risk.stroke"
+  procedure_slug: string,
+  topic: "overview" | "condition" | "candidacy" | "anatomy" | "procedure" | "comparison" | "instruments" | "risks" | "preparation" | "recovery" | "safety",
+  title: string,           // short heading, also the source title
+  text: string,            // patient-facing facts, answer first
+  questions: string[],     // example questions, used only for search
+  keywords: string[],      // search words
+  structure_ids: StructureId[], // parts of the 3D model it is about
+  source: string,
+}
+```
+
+The frontend does not need this type. It is used by the backend and is described in [`docs/knowledge-base.md`](knowledge-base.md). The only visible effect is that `ChatResponse.sources` is now filled, for example `{ title: "Risk: stroke (TAVR patient information guide)", url: null }`.
+
 ## 5. Example data
 
 `packages/shared/fixtures/` holds dummy data that follows the contract, and `pnpm test` checks schema conformance and referential integrity of ids.
@@ -83,6 +101,7 @@ Medical information is educational, and when there is no source the chatbot says
 - `structures.json`, `instruments.json`
 - `conditions.json`
 - `procedure.tavr.json` (TAVR, four scenes; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
+- `knowledge.tavr.json` (the chatbot's reference facts, see [`docs/knowledge-base.md`](knowledge-base.md))
 - `chat-response.example.json`, `chat-request.example.json`
 
 Everything is **educational dummy content** and not real patient data.
@@ -103,3 +122,4 @@ The database stores `scene`, `sidePanel`, and `sceneActions` with the same snake
 | 2026-10-23 | Added `Condition`, added `condition_slug` and `order` to `Procedure`, added `short_title` to `Step` (fields only added; existing fields unchanged) | Frontend: `short_title` can be used as a timeline label. New functions to list conditions and procedures |
 | 2026-10-25 | Added the `zoom`, `rotate`, and `reset_view` scene actions, `ChatRequest`, and the `safety`, `doctor_question`, and `urgent` fields of `ChatResponse` (additions only) | Frontend: handle the three new actions in the 3D view and show `safety` and `urgent` in the chat. See `docs/chatbot.md` |
 | 2026-10-24 | Removed the Korean name field `name_ko` from `Structure`, `Instrument`, and `Condition`, and translated all fixtures to English | **Breaking**: frontend code must not read `name_ko`. Use `name_en` |
+| 2026-10-24 | Added `KnowledgeChunkSchema` and the fixture `knowledge.tavr.json` (the chatbot's reference facts). `ChatResponse.sources` is now filled with the facts an answer is based on (the field already existed) | Frontend: no change needed. Optionally show `sources` under an answer |

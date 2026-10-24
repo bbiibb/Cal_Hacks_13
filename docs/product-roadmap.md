@@ -33,7 +33,7 @@ Screen layout (main page mockup): on the left the 3D image with a **timeline (sl
 | F6 | Move between steps with the timeline | Provide the step order and a short label (`short_title`). The slider UI is frontend (`docs/frontend-backend-split.md`) | ✅ Decided: step-based. Continuous time (seconds) would add `duration_ms` if needed |
 | F7 | Comprehension check and a list of "questions to ask the doctor in charge" | Build a short comprehension check and a question list from the conversation | ⬜ |
 | F8 | Expand to other organs and tumors | A data model that can hold many structures and procedures | ✅ The model is general. Add content with the `seed-content` skill |
-| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | 🟡 Retrieval exists for the local model (`medicalDocs`, `rag:indexContent`, `docs/local-llm.md`). Source citations in answers ⬜ |
+| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | ✅ 80 TAVR facts from the team's document (`docs/knowledge-base.md`), keyword plus vector search, both models read them, and `sources` is filled in each answer. Clinical review ⬜. Showing `sources` in the UI ⬜ |
 | F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | 🟡 Length limit and a short wait between questions exist. Real rate limits ⬜ |
 | F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`). Clinical review, UI disclaimer, citations, scheduled purge, authentication ⬜ |
 | F11 | **Add heart conditions** (more procedures per condition later) | Link conditions (`conditions`) and procedures (`procedures.condition_slug`) so the app grows by content, without code changes | ✅ Structure ready (only `aortic_stenosis` for now). Candidates to add: coronary artery disease (PCI, CABG) and others |
@@ -56,7 +56,7 @@ Components needed:
 3. **LLM-calling action**: the prompt is built on the server from the current step and the parts of the model ✅ (the API key is only a Convex environment variable)
 4. **Assembling and validating the response**: a `ChatResponse` is built from the model's JSON, and only `scene_actions` that pass the validator are used ✅
 5. **Safety rules**: educational tone, "I do not know" when unsure, no diagnosis or medicine advice, and urgent symptoms flagged by a rule-based safety net as well ✅
-6. **Still open**: try it with a real free key, add a real rate limit, and sources (RAG).
+6. **Still open**: try it with a real free key and add a real rate limit. Sources (RAG) are done: see `docs/knowledge-base.md`.
 
 ## 4. Feature proposed by a team member (original text)
 
@@ -108,4 +108,4 @@ Candidates to add when extending "a variable for each part of the heart" are lis
 2. Frontend: chat panel, microphone button, and handling of the new 3D actions
 3. Reading step-specific part explanations (`annotations` seed and query)
 4. Real rate limits (this also protects the free quota and the speech-to-text quota)
-6. Source material (RAG) and sources, the comprehension check, and organizing questions for the doctor
+6. The comprehension check and organizing questions for the doctor (the source material and sources are done)

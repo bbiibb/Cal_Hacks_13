@@ -6,6 +6,7 @@ import {
   ChatResponseSchema,
   ConditionSchema,
   InstrumentSchema,
+  KnowledgeChunkSchema,
   ProcedureSchema,
   SceneActionSchema,
   StructureIdSchema,
@@ -117,5 +118,44 @@ describe("schema rejection cases", () => {
     expect(
       SceneActionSchema.safeParse({ type: "set_opacity", structure_id: "aorta", opacity: 1.5 }).success,
     ).toBe(false);
+  });
+});
+
+describe("TAVR knowledge base", () => {
+  const knowledge = z.array(KnowledgeChunkSchema).parse(load("knowledge.tavr.json"));
+  const structureIds = new Set(z.array(StructureSchema).parse(load("structures.json")).map((s) => s.id));
+  const byId = (id: string) => knowledge.find((k) => k.id === id);
+
+  it("has unique ids and covers every topic", () => {
+    expect(new Set(knowledge.map((k) => k.id)).size).toBe(knowledge.length);
+    const topics = new Set(knowledge.map((k) => k.topic));
+    for (const t of ["overview", "condition", "candidacy", "anatomy", "procedure", "comparison", "instruments", "risks", "preparation", "recovery", "safety"]) {
+      expect(topics.has(t as never)).toBe(true);
+    }
+  });
+
+  it("only points at parts that exist in the 3D model", () => {
+    for (const k of knowledge) for (const id of k.structure_ids) expect(structureIds.has(id)).toBe(true);
+  });
+
+  it("keeps the published risk percentages exactly and always says they are group statistics", () => {
+    expect(byId("risk.bleeding")?.text).toContain("3% to 8%");
+    expect(byId("risk.vessel_injury")?.text).toContain("2% to 5%");
+    expect(byId("risk.stroke")?.text).toContain("1% to 3%");
+    expect(byId("risk.pacemaker")?.text).toContain("8% to 20%");
+    expect(byId("risk.kidney")?.text).toContain("2% to 5%");
+    expect(byId("risk.infection")?.text).toContain("1% to 2%");
+    expect(byId("risk.death")?.text).toContain("1% to 3%");
+    for (const k of knowledge.filter((x) => x.id.startsWith("risk."))) {
+      expect(k.text).toMatch(/not your personal risk/);
+    }
+  });
+
+  it("tells the patient not to change medicines on their own", () => {
+    expect(byId("prep.medications")?.text).toMatch(/Do not stop or change any medicine/);
+  });
+
+  it("keeps chunks short enough for a small model", () => {
+    for (const k of knowledge) expect(k.text.length).toBeLessThanOrEqual(600);
   });
 });
