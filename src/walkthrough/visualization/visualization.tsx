@@ -30,8 +30,22 @@ function Visualization({ objects, camera, controller }: Props) {
     if (!mount) return
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x000000)
+    scene.background = new THREE.Color(0xf4f1ee)
     sceneRef.current = scene
+
+    // Bright fill from all around: lifts the dark undersides
+    const fillLight = new THREE.HemisphereLight(0xffffff, 0xe8dff0, 2)
+    scene.add(fillLight)
+
+    // Gentler key light
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8)
+    keyLight.position.set(3, 5, 4)
+    scene.add(keyLight)
+
+    // Soft light from the other side, so no face goes fully dark
+    const backLight = new THREE.DirectionalLight(0xffffff, 0.8)
+    backLight.position.set(-4, 2, -3)
+    scene.add(backLight)
 
     const {
       position = [0, 0, 3],
@@ -63,8 +77,7 @@ function Visualization({ objects, camera, controller }: Props) {
       // 1. Objects
       for (const obj of objectsRef.current) {
         obj.update(delta)
-        if (!obj.mesh) continue // nothing to render
-        obj.syncMesh()
+        obj.root.visible = obj.renderable // no material or no meshes: skipped when drawing
       }
 
       // 2. Camera
@@ -95,20 +108,16 @@ function Visualization({ objects, camera, controller }: Props) {
     }
   }, [])
 
-  // Add renderable objects to the scene; mesh-less objects are skipped
+  // Every object's root joins the scene; content attached later (e.g. a loaded model) appears automatically
   useEffect(() => {
     const scene = sceneRef.current
     if (!scene) return
 
-    for (const obj of objects) {
-      if (obj.mesh) scene.add(obj.mesh)
-    }
+    for (const obj of objects) scene.add(obj.root)
     objectsRef.current = objects
 
     return () => {
-      for (const obj of objects) {
-        if (obj.mesh) scene.remove(obj.mesh)
-      }
+      for (const obj of objects) scene.remove(obj.root)
       objectsRef.current = []
     }
   }, [objects])

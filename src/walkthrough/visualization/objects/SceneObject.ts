@@ -9,27 +9,31 @@ export type Transform = {
 }
 
 export type SceneObjectOptions = Transform & {
+  /** Shorthand for content made of a single mesh. */
   geometry?: THREE.BufferGeometry
   material?: THREE.Material
 }
 
 export type Space = 'local' | 'world'
 
+/** A plain THREE.Mesh: not skinned, instanced, batched, lines or points. */
+export function isPlainMesh(node: THREE.Object3D): node is THREE.Mesh {
+  return node.type === 'Mesh'
+}
+
 // Reused scratch objects, so per-frame rotation doesn't allocate
 const _euler = new THREE.Euler()
 const _delta = new THREE.Quaternion()
+const _axis = new THREE.Vector3()
 
 export abstract class SceneObject {
-  // Transform: owned here, whether or not the object has a mesh
-  readonly position = new THREE.Vector3()
-  /** Orientation. Single source of truth for rotation. */
-  readonly quaternion = new THREE.Quaternion()
-  readonly scale = new THREE.Vector3(1, 1, 1)
-
-  // Rendering: a mesh exists only when both geometry and material are provided
-  readonly geometry: THREE.BufferGeometry | null
+  /** Stable render node. Holds this object's transform; content is attached beneath it. */
+  readonly root = new THREE.Group()
+  /** Applied to every mesh in this object's content. Without one, the object is not rendered. */
   readonly material: THREE.Material | null
-  readonly mesh: THREE.Mesh | null
+
+  private content: THREE.Object3D | null = null
+  private meshList: THREE.Mesh[] = []
 
   constructor({
     geometry,
@@ -38,12 +42,7 @@ export abstract class SceneObject {
     rotation = [0, 0, 0],
     scale = 1,
   }: SceneObjectOptions = {}) {
-    this.geometry = geometry ?? null
     this.material = material ?? null
-    this.mesh =
-      this.geometry && this.material
-        ? new THREE.Mesh(this.geometry, this.material)
-        : null
 
     this.setPosition(...position)
     this.setRotation(...rotation)
@@ -52,32 +51,80 @@ export abstract class SceneObject {
     } else {
       this.setScale(...scale)
     }
-    this.syncMesh()
+
+    if (geometry) this.setContent(new THREE.Mesh(geometry))
+  }
+
+  // Live transform state (stored on the root)
+  get position(): THREE.Vector3 {
+    return this.root.position
+  }
+
+  /** Orientation. Single source of truth for rotation. */
+  get quaternion(): THREE.Quaternion {
+    return this.root.quaternion
+  }
+
+  get scale(): THREE.Vector3 {
+    return this.root.scale
+  }
+
+  // Content
+  /** Every plain mesh in this object's content. */
+  get meshes(): readonly THREE.Mesh[] {
+    return this.meshList
+  }
+
+  /** True when there is something to draw: a material and at least one mesh. */
+  get renderable(): boolean {
+    return this.material !== null && this.meshList.length > 0
+  }
+
+  /**
+   * Attach content beneath the root, replacing and disposing any previous content.
+   * Every plain mesh in it receives this object's material.
+   */
+  protected setContent(content: THREE.Object3D | null): void {
+    if (this.content) {
+      this.root.remove(this.content)
+      for (const mesh of this.meshList) mesh.geometry.dispose()
+    }
+
+    this.content = content
+    this.meshList = []
+    if (!content) return
+
+    content.traverse((node) => {
+      if (!isPlainMesh(node)) return
+      if (this.material) node.material = this.material
+      this.meshList.push(node)
+    })
+    this.root.add(content)
   }
 
   // Position
   setPosition(x: number, y: number, z: number): this {
-    this.position.set(x, y, z)
+    this.root.position.set(x, y, z)
     return this
   }
 
   translate(x: number, y: number, z: number): this {
-    this.position.x += x
-    this.position.y += y
-    this.position.z += z
+    this.root.position.x += x
+    this.root.position.y += y
+    this.root.position.z += z
     return this
   }
 
   // Rotation (Euler in, quaternion inside)
   /** Set absolute orientation from Euler angles (radians). */
   setRotation(x: number, y: number, z: number): this {
-    this.quaternion.setFromEuler(_euler.set(x, y, z))
+    this.root.quaternion.setFromEuler(_euler.set(x, y, z))
     return this
   }
 
   /** Current orientation as Euler angles. Returns a copy; changing it does not rotate the object. */
   getRotation(target = new THREE.Euler()): THREE.Euler {
-    return target.setFromQuaternion(this.quaternion)
+    return target.setFromQuaternion(this.root.quaternion)
   }
 
   /**
@@ -91,32 +138,24 @@ export abstract class SceneObject {
 
   /** Rotate by an angle (radians) around an arbitrary axis. */
   rotateOnAxis(axis: THREE.Vector3, angle: number, space: Space = 'local'): this {
-    _delta.setFromAxisAngle(axis.clone().normalize(), angle)
+    _delta.setFromAxisAngle(_axis.copy(axis).normalize(), angle)
     return this.applyRotation(_delta, space)
   }
 
   private applyRotation(delta: THREE.Quaternion, space: Space): this {
     if (space === 'local') {
-      this.quaternion.multiply(delta)
+      this.root.quaternion.multiply(delta)
     } else {
-      this.quaternion.premultiply(delta)
+      this.root.quaternion.premultiply(delta)
     }
-    this.quaternion.normalize() // prevent floating-point drift
+    this.root.quaternion.normalize() // prevent floating-point drift
     return this
   }
 
   // Scale
   setScale(x: number, y = x, z = x): this {
-    this.scale.set(x, y, z)
+    this.root.scale.set(x, y, z)
     return this
-  }
-
-  /** Copy this object's transform onto its mesh. Called by the renderer each frame. */
-  syncMesh(): void {
-    if (!this.mesh) return
-    this.mesh.position.copy(this.position)
-    this.mesh.quaternion.copy(this.quaternion)
-    this.mesh.scale.copy(this.scale)
   }
 
   // Lifecycle
@@ -125,7 +164,7 @@ export abstract class SceneObject {
 
   /** Free GPU resources. */
   dispose(): void {
-    this.geometry?.dispose()
+    this.setContent(null)
     this.material?.dispose()
   }
 }
