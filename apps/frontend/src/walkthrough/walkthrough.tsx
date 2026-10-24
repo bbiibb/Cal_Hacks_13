@@ -17,33 +17,38 @@ const orbitCamera: CameraControllerFactory = (camera, domElement) =>
     maxDistance: 12,
   })
 
+const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
+
 /** Builds a fresh set of scene objects. Called once per mount. */
 function createSceneObjects(): SceneObject[] {
   return [
     new ModelObject({
       path: '/models/bicuspidic_aortic_root_with_calcifications.glb',
       color: '#FFE3CC', // pastel peach
-      position: [0, 0, 0],
-      scale: [2, 2, 2],
+      position: [0.7 + heartTranslate[0], 0.78 + heartTranslate[1], 0.5 + heartTranslate[2]],
+      rotation: [-3.14159 / 15, 0, -3.14159 / 3.8],
+      scale: [0.75, 0.75, 0.75],
     }),
     new ModelObject({
-      path: '/models/heart_part_1.glb',
+      path: '/models/heart_part_2.glb',
       color: '#FFD3DE', // pastel pink
-      position: [-2, 0, 0],
-      scale: [2, 2, 2],
+      position: [0 + heartTranslate[0], -1 + heartTranslate[1], 0 + heartTranslate[2]],
+      rotation: [0, 3.14159, 0],
+      scale: [3, 3, 3],
     }),
-    new ModelObject({
+    /*new ModelObject({
       path: '/models/normal_aortic_arch.glb',
       color: '#CFE6FA', // pastel blue
-      position: [2, 0, 0],
+      position: [2 + heartTranslate[0], 0 + heartTranslate[1], 0 + heartTranslate[2]],
       scale: [2, 2, 2],
-    }),
+    }),*/
     new ModelObject({
       path: '/models/aortic_arch.glb',
       color: '#C8EED8', // pastel mint
-      position: [-4, 0, 0],
-      scale: [2, 2, 2],
-    }),
+      position: [1.13, 0.75, 0],
+      rotation: [3.14159 / 3.5, 0, -3.14159 / 3],
+      scale: [1.6, 1.6, 1.6],
+    }).rotate(0, -3.14159 / 4, 0, 'local').rotate(0, 0, 3.14159 / 15, 'world'),
   ]
 }
 
