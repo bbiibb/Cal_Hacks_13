@@ -16,11 +16,12 @@
   "scripts": {
     "dev": "convex dev",
     "deploy": "convex deploy",
-    "typecheck": "tsc -p convex/tsconfig.json",
-    "test": "echo \"backend 테스트는 아직 없음\""
+    "typecheck": "tsc -p convex/tsconfig.json && tsc -p test/tsconfig.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "@cal-hacks/shared": "workspace:*",
-    "convex": "^1.47.0"
+    "convex": "^1.47.0",
+    "zod": "^4.6.7"
   }
 }

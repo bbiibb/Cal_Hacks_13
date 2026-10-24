@@ -72,3 +72,40 @@ export const vSource = v.object({
   title: v.string(),
   url: v.union(v.string(), v.null()),
 });
+
+// --- 읽기 query 의 반환 형태: 프론트 계약(packages/shared)과 같은 snake_case ---
+
+export const vStructure = v.object({
+  id: v.string(),
+  name_en: v.string(),
+  name_ko: v.string(),
+  parent_id: v.union(v.string(), v.null()),
+  description: v.string(),
+});
+
+export const vInstrument = v.object({
+  id: v.string(),
+  name_en: v.string(),
+  name_ko: v.string(),
+  description: v.string(),
+});
+
+export const vStep = v.object({
+  index: v.number(),
+  title: v.string(),
+  scene: vScene,
+  side_panel: vSidePanel,
+});
+
+export const vProcedureSummary = v.object({
+  slug: v.string(),
+  title: v.string(),
+  summary: v.string(),
+});
+
+export const vProcedure = v.object({
+  slug: v.string(),
+  title: v.string(),
+  summary: v.string(),
+  steps: v.array(vStep),
+});
