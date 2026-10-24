@@ -58,8 +58,3 @@
   background: radial-gradient(circle at 30% 28%, #fff4f6 0%, #f6c6d6 60%, #eba5be 100%);
   box-shadow: 0 10px 20px rgba(235, 165, 190, 0.3);
 }
-
-/* TEMPORARY: red landing page background, used to check that everyone sees the same version */
-.testRed {
-  background: #e00000;
-}
