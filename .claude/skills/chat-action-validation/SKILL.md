@@ -1,29 +1,29 @@
 ---
 name: chat-action-validation
-description: 챗봇의 새 scene_action 타입을 추가하거나 LLM 출력(scene_actions) 검증 규칙을 바꿀 때의 절차. zod 검증과 DB 존재 여부 검증을 항상 함께 유지한다.
+description: Procedure for adding a new chatbot scene_action type or changing the validation rules for LLM output (scene_actions). Always keep zod validation and database existence checks together.
 ---
 
-# scene_action / LLM 출력 검증 절차
+# scene_action and LLM output validation procedure
 
-원칙: **LLM이 만든 scene_actions는 (1) zod 스키마 검증, (2) DB 존재 여부 검증을 모두 통과한 것만 프론트로 전달한다.** 실패한 항목은 버리고 로그를 남긴다.
+Principle: **only scene_actions produced by the LLM that pass both (1) the zod schema check and (2) the existence check in the database are passed to the frontend.** Failed items are dropped and logged.
 
-## 새 action 타입을 추가할 때
-1. 계약 변경이므로 먼저 `contract-change` skill의 절차를 따른다 (`packages/shared`의 `SceneActionSchema` 유니온에 추가).
-2. `packages/backend/convex/validators.ts`의 `vSceneAction`에 같은 형태를 추가한다.
-3. **DB 존재 검증 규칙을 정의한다**: 이 action이 참조하는 id가 무엇이고(structure_id, instrument_id, procedure_slug+step_index 등) 어떤 테이블/인덱스로 확인할지 정한다.
-4. 검증 함수에 반영한다. 검증은 `internalQuery`로 DB를 조회하고, LLM을 호출하는 `action`에서 그 결과로 필터링한다.
-5. 테스트를 추가한다: 통과 케이스 / 알 수 없는 type / 존재하지 않는 id / 범위 밖 값(opacity, step_index) / 빈 배열.
-6. fixtures(`chat-response.example.json`)와 `docs/contracts.md`를 갱신한다.
+## When adding a new action type
+1. This is a contract change, so first follow the `contract-change` skill (add it to the `SceneActionSchema` union in `packages/shared`).
+2. Add the same shape to `vSceneAction` in `packages/backend/convex/validators.ts`.
+3. **Define the database existence rule**: what ids the action references (structure_id, instrument_id, procedure_slug plus step_index, and so on) and which table and index confirm them.
+4. Reflect it in the validation function. Validation reads the database with an `internalQuery`, and the `action` that calls the LLM filters with that result.
+5. Add tests: a passing case, an unknown type, an id that does not exist, out-of-range values (opacity, step_index), and an empty array.
+6. Update the fixtures (`chat-response.example.json`) and `docs/contracts.md`.
 
-## 검증 규칙을 바꿀 때
-- 규칙을 **느슨하게** 하는 변경(검증 제거/완화)은 이유를 적고 사용자 승인을 받는다.
-- 프롬프트에서 허용 action 목록·id 목록을 LLM에 알려주더라도, 서버 검증은 그대로 둔다 (프롬프트는 안전장치가 아니다).
-- LLM 출력 파싱 실패 시 동작: `scene_actions: []`로 대체하고 `message`만 안전하게 전달한다.
+## When changing validation rules
+- A change that **loosens** the rules (removing or relaxing validation) needs a written reason and the user's approval.
+- Even if the prompt tells the LLM the allowed action list and id list, keep the server-side validation as it is (a prompt is not a safety mechanism).
+- When parsing the LLM output fails: replace `scene_actions` with `[]` and deliver only a safe `message`.
 
-## 응답 규칙
-- 근거(sources)가 없는 의료 정보는 단정하지 않고 모른다고 답한다. 교육용임을 유지한다.
-- 프론트로 가는 최종 `ChatResponse`는 항상 `ChatResponseSchema.parse`를 통과해야 한다.
+## Response rules
+- Do not state medical information that has no source (`sources`) as fact; say you do not know. Keep the content educational.
+- The final `ChatResponse` sent to the frontend must always pass `ChatResponseSchema.parse`.
 
-## 검증
+## Verification
 - `pnpm typecheck && pnpm test && pnpm lint`
-- 프론트 영향이 있으면 `contract-change`의 "프론트 전달용 변경 요약"을 출력한다.
+- If the frontend is affected, print the "change summary for the frontend" from `contract-change`.

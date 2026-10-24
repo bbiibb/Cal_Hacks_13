@@ -13,7 +13,7 @@ export type Camera = z.infer<typeof CameraSchema>;
 
 export const SceneStructureSchema = z.object({
   id: StructureIdSchema,
-  /** 0(완전 투명) ~ 1(불투명) */
+  /** 0 (fully transparent) to 1 (opaque) */
   opacity: z.number().min(0).max(1),
   highlight: z.boolean(),
 });
@@ -21,7 +21,7 @@ export type SceneStructure = z.infer<typeof SceneStructureSchema>;
 
 export const TransformSchema = z.object({
   position: Vec3Schema,
-  /** 오일러 각 (라디안) */
+  /** Euler angles in radians */
   rotation: Vec3Schema,
   scale: Vec3Schema,
 });
@@ -39,7 +39,7 @@ export const AnimationClipSchema = z.object({
 });
 export type AnimationClip = z.infer<typeof AnimationClipSchema>;
 
-/** 한 단계(Step)의 3D 장면 상태. 영상이 아니라 이 데이터로 장면을 재현한다. */
+/** The 3D scene state of one step. The scene is rebuilt from this data instead of playing a video. */
 export const SceneSchema = z.object({
   camera: CameraSchema,
   structures: z.array(SceneStructureSchema),

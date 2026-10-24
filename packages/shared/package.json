@@ -2,7 +2,7 @@
   "name": "@cal-hacks/shared",
   "version": "0.0.0",
   "private": true,
-  "description": "프론트-백엔드 계약: zod 스키마, 타입, 예시 fixtures",
+  "description": "Frontend-backend contract: zod schemas, types, and example fixtures",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

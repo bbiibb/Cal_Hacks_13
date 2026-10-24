@@ -2,7 +2,7 @@
   "name": "cal-hacks-13",
   "private": true,
   "version": "0.0.0",
-  "description": "3D 인간 장기 + 수술 과정 시연 웹사이트 모노레포",
+  "description": "Monorepo for a 3D human organ and surgical procedure demo website",
   "type": "module",
   "packageManager": "pnpm@12.15.0",
   "engines": {

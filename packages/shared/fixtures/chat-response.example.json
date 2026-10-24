@@ -1,5 +1,5 @@
 {
-  "message": "새 판막이 펼쳐지면 지지틀이 판륜에 고정되고, 원래 판막의 딱딱한 첨판은 혈관 벽 쪽으로 밀려나요. 해당 장면으로 이동해서 강조해 드렸어요. (더미 교육용 응답)",
+  "message": "When the new valve expands, its frame anchors in the annulus and the stiff original leaflets are pushed against the vessel wall. I moved to that scene and highlighted the relevant parts. (Dummy educational response)",
   "scene_actions": [
     {
       "type": "goto_step",
@@ -26,8 +26,8 @@
     }
   ],
   "side_panel": {
-    "title": "인공판막 지지틀",
-    "body_markdown": "새 판막을 지지하고 판륜에 고정시키는 금속 틀. 좁게 접힌 채 전달된 뒤 확장된다.",
+    "title": "Valve frame",
+    "body_markdown": "The metal frame that supports the new valve and anchors it in the annulus. It is delivered folded and then expanded.",
     "related_structure_ids": [
       "transcatheter_valve.frame",
       "aortic_annulus"
@@ -35,7 +35,7 @@
   },
   "sources": [
     {
-      "title": "더미 출처 (실제 근거 자료로 교체 필요)",
+      "title": "Dummy source (replace with real reference material)",
       "url": null
     }
   ]

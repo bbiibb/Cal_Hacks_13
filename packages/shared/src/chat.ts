@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ProcedureSlugSchema, StructureIdSchema } from "./ids";
 
-/** 챗봇이 3D 화면에 내리는 제어 명령. `type` 으로 구분되는 유니온. */
+/** Commands the chatbot sends to the 3D view. A union discriminated by `type`. */
 export const GotoStepActionSchema = z.object({
   type: z.literal("goto_step"),
   procedure_slug: ProcedureSlugSchema,

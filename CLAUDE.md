@@ -1,51 +1,55 @@
-# Cal_Hacks_13 — 3D 인간 장기 + 수술 과정 시연 웹사이트
+# Cal_Hacks_13 — 3D human organ and surgical procedure demo website
 
-## 프로젝트 개요
-- 프론트: 3D 장기 화면(Three.js 계열) + 화면 옆 사이드 패널(설명 표시)
-- 수술 과정은 영상이 아니라 **단계(Step)별 3D 장면 상태 데이터(JSON)** 로 표현한다.
-- 챗봇: 질문에 답하면서 3D 제어 명령(`scene_actions`)을 함께 내려 카메라 이동/하이라이트/투명도/단계 이동과 사이드 패널을 동기화한다.
-- 백엔드는 Convex를 사용하고 별도 서버는 두지 않는 것이 기본이다 (query/mutation/action, HTTP action, file storage, vector search).
-- pnpm workspace 모노레포, TypeScript(strict).
+## Project overview
+- Frontend: a 3D organ view (Three.js family) with a side panel next to it that shows explanations.
+- A surgical procedure is represented not as a video but as **3D scene state data (JSON) for each step**.
+- Chatbot: it answers questions and also sends 3D control commands (`scene_actions`) that move the camera, highlight parts, change transparency, jump between steps, and keep the side panel in sync.
+- The backend uses Convex, and by default there is no separate server (queries, mutations, actions, HTTP actions, file storage, vector search).
+- pnpm workspace monorepo, TypeScript (strict).
 
-## 폴더 구조와 소유권
+## Product context
+The app is called **Simple Surgeries**. A patient watches a procedure in 3D, selects a part to read about it, and asks a chatbot that answers in the context of the current scene and highlights the related parts.
+`docs/product-roadmap.md` is the reference for the feature list, backend needs, and implementation status. When you build a feature or the plan changes, update that document too.
+
+## Folder structure and ownership
 ```
 .
-├── CLAUDE.md                 # 이 파일 (루트 공통 규칙)
-├── .claude/skills/           # 프로젝트 skills
-├── docs/contracts.md         # 프론트-백엔드 계약 문서
-├── apps/frontend/            # 프론트 담당자 영역
-├── packages/backend/         # Convex 프로젝트 (convex/ 포함) — 백엔드 담당자(사용자) 영역
-└── packages/shared/          # 계약: zod 스키마 + 타입 + 예시 fixtures
+├── CLAUDE.md                 # This file (shared root rules)
+├── .claude/skills/           # Project skills
+├── docs/contracts.md         # Frontend-backend contract
+├── apps/frontend/            # Frontend owner's area
+├── packages/backend/         # Convex project (includes convex/) — backend owner's (the user's) area
+└── packages/shared/          # Contract: zod schemas, types, and example fixtures
 ```
 
-- `packages/backend`: 사용자(백엔드 담당) 영역. 자유롭게 수정한다. 세부 규칙은 `packages/backend/CLAUDE.md`.
-- `apps/frontend`: **사용자가 요청하지 않으면 수정하지 않는다.**
-- `packages/shared`: 변경이 양쪽에 영향을 준다. 바꿀 때는 반드시 `docs/contracts.md`를 함께 갱신하고, **프론트 담당자에게 전달할 변경 요약을 출력**한다. (`contract-change` skill 참고)
+- `packages/backend`: the user's (backend owner's) area. Edit freely. Detailed rules are in `packages/backend/CLAUDE.md`.
+- `apps/frontend`: **do not modify unless the user asks.**
+- `packages/shared`: changes affect both sides. Whenever you change it, update `docs/contracts.md` in the same change and **print a change summary to hand to the frontend owner** (see the `contract-change` skill).
 
-## 자주 쓰는 명령어
+## Common commands
 ```bash
-pnpm install                 # 설치
-pnpm dev:backend             # = convex dev (최초 1회 로그인/프로젝트 생성 필요, 아래 보안 참고)
-pnpm typecheck               # 모든 패키지 tsc
-pnpm lint                    # eslint (apps/frontend 제외)
-pnpm test                    # vitest (packages/shared 등)
-pnpm --filter @cal-hacks/shared test   # 패키지 단위 실행
+pnpm install                 # install
+pnpm dev:backend             # = convex dev (first run needs a login and project creation; see Security below)
+pnpm typecheck               # tsc in every package
+pnpm lint                    # eslint (excluding apps/frontend)
+pnpm test                    # vitest (packages/shared, packages/backend)
+pnpm --filter @cal-hacks/shared test   # run one package
 ```
-프론트 개발 서버 명령은 프론트 담당자가 `apps/frontend`에 정의한다.
+The frontend dev server command is defined by the frontend owner in `apps/frontend`.
 
-## 코드/문서 규칙
-- 코드, 식별자, 커밋 타입 접두사는 **영어**. 문서(`*.md`)와 주석은 **한국어**.
-- 공통 식별자 규칙은 `docs/contracts.md`가 기준이다 (`structure_id`는 GLB 메시 이름과 1:1).
-- 패키지 이름은 `@cal-hacks/*` scope를 쓴다.
+## Code and documentation rules
+- **Everything is written in English**: code, identifiers, comments, documentation (`*.md`), UI text, fixtures, and commit messages.
+- Common identifier rules are defined in `docs/contracts.md` (`structure_id` matches a GLB mesh name one to one).
+- Package names use the `@cal-hacks/*` scope.
 
-## 작업 방식
-- 큰 변경은 구현 전에 **계획을 먼저** 제시하고 승인을 받는다.
-- 커밋은 작게 나눈다. 커밋 메시지는 `type(scope): 요약` 형식 (예: `feat(backend): ...`).
-- **main에 직접 커밋/푸시하지 않는다.** 항상 작업 브랜치에서 한다.
-- 타입체크/테스트가 깨진 채로 커밋하지 않는다.
+## Way of working
+- For a big change, **present a plan first** and get approval before implementing.
+- Keep commits small. Commit messages use the form `type(scope): summary` (for example `feat(backend): ...`).
+- **Do not commit or push directly to main.** Always work on a working branch.
+- Do not commit with a broken typecheck or failing tests.
 
-## 보안
-- API 키, 토큰, 시크릿은 절대 커밋하지 않는다. `.env.local`은 gitignore 대상이고, 필요한 변수 목록은 `.env.example`에 둔다.
-- 서버 시크릿(LLM 키 등)은 Convex 환경변수(`npx convex env set`)로만 관리한다.
-- `npx convex dev` 등이 계정 로그인이나 프로젝트 생성을 요구하면 멈추고 사용자에게 안내한다. 로그인/시크릿을 대신 처리하지 않는다.
-- 실제 환자 데이터는 사용하지 않는다. 공개 데이터 또는 합성(더미) 데이터만 쓴다.
+## Security
+- Never commit API keys, tokens, or secrets. `.env.local` is gitignored, and the list of required variables lives in `.env.example`.
+- Manage server secrets (LLM and speech-to-text keys, etc.) only through Convex environment variables (`npx convex env set`).
+- If `npx convex dev` or similar asks for an account login or project creation, stop and guide the user. Do not handle logins or secrets on their behalf.
+- Never use real patient data. Use only public or synthetic (dummy) data.

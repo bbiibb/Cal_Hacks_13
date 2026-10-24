@@ -1,14 +1,14 @@
 # apps/frontend
 
-프론트엔드 담당자 영역입니다. 아직 코드가 없습니다.
+This is the frontend owner's area. There is no code here yet.
 
-- 3D 장기 화면(Three.js 계열)과 화면 옆 사이드 패널(설명 표시)
-- 백엔드(Convex)와 주고받는 데이터 형식은 [`docs/contracts.md`](../../docs/contracts.md) 와
-  `@cal-hacks/shared` 패키지(zod 스키마·타입·fixtures)를 따릅니다.
+- A 3D organ view (Three.js family) with a side panel next to it that shows explanations.
+- The data exchanged with the backend (Convex) follows [`docs/contracts.md`](../../docs/contracts.md) and
+  the `@cal-hacks/shared` package (zod schemas, types, and fixtures).
 
-## 백엔드 연결 방법
+## Connecting to the backend
 
-`package.json` 의 dependencies 에 워크스페이스 패키지를 추가합니다.
+Add the workspace packages to the `dependencies` in `package.json`.
 
 ```json
 {
@@ -20,12 +20,12 @@
 ```
 
 ```ts
-// 계약 타입 / 스키마
+// Contract types and schemas
 import { ChatResponseSchema, type Scene } from "@cal-hacks/shared";
-// 예시 데이터
+// Example data
 import procedure from "@cal-hacks/shared/fixtures/procedure.tavr.json";
-// Convex generated api (백엔드 담당자가 `convex dev` 를 한 번 실행한 뒤 사용 가능)
+// Convex generated api (use it once the backend owner has run `convex dev` at least once)
 import { api } from "@cal-hacks/backend/api";
 ```
 
-환경변수 이름은 루트 `.env.example` 을 참고하세요.
+See the root `.env.example` for the environment variable names.

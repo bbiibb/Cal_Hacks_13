@@ -2,106 +2,91 @@
   {
     "id": "aorta",
     "name_en": "Aorta",
-    "name_ko": "대동맥",
     "parent_id": null,
-    "description": "심장의 좌심실에서 나온 혈액을 온몸으로 보내는 가장 큰 동맥."
+    "description": "The largest artery. It carries blood from the left ventricle to the rest of the body."
   },
   {
     "id": "aorta.ascending",
     "name_en": "Ascending aorta",
-    "name_ko": "상행대동맥",
     "parent_id": "aorta",
-    "description": "대동맥판막 바로 위에서 위로 올라가는 대동맥 구간."
+    "description": "The section of the aorta that rises from just above the aortic valve."
   },
   {
     "id": "aorta.root",
     "name_en": "Aortic root",
-    "name_ko": "대동맥근부",
     "parent_id": "aorta",
-    "description": "대동맥판막이 자리한 대동맥의 시작 부분."
+    "description": "The beginning of the aorta, where the aortic valve sits."
   },
   {
     "id": "aortic_annulus",
     "name_en": "Aortic annulus",
-    "name_ko": "대동맥판륜",
     "parent_id": null,
-    "description": "대동맥판막이 붙어 있는 고리 모양 조직. 새 판막이 자리 잡는 기준 위치."
+    "description": "The ring of tissue that the aortic valve is attached to. It is the reference position where the new valve is anchored."
   },
   {
     "id": "aortic_valve",
     "name_en": "Native aortic valve",
-    "name_ko": "원래 대동맥판막",
     "parent_id": null,
-    "description": "좌심실과 대동맥 사이에서 혈액이 거꾸로 흐르지 않게 하는 3엽 판막."
+    "description": "The three-leaflet valve between the left ventricle and the aorta that keeps blood from flowing backward."
   },
   {
     "id": "aortic_valve.leaflet_right",
     "name_en": "Right leaflet",
-    "name_ko": "우관상동 첨판",
     "parent_id": "aortic_valve",
-    "description": "원래 판막의 첨판 중 하나."
+    "description": "One of the three leaflets of the native valve."
   },
   {
     "id": "aortic_valve.leaflet_left",
     "name_en": "Left leaflet",
-    "name_ko": "좌관상동 첨판",
     "parent_id": "aortic_valve",
-    "description": "원래 판막의 첨판 중 하나."
+    "description": "One of the three leaflets of the native valve."
   },
   {
     "id": "aortic_valve.leaflet_noncoronary",
     "name_en": "Non-coronary leaflet",
-    "name_ko": "무관상동 첨판",
     "parent_id": "aortic_valve",
-    "description": "원래 판막의 첨판 중 하나."
+    "description": "One of the three leaflets of the native valve."
   },
   {
     "id": "aortic_valve.calcification",
     "name_en": "Calcification",
-    "name_ko": "석회화",
     "parent_id": "aortic_valve",
-    "description": "첨판에 칼슘이 쌓여 딱딱해진 부분. 판막이 잘 열리지 않는 대동맥판막 협착의 주된 원인."
+    "description": "Calcium buildup that has hardened part of a leaflet. It is the main cause of aortic valve stenosis."
   },
   {
     "id": "left_ventricle",
     "name_en": "Left ventricle",
-    "name_ko": "좌심실",
     "parent_id": null,
-    "description": "혈액을 대동맥으로 밀어내는 심장의 방."
+    "description": "The heart chamber that pumps blood into the aorta."
   },
   {
     "id": "left_coronary_artery",
     "name_en": "Left coronary artery",
-    "name_ko": "좌관상동맥",
     "parent_id": null,
-    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+    "description": "An artery that supplies the heart muscle with blood. It branches off the aortic root."
   },
   {
     "id": "right_coronary_artery",
     "name_en": "Right coronary artery",
-    "name_ko": "우관상동맥",
     "parent_id": null,
-    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+    "description": "An artery that supplies the heart muscle with blood. It branches off the aortic root."
   },
   {
     "id": "transcatheter_valve",
     "name_en": "Transcatheter valve",
-    "name_ko": "경도관 인공판막",
     "parent_id": null,
-    "description": "카테터로 전달해 원래 판막 안에 자리 잡는 새 인공 판막."
+    "description": "The new artificial valve. It is delivered by catheter and placed inside the native valve."
   },
   {
     "id": "transcatheter_valve.frame",
     "name_en": "Valve frame",
-    "name_ko": "인공판막 지지틀(스텐트)",
     "parent_id": "transcatheter_valve",
-    "description": "새 판막을 지지하고 판륜에 고정되는 금속 틀. 좁게 접힌 채 전달되어 확장된다."
+    "description": "The metal frame that supports the new valve and anchors it in the annulus. It is delivered folded and then expanded."
   },
   {
     "id": "transcatheter_valve.leaflets",
     "name_en": "Valve leaflets",
-    "name_ko": "인공판막 첨판",
     "parent_id": "transcatheter_valve",
-    "description": "새 판막의 여닫이 막. (3D 모델 아직 없음 — docs/tavr-demo.md 참고)"
+    "description": "The flexible flaps of the new valve that open and close. (3D model not available yet; see docs/tavr-demo.md)"
   }
 ]

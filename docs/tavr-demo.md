@@ -1,43 +1,43 @@
-# TAVR 시연 계획 (1차 버전)
+# TAVR Demo Plan (First Version)
 
-환자 교육용 데모의 첫 주제는 **TAVR (경피적 대동맥판막 치환술, Transcatheter Aortic Valve Replacement)** 입니다.
-협착된 대동맥판막 안에 카테터로 새 판막을 넣는 시술을 4개 장면으로 단순화합니다.
-`packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`)이 이 계획의 더미 데이터입니다.
-내용은 모두 **교육용 더미**이며 실제 환자 데이터나 의료 조언이 아닙니다.
+The first topic of the patient-education demo is **TAVR (Transcatheter Aortic Valve Replacement)**.
+We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into four scenes.
+`packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`) is the dummy data for this plan.
+Everything is **educational dummy content** and is neither real patient data nor medical advice.
 
-## 장면 (Step)
+## Scenes (Steps)
 
-| index | 제목 | 보여줄 것 | animation_clip |
+| index | Title | What it shows | animation_clip |
 |---|---|---|---|
-| 0 | 협착된 원래 판막 | 석회화로 좁아진 원래 판막 | `native_valve_stenosis` (loop) |
-| 1 | 새 판막 전달 | 가이드와이어와 전달 카테터로 접힌 새 판막을 판막 위치까지 운반 | `deliver_valve` |
-| 2 | 새 판막 확장 | 새 판막이 펼쳐져 판륜에 고정되고 원래 첨판이 벽 쪽으로 밀려남 | `expand_valve` |
-| 3 | 전달 장비 제거 후 최종 위치 | 카테터를 뺀 뒤 새 판막과 관상동맥 혈류 | `valve_function` (loop) |
+| 0 | The narrowed original valve | The original valve narrowed by calcification | `native_valve_stenosis` (loop) |
+| 1 | Delivering the new valve | The folded new valve carried to the valve position with a guidewire and a delivery catheter | `deliver_valve` |
+| 2 | Expanding the new valve | The new valve opens and anchors in the annulus, and the original leaflets are pushed against the wall | `expand_valve` |
+| 3 | Final position after the equipment is removed | The new valve and blood flow to the coronary arteries after the catheter is withdrawn | `valve_function` (loop) |
 
-## 3D 에셋 현황
+## 3D asset status
 
-`structure_id` 는 GLB 메시 이름과 1:1 이어야 합니다. 아래는 fixtures 가 가정하는 이름이며, **3D 담당자와 실제 메시 이름을 맞춰야 합니다.**
+A `structure_id` must match a GLB mesh name one to one. The names below are the ones the fixtures assume, and **they must be matched with the real mesh names together with the 3D owner.**
 
-| 대상 | id | 상태 |
+| Subject | id | Status |
 |---|---|---|
-| 원래 대동맥판막 (첨판 3개, 석회화) | `aortic_valve`, `aortic_valve.leaflet_*`, `aortic_valve.calcification` | 후보 모델 확보 |
-| 대동맥, 대동맥근부, 판륜, 좌심실, 관상동맥 | `aorta*`, `aortic_annulus`, `left_ventricle`, `*_coronary_artery` | 확인 필요 |
-| 전달 장비 | `guidewire`, `delivery_catheter` (instrument) | 후보 모델 확보 |
-| 새 판막 지지틀 | `transcatheter_valve.frame` | 확인 필요 |
-| **새 판막 첨판** | `transcatheter_valve.leaflets` | **모델 없음 (TODO)** |
+| Original aortic valve (three leaflets, calcification) | `aortic_valve`, `aortic_valve.leaflet_*`, `aortic_valve.calcification` | Candidate model found |
+| Aorta, aortic root, annulus, left ventricle, coronary arteries | `aorta*`, `aortic_annulus`, `left_ventricle`, `*_coronary_artery` | To be confirmed |
+| Delivery equipment | `guidewire`, `delivery_catheter` (instruments) | Candidate model found |
+| Frame of the new valve | `transcatheter_valve.frame` | To be confirmed |
+| **Leaflets of the new valve** | `transcatheter_valve.leaflets` | **No model yet (TODO)** |
 
-새 판막 첨판 모델이 없는 동안에는 `transcatheter_valve.leaflets` 를 숨기거나(opacity 0) 지지틀만 보여주는 임시 처리가 필요합니다.
-모델이 준비되면 fixtures 의 opacity 를 조정하세요.
+While there is no model for the leaflets of the new valve, a temporary treatment is needed: hide `transcatheter_valve.leaflets` (opacity 0) or show only the frame.
+When the model is ready, adjust the opacity in the fixtures.
 
-## 애니메이션과 계약
+## Animation and the contract
 
-- 판막의 이동·확장은 `Scene.structures` 에 transform 이 없으므로 GLB 에 구운 애니메이션 클립(`animation_clip`)으로 표현합니다.
-  클립 이름은 위 표를 기준으로 하며 3D 담당자와 확정합니다.
-- 새 판막(`transcatheter_valve`)은 챗봇이 `focus`/`highlight` 로 가리킬 수 있어야 하므로 instrument 가 아니라 **structure** 로 둡니다.
-  전달 장비는 위치가 단계마다 달라지므로 **instrument** 로 둡니다.
+- `Scene.structures` has no transform, so the movement and expansion of the valve are expressed with animation clips baked into the GLB (`animation_clip`).
+  The clip names follow the table above and are to be confirmed with the 3D owner.
+- The new valve (`transcatheter_valve`) must be something the chatbot can point at with `focus` or `highlight`, so it is a **structure**, not an instrument.
+  Delivery equipment changes position from step to step, so it is an **instrument**.
 
-## 열린 질문
+## Open questions
 
-- 사용할 판막 종류: 풍선확장형인지 자가확장형인지 (확장 장면 연출과 instrument 구성이 달라짐)
-- 접근 경로: 대퇴동맥 경유 등 어디까지 보여줄지 (1차 버전은 판막 부위만)
-- 영상(참고 자료)의 출처와 라이선스, 그리고 `sources` 에 넣을 근거 자료
+- Which kind of valve to show: balloon-expandable or self-expanding (the expansion scene and the instrument set differ)
+- Access route: how far to show it, for example through the femoral artery (the first version shows only the valve area)
+- The source and license of the reference video, and the reference material to put in `sources`
