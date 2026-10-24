@@ -26,24 +26,22 @@ function WalkthroughsList() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.content}>
-        <SiteHeader />
-        <h1 className={styles.heading}>Walkthroughs</h1>
-        <section className={styles.grid}>
-          {WALKTHROUGHS.map((item) => (
-            <WalkthroughCard
-              key={item.id}
-              title={item.title}
-              imageSrc={item.imageSrc}
-              imageAlt={item.imageAlt}
-              onSelect={() => navigate(item.to)}
-            />
-          ))}
-          {Array.from({ length: placeholders }, (_, i) => (
-            <WalkthroughCard key={`soon-${i}`} comingSoon />
-          ))}
-        </section>
-      </div>
+      <SiteHeader backgroundColor="transparent" />
+      <h1 className={styles.heading}>Interactive Walkthroughs</h1>
+      <section className={styles.grid}>
+        {WALKTHROUGHS.map((item) => (
+          <WalkthroughCard
+            key={item.id}
+            title={item.title}
+            imageSrc={item.imageSrc}
+            imageAlt={item.imageAlt}
+            onSelect={() => navigate(item.to)}
+          />
+        ))}
+        {Array.from({ length: placeholders }, (_, i) => (
+          <WalkthroughCard key={`soon-${i}`} comingSoon />
+        ))}
+      </section>
     </main>
   )
 }

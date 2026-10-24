@@ -1,67 +1,43 @@
 /* Colors come from the page (--ss-*); the fallbacks keep the header usable on its own. */
 .header {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
+  width: 100%;
+  padding: 1.25rem 2.5rem;
   font-family: 'Sora', system-ui, sans-serif;
   color: var(--ss-ink, #1d2233);
   text-align: left;
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
   flex-shrink: 0;
-  color: inherit;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ss-ink, #1d2233);
   text-decoration: none;
 
   &:focus-visible {
     outline: 2px solid var(--ss-accent, #5a58a6);
     outline-offset: 6px;
-    border-radius: 2rem;
+    border-radius: 0.5rem;
   }
 }
 
-/* Pearl-like sphere that holds the monogram */
-.orb {
-  display: grid;
-  place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 50%;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--ss-accent, #5a58a6);
-  background: radial-gradient(
-    circle at 30% 28%,
-    #ffffff 0%,
-    #f3ecff 38%,
-    #d9d0f7 72%,
-    #c4c9f5 100%
-  );
-  box-shadow:
-    inset -4px -6px 10px rgba(150, 130, 210, 0.25),
-    0 8px 18px rgba(120, 100, 180, 0.25);
-}
-
-.name {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.78rem;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+.accent {
   color: var(--ss-accent, #5a58a6);
 }
 
 .nav {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   gap: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(90, 88, 166, 0.35);
 }
 
 .link {
@@ -146,6 +122,7 @@
   .header {
     flex-wrap: wrap;
     gap: 1.25rem;
+    padding: 1rem 1.25rem;
   }
 
   .auth {

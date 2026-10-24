@@ -10,22 +10,22 @@ type NavItem = {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'About SS', to: '/about' },
+  { label: 'About us', to: '/about' },
   { label: 'FAQs', to: '/faqs' },
   { label: 'Contact', to: '/contact' },
 ]
 
-function SiteHeader() {
+type Props = {
+  /** Any CSS color, e.g. "#000" or "rgba(255, 255, 255, 0.4)". Defaults to transparent. */
+  backgroundColor?: string
+}
+
+/** Site-wide header. It stretches across the whole width of the page. */
+function SiteHeader({ backgroundColor = 'transparent' }: Props) {
   return (
-    <header className={styles.header}>
-      <Link to="/" className={styles.logo} aria-label="Simple Surgeries home">
-        <span className={styles.orb} aria-hidden="true">
-          SS
-        </span>
-        <span className={styles.name}>
-          <span>Simple</span>
-          <span>Surgeries</span>
-        </span>
+    <header className={styles.header} style={{ backgroundColor }}>
+      <Link to="/" className={styles.logo} aria-label="ask-ray home">
+        ask-<span className={styles.accent}>ray</span>
       </Link>
       <nav className={styles.nav} aria-label="Main">
         {NAV_ITEMS.map((item) => (
