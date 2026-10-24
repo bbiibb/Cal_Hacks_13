@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import Walkthrough from './walkthrough/walkthrough.tsx'
+import WalkthroughsList from './walkthroughs_list/walkthroughs_list.tsx'
 
 const container = document.getElementById('root')
 
@@ -18,6 +19,7 @@ createRoot(container).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/walkthrough" element={<Walkthrough />} />
+        <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

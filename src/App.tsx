@@ -20,6 +20,13 @@ function App() {
         >
           Go To Walkthrough
         </button>
+        <button
+          type="button"
+          className="counter"
+          onClick={() => navigate('/walkthroughs-list')}
+        >
+          Go To Walkthroughs List
+        </button>
       </section>
     </>
   )
