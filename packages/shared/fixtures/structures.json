@@ -1,0 +1,107 @@
+[
+  {
+    "id": "aorta",
+    "name_en": "Aorta",
+    "name_ko": "대동맥",
+    "parent_id": null,
+    "description": "심장의 좌심실에서 나온 혈액을 온몸으로 보내는 가장 큰 동맥."
+  },
+  {
+    "id": "aorta.ascending",
+    "name_en": "Ascending aorta",
+    "name_ko": "상행대동맥",
+    "parent_id": "aorta",
+    "description": "대동맥판막 바로 위에서 위로 올라가는 대동맥 구간."
+  },
+  {
+    "id": "aorta.root",
+    "name_en": "Aortic root",
+    "name_ko": "대동맥근부",
+    "parent_id": "aorta",
+    "description": "대동맥판막이 자리한 대동맥의 시작 부분."
+  },
+  {
+    "id": "aortic_annulus",
+    "name_en": "Aortic annulus",
+    "name_ko": "대동맥판륜",
+    "parent_id": null,
+    "description": "대동맥판막이 붙어 있는 고리 모양 조직. 새 판막이 자리 잡는 기준 위치."
+  },
+  {
+    "id": "aortic_valve",
+    "name_en": "Native aortic valve",
+    "name_ko": "원래 대동맥판막",
+    "parent_id": null,
+    "description": "좌심실과 대동맥 사이에서 혈액이 거꾸로 흐르지 않게 하는 3엽 판막."
+  },
+  {
+    "id": "aortic_valve.leaflet_right",
+    "name_en": "Right leaflet",
+    "name_ko": "우관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
+  },
+  {
+    "id": "aortic_valve.leaflet_left",
+    "name_en": "Left leaflet",
+    "name_ko": "좌관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
+  },
+  {
+    "id": "aortic_valve.leaflet_noncoronary",
+    "name_en": "Non-coronary leaflet",
+    "name_ko": "무관상동 첨판",
+    "parent_id": "aortic_valve",
+    "description": "원래 판막의 첨판 중 하나."
+  },
+  {
+    "id": "aortic_valve.calcification",
+    "name_en": "Calcification",
+    "name_ko": "석회화",
+    "parent_id": "aortic_valve",
+    "description": "첨판에 칼슘이 쌓여 딱딱해진 부분. 판막이 잘 열리지 않는 대동맥판막 협착의 주된 원인."
+  },
+  {
+    "id": "left_ventricle",
+    "name_en": "Left ventricle",
+    "name_ko": "좌심실",
+    "parent_id": null,
+    "description": "혈액을 대동맥으로 밀어내는 심장의 방."
+  },
+  {
+    "id": "left_coronary_artery",
+    "name_en": "Left coronary artery",
+    "name_ko": "좌관상동맥",
+    "parent_id": null,
+    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+  },
+  {
+    "id": "right_coronary_artery",
+    "name_en": "Right coronary artery",
+    "name_ko": "우관상동맥",
+    "parent_id": null,
+    "description": "심장 근육에 혈액을 공급하는 동맥. 대동맥근부에서 갈라져 나온다."
+  },
+  {
+    "id": "transcatheter_valve",
+    "name_en": "Transcatheter valve",
+    "name_ko": "경도관 인공판막",
+    "parent_id": null,
+    "description": "카테터로 전달해 원래 판막 안에 자리 잡는 새 인공 판막."
+  },
+  {
+    "id": "transcatheter_valve.frame",
+    "name_en": "Valve frame",
+    "name_ko": "인공판막 지지틀(스텐트)",
+    "parent_id": "transcatheter_valve",
+    "description": "새 판막을 지지하고 판륜에 고정되는 금속 틀. 좁게 접힌 채 전달되어 확장된다."
+  },
+  {
+    "id": "transcatheter_valve.leaflets",
+    "name_en": "Valve leaflets",
+    "name_ko": "인공판막 첨판",
+    "parent_id": "transcatheter_valve",
+    "description": "새 판막의 여닫이 막. (3D 모델 아직 없음 — docs/tavr-demo.md 참고)"
+  }
+]

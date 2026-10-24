@@ -1,0 +1,14 @@
+[
+  {
+    "id": "guidewire",
+    "name_en": "Guidewire",
+    "name_ko": "가이드와이어",
+    "description": "혈관을 따라 판막까지 길을 만들어 주는 가느다란 철사."
+  },
+  {
+    "id": "delivery_catheter",
+    "name_en": "Delivery catheter",
+    "name_ko": "전달 카테터",
+    "description": "접힌 새 판막을 싣고 혈관을 지나 판막 위치까지 운반하는 도관."
+  }
+]
