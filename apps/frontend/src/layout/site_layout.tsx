@@ -35,7 +35,14 @@ function SiteLayout() {
   const look = lookFor(pathname)
 
   return (
-    <div className={look.pastel ? `${styles.layout} ${styles.pastel}` : styles.layout}>
+    <div
+      className={[
+        styles.layout,
+        look.pastel ? styles.pastel : '',
+        // TEMPORARY: red landing page, to check that everyone runs the same code
+        pathname === '/' ? styles.testRed : '',
+      ].join(' ')}
+    >
       <SiteHeader
         backgroundColor={look.backgroundColor}
         textColor={look.textColor}

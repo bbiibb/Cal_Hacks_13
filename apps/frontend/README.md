@@ -39,7 +39,23 @@ public/models/               glTF (.glb) organ models
 The models in `public/models/` are large (about 130 MB in total, and `aortic_arch.glb` alone is about 72 MB). GitHub rejects files over 100 MB, so move them to Git LFS before they grow.
 Mesh names must match the `structure_id` values of the contract (see `docs/contracts.md`) so the chatbot can highlight parts.
 
-## Connecting to the backend
+## TAVI chat panel
+
+The walkthrough page has a chat panel next to the 3D view. Patients ask about TAVI and its side effects, and each answer can move the 3D view: change the step, focus on or highlight a part, zoom, rotate, or reset the camera. Answers also show a safety note, a question to ask the care team, and suggested follow-up questions.
+
+- `src/walkthrough/chat/`: the panel, the chat clients, and the frontend copy of the chat contract (`chat_types.ts`)
+- `src/walkthrough/visualization/scene_director.ts`: applies the answer's `scene_actions` to the models and the camera
+- `src/walkthrough/visualization/scene_bindings.ts`: which `structure_id` values each model file stands for. The current GLB mesh names do not match the contract yet, so a whole model stands in for its structures
+
+Where answers come from, set in `apps/frontend/.env.local`:
+
+| Setting | Answers |
+|---|---|
+| nothing (default) | Built-in demo answers about TAVI (`chat/demo_answers.ts`), with simple commands such as "zoom in", "rotate left 90 degrees", or "go to step 3". Works offline |
+| `VITE_CHAT_BACKEND=convex` and `VITE_CONVEX_URL=https://<deployment>.convex.cloud` | The backend chatbot (`chat.createSession` and `chat.ask`). Needs the backend's chat functions deployed |
+
+The demo answers are educational dummy content and must be reviewed by someone with medical knowledge before patients see them. Tests for the demo answers and response checks: `pnpm --filter @cal-hacks/frontend test`.
+
 
 The app does not call the backend yet. When it does, use the workspace packages:
 
