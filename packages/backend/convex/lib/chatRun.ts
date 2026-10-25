@@ -8,7 +8,7 @@ import { redactPersonalInfo } from "./safety";
 import { MAX_HISTORY_TURNS, type PromptData } from "./chatPrompt";
 import { LlmError } from "./llm";
 import { knowledgeFor } from "./knowledge";
-import { prepareModel } from "./modelRoute";
+import { cameraOnlyRoute, prepareModel } from "./modelRoute";
 
 /** Minimum time between two questions of one session, in milliseconds. Protects the free quota. */
 const MIN_MS_BETWEEN_QUESTIONS = 1500;
@@ -64,7 +64,9 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
     // The context above already lists every real part and step, so existence checks need no more reads
     const structureIds = new Set(data.structures.map((s) => s.id));
     // LLM_PROVIDER decides which model answers ("groq" or "local"); everything else stays the same
-    const route = await prepareModel(ctx, data, message);
+    // A pure camera command ("zoom in", "show me the right atrium") needs no model, so no embedding or search either
+    const cameraOnly = isCameraOnly(message, data.structures);
+    const route = cameraOnly ? cameraOnlyRoute() : await prepareModel(ctx, data, message);
     const result = await runChat({
       message,
       data,
@@ -87,7 +89,7 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
     if (result.safetyEvents.length > 0) console.log("[safety]", result.safetyEvents.join(","));
 
     // A camera command ("zoom in") says nothing about the patient's questions, so it does not use up memory
-    const memorable = !(isCameraOnly(message) && !result.response.urgent);
+    const memorable = !(cameraOnly && !result.response.urgent);
     if (args.sessionId && memorable) {
       await ctx.runMutation(internal.chatStore.saveExchange, {
         sessionId: args.sessionId,

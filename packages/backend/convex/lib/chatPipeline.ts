@@ -1,5 +1,12 @@
 import { ChatResponseSchema, type ChatResponse } from "@cal-hacks/shared";
-import { EMERGENCY_NOTICE, buildSceneActions, describeCameraCommands, detectUrgent, detectViewCommands } from "./chatActions";
+import {
+  EMERGENCY_NOTICE,
+  buildSceneActions,
+  describeCameraCommands,
+  detectPartTarget,
+  detectUrgent,
+  detectViewCommands,
+} from "./chatActions";
 import { parseLlmOutput, type LlmOutput } from "./chatParse";
 import {
   buildMessages,
@@ -66,11 +73,20 @@ const NO_MODEL_OUTPUT: LlmOutput = {
 /** An answer where the model itself declines or defers to the care team is fine as it is. */
 const DECLINES = /\b(can'?t|cannot|can not|unable to|not able to|don'?t have|do not have|not sure)\b[^.?!]*\b(care team|doctor|pharmacist|medical team|provide|help|advice|information)\b/i;
 
-/** "Zoom in" or "go to step 3": a command, not a medical question. */
-export function isCameraOnly(message: string): boolean {
-  const c = detectViewCommands(message);
-  const hasCommand = c.zoom !== null || c.rotate !== null || c.resetView || c.step !== null;
-  return hasCommand && !message.includes("?") && message.length < 80;
+/** A polite way to ask for a view change: "Can you zoom in?" */
+const POLITE_REQUEST = /^(please\b|(can|could|would|will) you\b|let'?s\b|i('d| would) like to\b|i want to\b|where (is|are)\b)/;
+
+/**
+ * "Zoom in", "go to step 3", "show me the right atrium": a command for the 3D view, not a medical question.
+ * It is answered from the patient's words alone, so no model is asked (about ten seconds saved on a local 3B model).
+ */
+export function isCameraOnly(message: string, structures: readonly { id: string; name: string }[] = []): boolean {
+  const text = message.trim().toLowerCase();
+  const c = detectViewCommands(text);
+  const hasCommand =
+    c.zoom !== null || c.rotate !== null || c.resetView || c.step !== null || detectPartTarget(text, structures) !== null;
+  if (!hasCommand || text.length >= 80) return false;
+  return !text.includes("?") || POLITE_REQUEST.test(text);
 }
 
 /**
@@ -124,7 +140,8 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
 
   // A pure camera command ("zoom in") is read from the patient's words and answered with a fixed sentence,
   // so the model is not needed. On a local 3B model this saves a whole generation (about ten seconds).
-  let output: LlmOutput | null = !urgentByRule && isCameraOnly(input.message) ? NO_MODEL_OUTPUT : null;
+  const cameraOnly = !urgentByRule && isCameraOnly(input.message, input.data.structures);
+  let output: LlmOutput | null = cameraOnly ? NO_MODEL_OUTPUT : null;
   if (!output) output = parseLlmOutput(await input.callModel(messages));
   if (!output) {
     // One retry with a reminder: cheap, and fixes many format slips of small models.
@@ -158,10 +175,13 @@ export async function runChat(input: ChatPipelineInput): Promise<ChatPipelineRes
   let sourceTitle: string | undefined;
   let modelAnswerUsed = false;
 
-  if (!urgent && isCameraOnly(input.message)) {
-    // A pure camera command gets a fixed confirmation; the model's wording and highlights are not used
-    answer = describeCameraCommands(detectViewCommands(input.message), input.data.steps.length);
-    highlight = [];
+  if (!urgent && cameraOnly) {
+    // A pure camera command gets a fixed confirmation; the model's wording and highlights are not used.
+    // "Show me the right atrium" points at that one part, found by its name in the patient's words.
+    const target = detectPartTarget(input.message, input.data.structures);
+    const targetName = input.data.structures.find((s) => s.id === target)?.name;
+    answer = describeCameraCommands(detectViewCommands(input.message), input.data.steps.length, targetName);
+    highlight = target ? [target] : [];
   } else if (containsMedicalAdvice(answer)) {
     answer = REFUSALS.advice_filtered.message;
     doctorQuestion = REFUSALS.advice_filtered.doctorQuestion;

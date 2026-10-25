@@ -77,9 +77,30 @@ export function detectViewCommands(message: string): ViewCommands {
   return { zoom, rotate, resetView, step };
 }
 
+/** A word that shows the patient wants to see a part, not to learn about it. */
+const SHOW_PART_INTENT = /\b(show|point (at|to)|focus (on|in on)|zoom (in )?(on|to|into)|take me to|look at|find|highlight|where (is|are))\b/;
+/** A word that shows the patient wants an explanation, so the model should answer. */
+const EXPLAIN_INTENT = /\b(what|why|how|when|does|do|did|is it|are they|explain|tell|mean|means|happen|happens|risk|risks|safe|hurt|pain|side effects?)\b/;
+
+/** The part a "show me the right atrium" command points at, or null. The longest matching name wins. */
+export function detectPartTarget(message: string, structures: readonly { id: string; name: string }[]): string | null {
+  const text = message.toLowerCase();
+  if (!SHOW_PART_INTENT.test(text) || EXPLAIN_INTENT.test(text.replace(/\bwhere (is|are)\b/g, ""))) return null;
+  let best: { id: string; length: number } | null = null;
+  for (const s of structures) {
+    const names = new Set([s.name.toLowerCase(), s.id.replace(/[._]/g, " ")]);
+    for (const name of names) {
+      const found = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(text);
+      if (found && (!best || name.length > best.length)) best = { id: s.id, length: name.length };
+    }
+  }
+  return best?.id ?? null;
+}
+
 /** A plain confirmation of what the camera did. Used instead of the model's words for pure camera commands. */
-export function describeCameraCommands(commands: ViewCommands, stepCount: number): string {
+export function describeCameraCommands(commands: ViewCommands, stepCount: number, partName?: string): string {
   const done: string[] = [];
+  if (partName) done.push(`showing the ${partName.toLowerCase()}`);
   if (commands.step !== null && commands.step >= 1 && commands.step <= stepCount) done.push(`moved to step ${commands.step}`);
   if (commands.zoom) done.push(`zoomed ${commands.zoom.direction}`);
   if (commands.rotate) {
