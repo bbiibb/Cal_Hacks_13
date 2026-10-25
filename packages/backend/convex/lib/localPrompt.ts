@@ -1,4 +1,5 @@
 import { cleanUserText, describeScreen, type ChatTurn, type LlmMessage, type PromptData } from "./chatPrompt";
+import { capHistoryMessage } from "./chatSummary";
 import { allowedStructureIds, promptText, type RetrievedDoc } from "./rag";
 
 /**
@@ -47,10 +48,11 @@ function formatContext(docs: RetrievedDoc[], allowedIds: string[]): string {
 export const LOCAL_FORMAT_LINE =
   'Reply with ONLY this JSON object and nothing else: {"answer": "...", "highlight": [], "urgent": false, "safety": "", "doctor_question": ""}';
 
-export function buildLocalSystemPrompt(docs: RetrievedDoc[], allowedIds: string[]): string {
+export function buildLocalSystemPrompt(docs: RetrievedDoc[], allowedIds: string[], summary = ""): string {
   return [
     "You are a patient-education assistant for a 3D heart procedure viewer. Answer using ONLY the CONTEXT below.",
     `CONTEXT:\n${formatContext(docs, allowedIds)}`,
+    ...(summary ? [`EARLIER IN THIS CONVERSATION (older messages, shortened): ${summary}`] : []),
     [
       "RULES:",
       "1. Reply in at most 3 short sentences, in plain words, in the patient's language. Answer the question first. Begin with Yes or No only if the CONTEXT clearly says so.",
@@ -110,10 +112,10 @@ export function buildLocalMessages(
   const ids = allowedIds ?? allowedStructureIds(docs);
   const recent = history.slice(-MAX_LOCAL_HISTORY_TURNS).map((turn) => ({
     role: turn.role,
-    content: cleanUserText(turn.content),
+    content: capHistoryMessage(cleanUserText(turn.content)),
   }));
   return [
-    { role: "system", content: buildLocalSystemPrompt(docs, ids) },
+    { role: "system", content: buildLocalSystemPrompt(docs, ids, data.conversationSummary ?? "") },
     ...buildLocalExample(data, ids),
     ...recent,
     { role: "user", content: `${describeScreen(data)}\nQuestion: ${cleanUserText(userMessage)}` },

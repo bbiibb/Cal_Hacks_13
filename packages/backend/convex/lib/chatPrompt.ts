@@ -1,4 +1,5 @@
 import type { KnowledgeChunk } from "@cal-hacks/shared";
+import { capHistoryMessage } from "./chatSummary";
 import type { RetrievedDoc } from "./rag";
 
 /**
@@ -30,6 +31,8 @@ export interface PromptData {
   structures: PromptStructure[];
   /** Patient-education facts about the procedure (the reference material). Added by the caller, not stored with the procedure. */
   knowledge?: KnowledgeChunk[];
+  /** Older messages of this conversation, shortened (see chatSummary.ts). Empty or missing for a short conversation. */
+  conversationSummary?: string;
 }
 
 export interface ChatTurn {
@@ -88,6 +91,7 @@ export function buildSystemPrompt(data: PromptData, reference: RetrievedDoc[] = 
   return [
     "You are a friendly patient-education assistant. The patient is looking at an interactive 3D model of their heart procedure and asks you questions about what they see.",
     `PROCEDURE: ${data.procedureTitle}`,
+    ...(data.conversationSummary ? [`EARLIER IN THIS CONVERSATION (older messages, shortened): ${data.conversationSummary}`] : []),
     `STEPS:\n${steps}`,
     `PARTS YOU CAN POINT AT (use the ids exactly as written):\n${parts}`,
     ...(reference.length > 0
@@ -163,7 +167,7 @@ export function buildMessages(
 ): LlmMessage[] {
   const recent = history.slice(-MAX_HISTORY_TURNS).map((turn) => ({
     role: turn.role,
-    content: cleanUserText(turn.content),
+    content: capHistoryMessage(cleanUserText(turn.content)),
   }));
   return [
     { role: "system", content: buildSystemPrompt(data, reference) },

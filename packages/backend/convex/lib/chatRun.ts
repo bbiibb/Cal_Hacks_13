@@ -3,9 +3,9 @@ import { ConvexError } from "convex/values";
 import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import type { ActionCtx } from "../_generated/server";
-import { runChat } from "./chatPipeline";
+import { isCameraOnly, runChat } from "./chatPipeline";
 import { redactPersonalInfo } from "./safety";
-import { MAX_HISTORY_TURNS } from "./chatPrompt";
+import { MAX_HISTORY_TURNS, type PromptData } from "./chatPrompt";
 import { LlmError } from "./llm";
 import { knowledgeFor } from "./knowledge";
 import { prepareModel } from "./modelRoute";
@@ -45,7 +45,7 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
       throw new ConvexError({ code: "context_not_found", message: "That procedure or step does not exist." });
     }
     // The reference facts (patient-education knowledge) are bundled with the backend
-    const data = { ...stored, knowledge: knowledgeFor(stored.procedureSlug) };
+    let data: PromptData = { ...stored, knowledge: knowledgeFor(stored.procedureSlug) };
 
     let history: { role: "user" | "assistant"; content: string }[] = [];
     if (args.sessionId) {
@@ -57,6 +57,8 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
         throw new ConvexError({ code: "too_many_requests", message: "Please wait a moment before asking again." });
       }
       history = stored.turns;
+      // Older messages are no longer kept; what the patient asked earlier reaches the model as a short summary
+      if (stored.summary !== "") data = { ...data, conversationSummary: stored.summary };
     }
 
     // The context above already lists every real part and step, so existence checks need no more reads
@@ -84,7 +86,9 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
     // Only the kind of event is logged, never the patient's words
     if (result.safetyEvents.length > 0) console.log("[safety]", result.safetyEvents.join(","));
 
-    if (args.sessionId) {
+    // A camera command ("zoom in") says nothing about the patient's questions, so it does not use up memory
+    const memorable = !(isCameraOnly(message) && !result.response.urgent);
+    if (args.sessionId && memorable) {
       await ctx.runMutation(internal.chatStore.saveExchange, {
         sessionId: args.sessionId,
         question: message,

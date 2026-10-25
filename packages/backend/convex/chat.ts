@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { action, internalMutation, mutation, type MutationCtx } from "./_generated/server";
 import { answerQuestion } from "./lib/chatRun";
@@ -14,6 +15,7 @@ export const createSession = mutation({
     return await ctx.db.insert("chatSessions", {
       // No login yet, so each conversation gets a random anonymous key
       clientSessionId: crypto.randomUUID(),
+      lastActiveAt: Date.now(),
       ...(args.procedureSlug ? { procedureSlug: args.procedureSlug } : {}),
     });
   },
@@ -44,6 +46,40 @@ export const purgeOldSessions = internalMutation({
       .take(50);
     for (const session of old) await deleteSessionData(ctx, session._id);
     return old.length;
+  },
+});
+
+/** Sessions deleted per run. A run that finds more schedules the next one right away. */
+const PURGE_BATCH = 10;
+
+/**
+ * Deletes conversations that nobody has used for the given number of hours. This is the safety net behind
+ * "the conversation ends when the window closes": the page asks for deletion when it closes, but a browser
+ * may not send that request (a crash, a phone that suspends the page). It runs every hour (see crons.ts).
+ * Sessions made before `lastActiveAt` existed have no value and are treated as idle.
+ */
+export const purgeInactiveSessions = internalMutation({
+  args: { inactiveHours: v.number() },
+  returns: v.number(),
+  handler: async (ctx, args) => {
+    const cutoff = Date.now() - Math.max(args.inactiveHours, 0) * 3_600_000;
+    const idle = await ctx.db
+      .query("chatSessions")
+      .withIndex("by_last_active_at", (q) => q.lt("lastActiveAt", cutoff))
+      .take(PURGE_BATCH);
+    // Old sessions without a last activity time: judged by when they were created
+    const legacy =
+      idle.length < PURGE_BATCH
+        ? await ctx.db
+            .query("chatSessions")
+            .withIndex("by_creation_time", (q) => q.lt("_creationTime", cutoff))
+            .filter((q) => q.eq(q.field("lastActiveAt"), undefined))
+            .take(PURGE_BATCH - idle.length)
+        : [];
+    const ids = new Set([...idle, ...legacy].map((s) => s._id));
+    for (const id of ids) await deleteSessionData(ctx, id);
+    if (ids.size === PURGE_BATCH) await ctx.scheduler.runAfter(0, internal.chat.purgeInactiveSessions, args);
+    return ids.size;
   },
 });
 

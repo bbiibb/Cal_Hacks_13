@@ -28,6 +28,8 @@ export class ConvexChatClient implements ChatClient {
   private readonly baseUrl: string
   private readonly procedureSlug: string
   private session: Promise<string | null> | null = null
+  /** The id of the session once it exists, so `close()` can use it without waiting */
+  private openSessionId: string | null = null
 
   constructor(deploymentUrl: string, procedureSlug: string) {
     this.baseUrl = deploymentUrl.replace(/\/+$/, '')
@@ -65,6 +67,29 @@ export class ConvexChatClient implements ChatClient {
     return { response, followUps: response.urgent ? [] : followUpsForStep(stepIndex) }
   }
 
+  /**
+   * Asks the backend to delete this conversation. It does not wait: it is meant for the moment the page closes,
+   * so the request is sent with `keepalive`, which lets it finish after the page is gone. Nothing happens when
+   * no conversation was started. A later question starts a new conversation.
+   * If the browser cannot send it, the backend deletes idle conversations on its own (after 2 hours).
+   */
+  close(): void {
+    const sessionId = this.openSessionId
+    this.openSessionId = null
+    this.session = null
+    if (!sessionId) return
+    try {
+      void fetch(`${this.baseUrl}/api/mutation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: 'chat:deleteSession', args: { sessionId }, format: 'json' }),
+        keepalive: true,
+      }).catch(() => {})
+    } catch {
+      // Closing the page must never throw
+    }
+  }
+
   /** Sends the recording to a one-time upload URL and returns the storage id. */
   private async upload(audio: Blob): Promise<string> {
     const uploadUrl = await this.call('mutation', 'speech:generateUploadUrl', {})
@@ -95,7 +120,10 @@ export class ConvexChatClient implements ChatClient {
    */
   private sessionId(): Promise<string | null> {
     this.session ??= this.call('mutation', 'chat:createSession', { procedureSlug: this.procedureSlug })
-      .then((id) => (typeof id === 'string' ? id : null))
+      .then((id) => {
+        this.openSessionId = typeof id === 'string' ? id : null
+        return this.openSessionId
+      })
       .catch((error: unknown) => {
         console.warn('Chat: could not start a session; answering without history', error)
         this.session = null // try again on the next question

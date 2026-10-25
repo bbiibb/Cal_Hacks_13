@@ -76,6 +76,11 @@ export interface ChatClient {
    * `transcript` is what the backend heard, shown as the patient's message.
    */
   askByVoice?(audio: Blob, context: ChatContext): Promise<ChatReply & { transcript: string }>
+  /**
+   * Ends the conversation: the backend deletes it. Called when the page is closed or hidden, so it must not
+   * wait for an answer. Absent for the demo answers, which keep nothing.
+   */
+  close?(): void
 }
 
 /** An error with a stable code, so the panel can show a friendly message. */

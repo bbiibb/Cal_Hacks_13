@@ -65,7 +65,13 @@ export default defineSchema({
     clientSessionId: v.string(),
     procedureSlug: v.optional(v.string()),
     currentStepIndex: v.optional(v.number()),
-  }).index("by_client_session_id", ["clientSessionId"]),
+    // When the patient last asked something. Conversations idle for too long are deleted (see crons.ts)
+    lastActiveAt: v.optional(v.number()),
+    // Older messages, shortened by rules (lib/chatSummary.ts), after the originals were deleted
+    summary: v.optional(v.object({ questions: v.array(v.string()), topics: v.array(v.string()) })),
+  })
+    .index("by_client_session_id", ["clientSessionId"])
+    .index("by_last_active_at", ["lastActiveAt"]),
 
   chatMessages: defineTable({
     sessionId: v.id("chatSessions"),

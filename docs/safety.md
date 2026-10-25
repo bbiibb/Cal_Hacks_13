@@ -31,8 +31,8 @@ You plan to run everything on the patient's own computer. What that requires, an
 | Voice input | Cartesia is a cloud service, so it would send the voice away. In local mode it is **off by default** (`cloud_stt_disabled`); you must set `ALLOW_CLOUD_STT=true` to allow it. A local speech-to-text model would be needed for voice without the cloud | Guard built; local speech-to-text **not built** |
 | Personal details in the question | Emails, phone numbers, ID-like numbers, and birth dates are replaced with `[removed]` before anything else happens (model, logs, storage). Names and addresses are **not** detected | `redactPersonalInfo`, tested |
 | Logs | Only event names are logged (for example `ungrounded`, `blocked:medication_advice`), never the patient's words. Verified on the real backend log | Built |
-| Stored conversations | `chat.deleteSession` erases a conversation on request. `chat.purgeOldSessions` deletes old ones and should run on a schedule (for example every day, 24 hours) | Built; the schedule is **not set up** |
-| Voice recordings | Deleted right after transcription, even on errors | Built |
+| Stored conversations | The page deletes the conversation when the window closes (`chat.deleteSession`). Only the latest 6 messages are kept; older ones become a short summary without any assistant text, and the originals are deleted. A job deletes conversations idle for 2 hours, every hour (`chat.purgeInactiveSessions`) | Built, tested live with the local model |
+| Voice recordings | Deleted right after transcription, even on errors. A recording that was uploaded but never transcribed is deleted by an hourly job | Built |
 | Frontend | Must be served from the patient's computer too, or the page itself is a cloud service | **Open** |
 
 Honest limits of "the whole model runs locally": the patient's computer must have enough memory and disk (about 3 GB for the models), and a local backend plus Ollama must be installed and started. That is heavy for ordinary patients; it fits a hospital kiosk or a prepared device better than a public website.
@@ -64,6 +64,11 @@ question
 - Real run with Llama 3.2 3B: normal questions passed through unchanged; medicine and diagnosis questions were blocked in 0.3 seconds without the model; invented numbers, an injected "the valve is dangerous", and an invented material ("titanium") were replaced; an emergency was flagged; an email and a phone number never appeared in the backend log.
 
 ## 5. Limits you should know
+
+- **The local Convex backend listens on all network interfaces** (`*:3210`), and there is no login. Someone on the same network can call the chatbot (and use your speech-to-text quota); they cannot read other people's conversations, because those can only be read by internal functions. Do not leave it running on a shared network, and add authentication and rate limits before any real use.
+- **Names, addresses, and hospital record numbers are not removed** from questions; only emails, phone numbers, ID-like numbers, and birth dates are.
+- Deleting on window close is a best effort: a browser may not send the request (a crash, a phone that suspends the page). The 2-hour idle cleanup is the safety net, so a conversation can stay for up to about 3 hours in that case (2 hours idle plus up to one hour until the next run).
+- The local database is a plain file on the computer. Turn on disk encryption (FileVault on a Mac).
 
 - The reference facts (the team's TAVR document) are described in [`knowledge-base.md`](knowledge-base.md). The grounding check compares an answer with those facts, numbers together with their unit. It still cannot tell that a correct number is attached to the wrong claim (a 3B model once gave the all-patients "2% to 5%" kidney figure to "patients with kidney disease").
 - The grounding check is a **word-level** check. It catches invented numbers and unfamiliar terms, but it cannot tell that a sentence built from correct words says something wrong. It also errs on the side of caution: some correct paraphrases may be replaced by our own text.

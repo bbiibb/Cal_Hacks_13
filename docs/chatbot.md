@@ -65,6 +65,44 @@ chat.ask({ message, context: { procedure_slug, step_index, selected_structure_id
 
 The pure logic is in `packages/backend/convex/lib/` (`chatPrompt`, `chatParse`, `chatActions`, `chatPipeline`, `llm`) and is covered by unit tests. `convex/chat.ts` only connects it to the database and the network.
 
+## Conversation memory
+
+A conversation lasts until the window is closed. The model sees only the latest messages (6 for the cloud model, 4 for the local one), because a small model has a short memory and every extra token costs seconds on a local computer. Older messages are not simply lost; they are folded into a short summary.
+
+**How it works** (`convex/lib/chatSummary.ts`, `convex/chatStore.ts`)
+
+1. After each answer, only the latest 6 messages stay in the database in full. Older ones are folded into the session's `summary` and **deleted**.
+2. The summary holds two lists, built by rules: the patient's earlier questions (each cut to 90 characters, the newest 8 kept) and the topics already explained (the titles of the reference facts that earlier answers cited, the newest 6 kept). It never keeps the assistant's own sentences.
+3. It is rendered as one paragraph of at most 600 characters (the oldest questions are dropped first) and added to the prompt as `EARLIER IN THIS CONVERSATION (older messages, shortened): The patient earlier asked: "..."; "...". Already explained: ...`.
+4. A pure camera command ("zoom in") is not stored, so it does not use up the memory. Any single earlier message is cut at 300 characters in the prompt.
+5. The conversation ends when the window closes: the page asks the backend to delete it (`chat.deleteSession`, sent with `keepalive` on `pagehide`). Because a browser may not send that request, a job deletes every conversation that was idle for 2 hours, every hour (`chat.purgeInactiveSessions`, `convex/crons.ts`). A question that arrives with the id of a deleted conversation is still answered, without history, and does not bring the conversation back.
+
+### Decision record: why the summary is built by rules and not by a model
+
+Status: accepted. Date: 2026-10-24. Context: the chatbot runs a 3B model on the patient's own computer (Llama 3.2 3B through Ollama), with a 2048-token window, and answers medical questions.
+
+The obvious way to shorten a conversation is to ask the language model to summarize it. We chose not to, for these reasons:
+
+| Reason | Detail |
+|---|---|
+| **Latency** | A model summary is a second generation. On the local 3B model one answer already takes 10 to 20 seconds, so a summary would add about 10 seconds more (in the background it competes with the next question for the same model, because the computer has memory for one). The rules take well under a millisecond. |
+| **Errors would last** | A summary that contains a wrong claim is copied into every following prompt. The grounding check only compares an answer with our reference facts, so a mistake in the summary would not be caught, and a small model reading its own wrong summary tends to repeat it. A wrong sentence in a normal answer is seen once; in a summary it would be repeated for the rest of the conversation. |
+| **Prompt injection would last** | Text the patient types is untrusted. A model that summarizes it can turn "ignore your rules" into a lasting instruction. The rule-based summary only copies a shortened question as quoted text, and it never copies the assistant's sentences. |
+| **No medical claims are stored** | The summary lists topics by the title of the reference fact (for example "Risk: stroke"), not by the sentence that was said. Medical wording therefore always comes from our reference text, never from a summary. |
+| **Privacy** | The original messages are deleted once folded, and the summary is smaller and contains no assistant text. Less patient data is kept. Personal details were already removed from the questions before they were stored. |
+| **Predictable and testable** | Every rule has a unit test (length limits, duplicates, oldest dropped first, nothing from the assistant). A model summary can only be checked by reading examples. |
+| **Fits the window** | The summary has a hard limit (600 characters), and a test builds the largest possible prompt to check that it still fits 2048 tokens together with the 300-token answer. A model summary can vary in length. |
+
+What we give up: the summary does not understand the conversation. It cannot say "the patient is worried about pain"; it only lists what was asked and which topics were explained. For a patient-education chatbot that is enough to avoid repeating itself and to understand "and the other one?", and the latest 4 to 6 messages are kept in full for the reference words ("it", "that").
+
+Alternatives considered:
+
+- **Model summary in the background.** Rejected for the reasons above. It can be reconsidered if the cloud model is the only provider, where a second call costs little and the model is stronger.
+- **Keep everything and send a longer history.** Rejected: the local window is 2048 tokens, and long prompts slow every answer.
+- **Embedding-based memory** (retrieve earlier messages that are similar to the new question). Rejected for now: more moving parts, and it would store the assistant's earlier text again. Reconsider if conversations become long enough that the listed questions are not enough.
+
+When to revisit: if real conversations often need details from more than 8 questions ago, if the local model is replaced by a larger one, or if clinicians ask for the summary to keep the patient's concerns in their own words.
+
 ## Prompt engineering used for small models
 
 - Short, numbered rules instead of long prose.
@@ -110,5 +148,5 @@ Animate these over about 0.5 to 1 second so the change is easy to follow.
 - **No rate limiting beyond one question per 1.5 seconds per session.** Anyone who knows the deployment URL could use up the free quota. Add a real limit before sharing the app.
 - The free providers return "busy" (error code `llm_rate_limited`) when too many questions arrive in a minute. The server waits up to 8 seconds once when the provider says when to retry, then gives up. The UI should show a friendly message and let the patient try again.
 - Answers are only as good as the content in the database. The dummy content is not medical advice.
-- Conversation history is kept per session in `chatMessages`. There is no login, so sessions are anonymous.
+- Conversation history is kept per session in `chatMessages` (the latest 6 messages) plus a short summary (see "Conversation memory"). There is no login, so sessions are anonymous.
 - Sources are built (the reference facts and how they are found: [`knowledge-base.md`](knowledge-base.md)). Not built yet: the comprehension quiz and the "questions for your doctor" summary.

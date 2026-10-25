@@ -101,3 +101,44 @@ describe('ConvexChatClient.askByVoice', () => {
     })
   })
 })
+
+describe('ConvexChatClient.close', () => {
+  it('deletes the conversation with a request that survives the page closing', async () => {
+    const calls = mockFetch(happyPath)
+    const client = new ConvexChatClient('https://x.convex.cloud/', 'tavi')
+    await client.ask({ message: 'Hi', context })
+    client.close()
+
+    const last = calls[calls.length - 1]
+    expect(last.url).toBe('https://x.convex.cloud/api/mutation')
+    expect(last.body).toEqual({ path: 'chat:deleteSession', args: { sessionId: 'sess1' }, format: 'json' })
+    const init = (fetch as unknown as { mock: { calls: [string, RequestInit][] } }).mock.calls.at(-1)![1]
+    expect(init.keepalive).toBe(true)
+  })
+
+  it('does nothing when no conversation was started', () => {
+    const calls = mockFetch(happyPath)
+    new ConvexChatClient('https://x.convex.cloud', 'tavi').close()
+    expect(calls).toHaveLength(0)
+  })
+
+  it('sends the deletion only once, and a later question starts a new conversation', async () => {
+    const calls = mockFetch(happyPath)
+    const client = new ConvexChatClient('https://x.convex.cloud', 'tavi')
+    await client.ask({ message: 'Hi', context })
+    client.close()
+    client.close()
+    expect(calls.filter((c) => (c.body as { path?: string }).path === 'chat:deleteSession')).toHaveLength(1)
+
+    await client.ask({ message: 'Hello again', context })
+    expect(calls.filter((c) => (c.body as { path?: string }).path === 'chat:createSession')).toHaveLength(2)
+  })
+
+  it('never throws, even when the request cannot be sent', async () => {
+    const client = new ConvexChatClient('https://x.convex.cloud', 'tavi')
+    mockFetch(happyPath)
+    await client.ask({ message: 'Hi', context })
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('offline'))))
+    expect(() => client.close()).not.toThrow()
+  })
+})
