@@ -544,6 +544,83 @@
     "source": "TAVR patient information guide"
   },
   {
+    "id": "anatomy.right_atrium",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Right atrium",
+    "text": "The right atrium is the upper chamber on the right side of the heart. It receives oxygen-poor blood coming back from the body and passes it down to the right ventricle. TAVR is done on the left side of the heart, so the right atrium is not part of the route the catheter takes.",
+    "questions": [
+      "What is the right atrium?",
+      "Is the right atrium touched during TAVR?"
+    ],
+    "keywords": [
+      "right atrium",
+      "upper right chamber"
+    ],
+    "structure_ids": [
+      "right_atrium"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.right_ventricle",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Right ventricle",
+    "text": "The right ventricle is the lower chamber on the right side of the heart. It pumps oxygen-poor blood to the lungs through the pulmonary artery. TAVR works on the left side of the heart; the only thing placed on the right side is the thin temporary pacemaker wire used briefly during the procedure.",
+    "questions": [
+      "What is the right ventricle?",
+      "What does the right ventricle do?"
+    ],
+    "keywords": [
+      "right ventricle",
+      "lower right chamber"
+    ],
+    "structure_ids": [
+      "right_ventricle"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.superior_vena_cava",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Superior vena cava",
+    "text": "The superior vena cava is the large vein that brings blood from the head, neck, and arms back to the right atrium. It is not part of the TAVR route, which follows the arteries to the aortic valve.",
+    "questions": [
+      "What is the superior vena cava?",
+      "What is the vena cava?"
+    ],
+    "keywords": [
+      "vena cava",
+      "large vein"
+    ],
+    "structure_ids": [
+      "superior_vena_cava"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.pulmonary_artery",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Pulmonary artery",
+    "text": "The pulmonary artery is the large vessel that carries oxygen-poor blood from the right ventricle to the lungs. It sits right beside the aorta at the top of the heart, but it is not part of the TAVR route.",
+    "questions": [
+      "What is the pulmonary artery?",
+      "Where does blood go to get oxygen?"
+    ],
+    "keywords": [
+      "pulmonary artery",
+      "lungs",
+      "pulmonary trunk"
+    ],
+    "structure_ids": [
+      "pulmonary_artery"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
     "id": "procedure.how_valve_delivered",
     "procedure_slug": "tavr",
     "topic": "procedure",
