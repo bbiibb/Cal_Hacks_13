@@ -47,10 +47,10 @@ For the **Fast** choice in the chat panel, point the three variables at any Open
 ```bash
 pnpm exec convex env set LLM_API_KEY <your Google AI Studio key>
 pnpm exec convex env set LLM_BASE_URL https://generativelanguage.googleapis.com/v1beta/openai
-pnpm exec convex env set LLM_MODEL gemini-2.5-flash-lite
+pnpm exec convex env set LLM_MODEL gemini-3.1-flash-lite
 ```
 
-`gemini-2.5-flash-lite` is the cheapest current Gemini text model (about $0.10 per million input and $0.40 per million output tokens on third-party price lists; check Google's pricing page). For Gemini 2.5 models the backend sends `reasoning_effort: "none"` so no thinking tokens are paid for. Other Gemini models get `reasoning_effort: "low"` and an output limit of at least 2048 tokens, because Gemini counts its thinking tokens against the limit. Or set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
+`gemini-3.1-flash-lite` is the small, low-cost Gemini model used for Fast mode. `gemini-2.5-flash-lite` was tried first but returns HTTP 404 ("no longer available to new users") for new API keys; check Google's pricing page for current prices. For Gemini 2.5 models the backend sends `reasoning_effort: "none"` so no thinking tokens are paid for. Other Gemini models get `reasoning_effort: "low"` and an output limit of at least 2048 tokens, because Gemini counts its thinking tokens against the limit. Or set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
 
 For speech-to-text, set `CARTESIA_API_KEY` the same way (see `docs/backend-api.md`).
 
