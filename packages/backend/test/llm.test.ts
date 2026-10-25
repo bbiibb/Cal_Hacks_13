@@ -4,6 +4,7 @@ import {
   DEFAULT_LLM_MODEL,
   LlmError,
   completeChat,
+  providerForSpeed,
   resolveLlmConfig,
 } from "../convex/lib/llm";
 
@@ -133,5 +134,13 @@ describe("completeChat", () => {
       completeChat({ config, messages, fetchImpl: fetchImpl as unknown as typeof fetch, timeoutMs: 20 }),
       "llm_timeout",
     );
+  });
+});
+
+describe("providerForSpeed", () => {
+  it("maps the patient's choice to a pipeline, and leaves the default alone without one", () => {
+    expect(providerForSpeed("fast")).toBe("groq");
+    expect(providerForSpeed("slow")).toBe("local");
+    expect(providerForSpeed(undefined)).toBeUndefined();
   });
 });

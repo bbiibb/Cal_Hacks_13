@@ -5,7 +5,7 @@ import { action, internalMutation, mutation, type MutationCtx } from "./_generat
 import { answerQuestion } from "./lib/chatRun";
 import { transcribeStoredAudio } from "./lib/speechRun";
 import { voiceQuestion } from "./lib/speechText";
-import { vChatContext, vChatResponse } from "./validators";
+import { vChatContext, vChatResponse, vChatSpeed } from "./validators";
 
 /** Starts a conversation. The returned id is passed to `ask` so the chat keeps its history. */
 export const createSession = mutation({
@@ -94,6 +94,8 @@ export const ask = action({
     message: v.string(),
     context: vChatContext,
     sessionId: v.optional(v.id("chatSessions")),
+    /** "slow": local Llama on this computer. "fast": the cloud model (uses the paid API). Default: LLM_PROVIDER. */
+    speed: v.optional(vChatSpeed),
   },
   returns: vChatResponse,
   handler: async (ctx, args) => {
@@ -113,6 +115,7 @@ export const askByVoice = action({
     language: v.optional(v.string()),
     context: vChatContext,
     sessionId: v.optional(v.id("chatSessions")),
+    speed: v.optional(vChatSpeed),
   },
   returns: v.object({
     transcript: v.string(),
@@ -129,6 +132,7 @@ export const askByVoice = action({
       message: voiceQuestion(heard.text),
       context: args.context,
       sessionId: args.sessionId,
+      speed: args.speed,
     });
     return { transcript: heard.text, language: heard.language, response };
   },

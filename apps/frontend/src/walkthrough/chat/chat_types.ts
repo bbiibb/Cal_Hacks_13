@@ -54,9 +54,14 @@ export type ChatContext = {
   selected_structure_id: string | null
 }
 
+/** "slow" answers with the model on this computer (free). "fast" uses the cloud model, a paid service. */
+export type ChatSpeed = 'slow' | 'fast'
+
 export type ChatRequest = {
   message: string
   context: ChatContext
+  /** Which model answers. Without it the backend decides. The demo answers ignore it. */
+  speed?: ChatSpeed
 }
 
 /** What the chat panel receives for one question: the answer plus follow-up questions to offer. */
@@ -75,7 +80,7 @@ export interface ChatClient {
    * Answer a spoken question. Absent when the backend cannot transcribe, so the panel hides the microphone.
    * `transcript` is what the backend heard, shown as the patient's message.
    */
-  askByVoice?(audio: Blob, context: ChatContext): Promise<ChatReply & { transcript: string }>
+  askByVoice?(audio: Blob, context: ChatContext, speed?: ChatSpeed): Promise<ChatReply & { transcript: string }>
   /**
    * Ends the conversation: the backend deletes it. Called when the page is closed or hidden, so it must not
    * wait for an answer. Absent for the demo answers, which keep nothing.

@@ -142,3 +142,21 @@ describe('ConvexChatClient.close', () => {
     expect(() => client.close()).not.toThrow()
   })
 })
+
+describe('ConvexChatClient.ask speed', () => {
+  it('sends the speed the patient chose, and nothing when they did not choose', async () => {
+    const calls = mockFetch(happyPath)
+    const client = new ConvexChatClient('https://x.convex.cloud', 'tavi')
+    await client.ask({ message: 'hi', context, speed: 'fast' })
+    await client.ask({ message: 'hi', context })
+    const asks = calls.filter((c) => (c.body as { path?: string }).path === 'chat:ask').map((c) => (c.body as { args: Record<string, unknown> }).args)
+    expect(asks[0]).toMatchObject({ speed: 'fast' })
+    expect(asks[1]).not.toHaveProperty('speed')
+  })
+
+  it('sends the speed with a voice question too', async () => {
+    const calls = mockFetch(happyPath)
+    await new ConvexChatClient('https://x.convex.cloud', 'tavi').askByVoice(audio, context, 'slow')
+    expect((calls[calls.length - 1].body as { args: Record<string, unknown> }).args).toMatchObject({ speed: 'slow' })
+  })
+})
