@@ -18,13 +18,6 @@ const CAMERA: CameraOptions = {
   position: [0, 1.5, 4],
 }
 
-const orbitCamera: CameraControllerFactory = (camera, domElement) =>
-  new OrbitCameraController(camera, domElement, {
-    target: [0, 0, 0],
-    minDistance: 0,
-    maxDistance: 12,
-  })
-
 const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
 
 /** Builds a fresh set of scene objects. Called once per mount. */
