@@ -4,6 +4,7 @@ import '@fontsource/sora/400.css'
 import '@fontsource/sora/600.css'
 import { useAuth } from './auth_context'
 import { PasswordField, TextField } from './auth_fields'
+import MicrosoftButton from './microsoft_button'
 import {
   GENERAL_SIGNUP_ERROR,
   errorCode,
@@ -17,6 +18,8 @@ import { safeNext } from './redirect'
 import styles from './auth_page.module.css'
 
 const NOT_AVAILABLE = 'Accounts are not available in this demo yet.'
+const MICROSOFT_PREVIEW =
+  'Signing up with Microsoft is a preview and is not connected yet. Please use the form below for now.'
 
 function Signup() {
   const { configured, status, signIn } = useAuth()
@@ -27,6 +30,7 @@ function Signup() {
   const [errors, setErrors] = useState<SignupErrors>({})
   const [general, setGeneral] = useState('')
   const [notice, setNotice] = useState('')
+  const [microsoftNotice, setMicrosoftNotice] = useState('')
   const mounted = useRef(true)
 
   useEffect(() => {
@@ -85,6 +89,14 @@ function Signup() {
           Create your account
         </h1>
         <p className={`${styles.lead} ${styles.centered}`}>Join asX-ray in a minute.</p>
+
+        <div className={styles.providers}>
+          <MicrosoftButton label="Sign up with Microsoft" onClick={() => setMicrosoftNotice(MICROSOFT_PREVIEW)} />
+          <div role="status">{microsoftNotice && <p className={styles.notice}>{microsoftNotice}</p>}</div>
+        </div>
+        <div className={styles.divider} aria-hidden="true">
+          <span>or sign up with a username</span>
+        </div>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.row}>

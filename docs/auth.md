@@ -54,6 +54,8 @@ Not verified against a live deployment: that the ConvexError reaches the browser
 ## Out of scope (future work)
 Password reset, email verification, MFA, OAuth providers, account deletion UI.
 
+**Microsoft button (preview):** the sign-up page has a "Sign up with Microsoft" button with the Microsoft logo (`apps/frontend/src/auth/microsoft_button.tsx`). It is not connected: a click only shows a notice that it is a preview. Making it real needs an Entra app registration, the `microsoft-entra-id` provider in `convex/auth.ts`, and a rule for the username of such accounts; see the notes in the pull request that added the button.
+
 ## Manual test script
 Run after the commands above, with `pnpm dev:frontend` and `VITE_CONVEX_URL` set. Use fake data only.
 1. **Sign up.** Open `/signup`. Enter first name `Jane`, last name `Demo`, email `jane@example.com`, username `Jane_Demo`, password `demo-pass-123`. Press Create account. Expect: you land on the walkthroughs list, and the header shows `Jane` and a Log out button.
