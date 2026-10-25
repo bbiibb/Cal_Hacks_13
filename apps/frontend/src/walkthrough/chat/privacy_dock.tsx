@@ -218,14 +218,16 @@ export default function PrivacyDock({ guard }: { guard: PiiGuard }) {
           {detector.text}
         </span>
       </div>
-      <p className={styles.voiceNote}>Voice is off while the privacy layer is on.</p>
-      <button type="button" className={styles.toggle} aria-expanded={open} aria-controls={drawerId} onClick={() => setOpen((v) => !v)}>
-        <span aria-hidden="true" className={styles.chevron}>
-          {open ? '▾' : '▸'}
-        </span>
-        What left your device
-        {entries.length > 0 && <span className={styles.count}> ({entries.length}{blockedCount > 0 ? `, ${blockedCount} blocked` : ''})</span>}
-      </button>
+      <div className={styles.footRow}>
+        <button type="button" className={styles.toggle} aria-expanded={open} aria-controls={drawerId} onClick={() => setOpen((v) => !v)}>
+          <span aria-hidden="true" className={styles.chevron}>
+            {open ? '▾' : '▸'}
+          </span>
+          What left your device
+          {entries.length > 0 && <span className={styles.count}> ({entries.length}{blockedCount > 0 ? `, ${blockedCount} blocked` : ''})</span>}
+        </button>
+        <span className={styles.voiceNote}>Voice is off while the privacy layer is on.</span>
+      </div>
       <div id={drawerId} hidden={!open} className={styles.drawer}>
         <p className={styles.hint}>{status.detail}</p>
         <h3 className={styles.drawerTitle}>What left your device</h3>
