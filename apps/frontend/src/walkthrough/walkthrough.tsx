@@ -3,6 +3,7 @@ import styles from './walkthrough.module.css'
 import Visualization, { type CameraOptions } from './visualization/visualization'
 import type { SceneObject } from './visualization/objects/SceneObject'
 import { ModelObject } from './visualization/objects/ModelObject'
+import { SlicedModelObject } from './visualization/objects/SlicedModelObject'
 import { OrbitCameraController } from './visualization/camera/OrbitCameraController'
 import type { CameraControllerFactory } from './visualization/camera/CameraController'
 
@@ -22,12 +23,13 @@ const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
 /** Builds a fresh set of scene objects. Called once per mount. */
 function createSceneObjects(): SceneObject[] {
   return [
-    new ModelObject({
+    new SlicedModelObject({
       path: '/models/bicuspidic_aortic_root_with_calcifications.glb',
       color: '#FFE3CC', // pastel peach
       position: [0.7 + heartTranslate[0], 0.78 + heartTranslate[1], 0.5 + heartTranslate[2]],
       rotation: [-3.14159 / 15, 0, -3.14159 / 3.8],
       scale: [0.75, 0.75, 0.75],
+      slice: { space: 'world', point: [0, 0, 0.08], normal: [0, 0, 1] },
     }),
     new ModelObject({
       path: '/models/heart_part_2.glb',
@@ -42,12 +44,13 @@ function createSceneObjects(): SceneObject[] {
       position: [2 + heartTranslate[0], 0 + heartTranslate[1], 0 + heartTranslate[2]],
       scale: [2, 2, 2],
     }),*/
-    new ModelObject({
-      path: '/models/aortic_arch.glb',
+    new SlicedModelObject({
+      path: '/models/aortic_arch_fixed.glb',
       color: '#C8EED8', // pastel mint
       position: [1.13, 0.75, 0],
       rotation: [3.14159 / 3.5, 0, -3.14159 / 3],
       scale: [1.6, 1.6, 1.6],
+      slice: { space: 'world', point: [0, 0, 0.08], normal: [0, 0, 1] },
     }).rotate(0, -3.14159 / 4, 0, 'local').rotate(0, 0, 3.14159 / 15, 'world'),
   ]
 }
