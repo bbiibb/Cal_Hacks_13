@@ -24,6 +24,8 @@ type Props = {
   /** The on-device privacy guard the client is wrapped with. Adds highlighting, the audit panel and the intake form. */
   guard?: PiiGuard
   procedure: Procedure
+  /** The topic named in the panel title and the welcome text. Defaults to TAVR. */
+  topic?: { name: string; welcome: string; starterQuestions: readonly string[]; placeholder: string }
   stepIndex: number
   /** The part the patient pinned, sent with each question as context. */
   selectedStructureId: string | null
@@ -38,8 +40,13 @@ type Props = {
   structureInfo: (structureId: string) => { name: string; description: string } | null
 }
 
-const WELCOME =
-  'Hi! I can walk you through TAVR and its possible side effects. Ask a question, or tell me to move the view, for example "zoom in" or "go to step 3". Point at the 3D model to see what each part is.'
+const TAVR_TOPIC = {
+  name: 'TAVR',
+  welcome:
+    'Hi! I can walk you through TAVR and its possible side effects. Ask a question, or tell me to move the view, for example "zoom in" or "go to step 3". Point at the 3D model to see what each part is.',
+  starterQuestions: STARTER_QUESTIONS,
+  placeholder: 'Ask about side effects, recovery, or a step…',
+}
 
 /** Friendly wording for the error codes the backend uses. */
 function errorText(error: unknown): string {
@@ -98,6 +105,7 @@ function ChatPanel({
   client,
   guard,
   procedure,
+  topic = TAVR_TOPIC,
   stepIndex,
   selectedStructureId,
   hoveredStructureId,
@@ -108,7 +116,7 @@ function ChatPanel({
   structureInfo,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: 'assistant', text: WELCOME, followUps: [...STARTER_QUESTIONS] },
+    { id: 0, role: 'assistant', text: topic.welcome, followUps: [...topic.starterQuestions] },
   ])
   const [input, setInput] = useState('')
   const [speed, setSpeed] = useState<ChatSpeed>('slow')
@@ -275,9 +283,9 @@ function ChatPanel({
   const remaining = MAX_CHAT_MESSAGE_LENGTH - input.length
 
   return (
-    <aside className={styles.panel} aria-label="TAVR assistant">
+    <aside className={styles.panel} aria-label={`${topic.name} assistant`}>
       <header className={styles.header}>
-        <h2 className={styles.title}>Ask about TAVR</h2>
+        <h2 className={styles.title}>Ask about {topic.name}</h2>
         <span
           className={client.mode === 'live' ? styles.badgeLive : styles.badgeDemo}
           title={client.mode === 'live' ? 'Answers come from the assistant' : 'Prepared answers, no AI involved'}
@@ -449,7 +457,7 @@ function ChatPanel({
             value={input}
             onChange={setInput}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about side effects, recovery, or a step…"
+            placeholder={topic.placeholder}
             guard={guard}
           />
         ) : (
@@ -459,7 +467,7 @@ function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value.slice(0, MAX_CHAT_MESSAGE_LENGTH))}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about side effects, recovery, or a step…"
+            placeholder={topic.placeholder}
             rows={2}
             maxLength={MAX_CHAT_MESSAGE_LENGTH}
           />

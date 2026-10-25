@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" role="img" aria-labelledby="t d">
+  <title id="t">Eye anatomy illustration</title>
+  <desc id="d">A cut-open eye with its cornea, iris, lens, retina and optic nerve in soft colors.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e3e6ff" />
+      <stop offset="0.55" stop-color="#efe3f7" />
+      <stop offset="1" stop-color="#fbd9e4" />
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbf6ee" />
+      <stop offset="1" stop-color="#eadfd3" />
+    </linearGradient>
+  </defs>
+  <rect width="500" height="400" fill="url(#bg)" />
+  <!-- optic nerve -->
+  <path d="M120 205 C80 205 55 215 25 235" fill="none" stroke="#f2e4b4" stroke-width="30" stroke-linecap="round" />
+  <!-- eye wall: sclera, choroid, retina -->
+  <circle cx="230" cy="200" r="120" fill="url(#wall)" stroke="#e7d9ca" stroke-width="3" />
+  <circle cx="230" cy="200" r="106" fill="#e8b9bd" />
+  <circle cx="230" cy="200" r="94" fill="#f6c9a8" />
+  <circle cx="230" cy="200" r="82" fill="#fffaf2" />
+  <!-- cornea -->
+  <path d="M338 130 C395 160 395 240 338 270 C352 235 352 165 338 130 Z" fill="#cfe8f5" stroke="#a9cfe3" stroke-width="3" />
+  <!-- iris and pupil -->
+  <path d="M326 150 L318 188 M326 250 L318 212" stroke="#c9d6f2" stroke-width="16" stroke-linecap="round" />
+  <!-- lens -->
+  <ellipse cx="300" cy="200" rx="16" ry="34" fill="#f6e7b8" stroke="#e5d08c" stroke-width="3" />
+</svg>

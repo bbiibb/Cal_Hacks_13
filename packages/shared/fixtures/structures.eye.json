@@ -1,0 +1,50 @@
+[
+  {
+    "id": "cornea",
+    "name_en": "Cornea",
+    "parent_id": null,
+    "description": "The clear dome at the very front of the eye. It bends most of the light that enters the eye. (Prototype description.)"
+  },
+  {
+    "id": "iris",
+    "name_en": "Iris",
+    "parent_id": null,
+    "description": "The colored ring of muscle that changes the size of the pupil to let in more or less light. (Prototype description.)"
+  },
+  {
+    "id": "lens",
+    "name_en": "Lens",
+    "parent_id": null,
+    "description": "A clear, flexible disc behind the iris. It changes shape to focus on things that are near or far. (Prototype description.)"
+  },
+  {
+    "id": "suspensory_ligaments",
+    "name_en": "Suspensory ligaments",
+    "parent_id": null,
+    "description": "Tiny fibers that hold the lens in place and let it change shape. (Prototype description.)"
+  },
+  {
+    "id": "sclera",
+    "name_en": "Sclera",
+    "parent_id": null,
+    "description": "The tough white outer wall of the eye. It protects the eye and helps it keep its shape. (Prototype description.)"
+  },
+  {
+    "id": "choroid",
+    "name_en": "Choroid",
+    "parent_id": null,
+    "description": "The dark middle layer under the sclera. It is rich in blood vessels that feed the retina. (Prototype description.)"
+  },
+  {
+    "id": "retina",
+    "name_en": "Retina",
+    "parent_id": null,
+    "description": "The light-sensitive lining at the back of the eye. It turns light into signals for the brain. (Prototype description.)"
+  },
+  {
+    "id": "optic_nerve",
+    "name_en": "Optic nerve",
+    "parent_id": null,
+    "description": "The cable of nerve fibers that carries signals from the retina to the brain. (Prototype description.)"
+  }
+]

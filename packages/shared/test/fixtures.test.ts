@@ -175,3 +175,23 @@ describe("TAVR knowledge base", () => {
     for (const k of knowledge) expect(k.text.length).toBeLessThanOrEqual(600);
   });
 });
+
+describe("eye anatomy prototype fixtures", () => {
+  const structures = z.array(StructureSchema).parse(load("structures.eye.json"));
+  const procedure = ProcedureSchema.parse(load("procedure.eye.json"));
+  const ids = new Set(structures.map((s) => s.id));
+
+  it("every structure in a scene and side panel exists", () => {
+    for (const step of procedure.steps) {
+      for (const s of step.scene.structures) expect(ids.has(s.id)).toBe(true);
+      for (const id of step.side_panel.related_structure_ids) expect(ids.has(id)).toBe(true);
+    }
+  });
+
+  it("steps are numbered from 0 and have short timeline labels", () => {
+    procedure.steps.forEach((step, i) => {
+      expect(step.index).toBe(i);
+      expect(step.short_title.length).toBeLessThanOrEqual(16);
+    });
+  });
+});

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import tavrCover from '../assets/tavr_cover.svg'
+import eyeCover from '../assets/eye_cover.svg'
 import WalkthroughCard from './walkthrough_card'
 import styles from './walkthroughs_list.module.css'
 
@@ -20,6 +21,13 @@ const WALKTHROUGHS: WalkthroughItem[] = [
     to: '/walkthrough',
     imageSrc: tavrCover,
     imageAlt: 'Illustration of a heart with a thin tube carrying a new valve into the aortic valve',
+  },
+  {
+    id: 'eye',
+    title: 'Eye anatomy (prototype)',
+    to: '/walkthrough/eye',
+    imageSrc: eyeCover,
+    imageAlt: 'Illustration of a cut-open eye with its cornea, lens, retina and optic nerve',
   },
 ]
 
