@@ -3,6 +3,7 @@
  * Every question here has a prepared demo answer, so a click always gets a useful reply.
  */
 export const STEP_FOLLOW_UPS: readonly (readonly string[])[] = [
+  ['What are the symptoms of a narrowed valve?', 'What is TAVR?', 'Why is my valve narrowed?'],
   ['What is TAVR?', 'What should I watch for at the groin site?', 'Will it hurt?'],
   ['How does the balloon work?', 'Is the contrast dye hard on my kidneys?', 'What are the side effects?'],
   ['Why might I need a pacemaker?', 'How is stroke risk reduced?', 'What happens to my old valve?'],

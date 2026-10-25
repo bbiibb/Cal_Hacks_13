@@ -149,7 +149,7 @@ export class DemoChatClient implements ChatClient {
   private stepText(stepIndex: number): string {
     const step = this.procedure.steps[stepIndex]
     if (!step) return FALLBACK_MESSAGE
-    return `Step ${step.index + 1} of ${this.procedure.steps.length}: ${step.title}\n\n${step.side_panel.body_markdown}`
+    return `Step ${step.index} of ${this.procedure.steps.length - 1}: ${step.title}\n\n${step.side_panel.body_markdown}`
   }
 
   private gotoStep(stepIndex: number): SceneAction {
@@ -163,10 +163,10 @@ export class DemoChatClient implements ChatClient {
 
     let target: number | null = null
     const numbered = text.match(/\bstep (\d+)\b/)
-    if (numbered) target = Number(numbered[1]) - 1
+    if (numbered) target = Number(numbered[1])
     else if (/\b(next step|go forward|continue|move on)\b/.test(text)) target = currentStep + 1
     else if (/\b(previous step|go back a step|back a step|step back)\b/.test(text)) target = currentStep - 1
-    else if (/\bfirst step\b/.test(text)) target = 0
+    else if (/\bfirst step\b/.test(text)) target = 1
     else if (/\b(final|last) step\b/.test(text)) target = lastStep
 
     if (target !== null) {
@@ -176,7 +176,7 @@ export class DemoChatClient implements ChatClient {
         result.notes.push(this.stepText(step.index))
         result.stepIndex = target
       } else {
-        result.notes.push(`This walkthrough has steps 1 to ${lastStep + 1}.`)
+        result.notes.push(`This walkthrough has steps 0 to ${lastStep}.`)
       }
     }
 

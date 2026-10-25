@@ -112,7 +112,7 @@ When to revisit: if real conversations often need details from more than 8 quest
 - **The exact JSON format is repeated at the very end of the system prompt** ("OUTPUT FORMAT"), and two worked examples are given as earlier turns.
 - Low temperature (0.2) and the provider's JSON mode (retried without it if the model rejects it). For gpt-oss models the reasoning effort is set to low, which keeps answers fast.
 - A rule that keeps the model on topic: other subjects get a polite "I can only help with the procedure, the heart, and the 3D model".
-- The screen state (`[Screen] Step 3 of 4 ... Selected part: ...`) is added to every question so "this valve" or "what you just put in" can be understood.
+- The screen state (`[Screen] Step 3 of 5 ... Selected part: ...`) is added to every question so "this valve" or "what you just put in" can be understood.
 - Prompt size is kept small because free tiers limit tokens per minute.
 
 ## The JSON the model must return

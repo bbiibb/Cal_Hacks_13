@@ -69,8 +69,8 @@ export function describeScreen(data: PromptData): string {
     ? data.structures.find((s) => s.id === data.selectedStructureId)
     : undefined;
   const stepText = step
-    ? `Step ${step.index + 1} of ${data.steps.length}: "${step.title}"`
-    : `Step ${data.currentStepIndex + 1}`;
+    ? `Step ${step.index} of ${data.steps.length - 1}: "${step.title}"`
+    : `Step ${data.currentStepIndex}`;
   const partText = selected ? `${selected.name} (${selected.id})` : "none";
   return `[Screen] ${stepText}. Selected part: ${partText}.`;
 }
@@ -82,7 +82,7 @@ export function formatReference(reference: RetrievedDoc[]): string {
 
 export function buildSystemPrompt(data: PromptData, reference: RetrievedDoc[] = []): string {
   const steps = data.steps
-    .map((s) => `${s.index + 1}. ${s.title}: ${shorten(s.summary, MAX_STEP_SUMMARY)}`)
+    .map((s) => `${s.index}. ${s.title}: ${shorten(s.summary, MAX_STEP_SUMMARY)}`)
     .join("\n");
   const parts = data.structures
     .map((s) => `${s.id}: ${s.name}. ${shorten(s.description, MAX_STRUCTURE_DESCRIPTION)}`)
@@ -106,7 +106,7 @@ export function buildSystemPrompt(data: PromptData, reference: RetrievedDoc[] = 
       "- Only help with this procedure, the heart, and the 3D model. For any other topic, politely say you can only help with those and suggest something the patient can ask.",
       '- If the patient describes symptoms happening now (chest pain, trouble breathing, fainting, stroke signs, heavy bleeding), set "urgent" to true and start the answer by telling them to call their local emergency number (for example 911, 112, or 999) right away.',
       '- "highlight": 0 to 3 part ids from the list that your answer talks about. Never invent an id. Use [] if no part fits.',
-      '- "step": a number from 1 to ' + data.steps.length + " only if the patient asks to see a step. Otherwise null.",
+      '- "step": a number from 0 to ' + (data.steps.length - 1) + " only if the patient asks to see a step (step 0 is the introduction). Otherwise null.",
       '- "zoom": "in" or "out" only if the patient asks to zoom, get closer, or move away. Otherwise null.',
       '- "rotate": {"direction": "left" or "right" or "up" or "down", "degrees": a number from 10 to 180} only if the patient asks to turn or rotate the model. Otherwise null.',
       '- "reset_view": true only if the patient asks to reset the view. Otherwise false.',
@@ -126,7 +126,7 @@ function buildExamples(data: PromptData): LlmMessage[] {
     data.structures.find((s) => s.id === "aortic_valve") ?? data.structures[0];
   if (!first) return [];
   const screen = describeScreen({ ...data, selectedStructureId: null });
-  const lastStep = Math.max(1, data.steps.length);
+  const lastStep = Math.max(1, data.steps.length - 1);
 
   const one = {
     answer: `This is the ${first.name}. ${shorten(first.description, 90)} I zoomed in so you can see it better.`,

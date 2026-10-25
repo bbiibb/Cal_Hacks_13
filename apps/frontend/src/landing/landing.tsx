@@ -101,13 +101,13 @@ function ProductPreview() {
             <path d="M356 168c0-30 2-58 2-84M358 112c-18-14-26-32-28-52M360 100c16-12 28-26 34-46" fill="none" stroke="url(#lp-blue)" strokeWidth="16" strokeLinecap="round" />
           </svg>
           <p className={styles.caption}>
-            Step 2 of {STEP_NAMES.length} · {STEP_NAMES[1]}
+            Step 2 of {STEP_NAMES.length - 1} · {STEP_NAMES[2]}
           </p>
           <div className={styles.timeline}>
             {STEP_NAMES.map((name, i) => (
-              <span key={name} className={i === 1 ? `${styles.tick} ${styles.tickOn}` : styles.tick}>
+              <span key={name} className={i === 2 ? `${styles.tick} ${styles.tickOn}` : styles.tick}>
                 <i />
-                {i + 1}
+                {i}
               </span>
             ))}
           </div>
@@ -231,7 +231,7 @@ function Landing() {
             </h2>
             <p className={styles.featuredLead}>
               Transcatheter aortic valve replacement places a new valve inside the old one through a thin tube, without
-              opening the chest. Follow all {STEP_NAMES.length} steps.
+              opening the chest. Start with why a narrowed valve needs replacing, then follow all {STEP_NAMES.length - 1} steps.
             </p>
             <Link to="/walkthrough" className={styles.primary}>
               Open the walkthrough
@@ -241,7 +241,7 @@ function Landing() {
           <ol className={styles.featuredSteps}>
             {STEP_NAMES.map((name, i) => (
               <li key={name}>
-                <span>{i + 1}</span>
+                <span>{i}</span>
                 {name}
               </li>
             ))}

@@ -10,7 +10,7 @@ export type RotateDirection = "left" | "right" | "up" | "down";
 export interface LlmOutput {
   answer: string;
   highlight: string[];
-  /** 1-based step number the patient asked for, or null */
+  /** Step number the patient asked for (the same as the step's index: step 0 is the introduction), or null */
   step: number | null;
   zoom: ZoomDirection | null;
   rotate: { direction: RotateDirection; degrees: number } | null;
@@ -62,7 +62,7 @@ function asBoolean(value: unknown): boolean {
 
 function asStep(value: unknown): number | null {
   const n = typeof value === "string" ? Number(value.trim()) : value;
-  return typeof n === "number" && Number.isInteger(n) && n >= 1 ? n : null;
+  return typeof n === "number" && Number.isInteger(n) && n >= 0 ? n : null;
 }
 
 function asZoom(value: unknown): ZoomDirection | null {

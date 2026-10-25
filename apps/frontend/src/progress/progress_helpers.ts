@@ -12,7 +12,7 @@ export type ProgressRecord = {
 }
 
 export type ProgressSummary = {
-  /** One-based step number to show people ("Step 3 of 5"). */
+  /** The step number to show people ("Step 3 of 5"). It is the step's index: step 0 is the introduction. */
   stepNumber: number
   totalSteps: number
   viewedCount: number
@@ -24,7 +24,7 @@ export type ProgressSummary = {
   complete: boolean
 }
 
-/** The URL query parameter that opens the walkthrough at a step. It is one-based, like the numbers people see. */
+/** The URL query parameter that opens the walkthrough at a step. It is the step number people see (step 0 is the introduction). */
 export const STEP_PARAM = 'step'
 
 const MINUTE = 60_000
@@ -56,7 +56,7 @@ export function summarizeProgress(record: ProgressRecord, totalSteps: number): P
   const viewedCount = viewed.filter(Boolean).length
   const current = Math.min(Math.max(0, Math.floor(record.currentStep)), total - 1)
   return {
-    stepNumber: current + 1,
+    stepNumber: current,
     totalSteps: total,
     viewedCount,
     viewed,
@@ -66,17 +66,17 @@ export function summarizeProgress(record: ProgressRecord, totalSteps: number): P
 }
 
 /**
- * Reads the `?step=` value (one-based) and returns a zero-based step index,
+ * Reads the `?step=` value (the step number people see, which is the step index) and returns the step index,
  * or null when it is missing or not a whole number inside the procedure.
  */
 export function parseStepParam(value: string | null | undefined, totalSteps: number): number | null {
   if (value == null || !/^\d+$/.test(value.trim())) return null
-  const oneBased = Number(value.trim())
-  if (!Number.isSafeInteger(oneBased) || oneBased < 1 || oneBased > totalSteps) return null
-  return oneBased - 1
+  const index = Number(value.trim())
+  if (!Number.isSafeInteger(index) || index < 0 || index >= totalSteps) return null
+  return index
 }
 
-/** The walkthrough link that opens a given zero-based step. */
+/** The walkthrough link that opens a given step. */
 export function walkthroughPath(stepIndex: number): string {
-  return `/walkthrough?${STEP_PARAM}=${stepIndex + 1}`
+  return `/walkthrough?${STEP_PARAM}=${stepIndex}`
 }

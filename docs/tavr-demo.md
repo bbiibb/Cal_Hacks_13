@@ -1,7 +1,7 @@
 # TAVR Demo Plan (First Version)
 
 The first topic of the patient-education demo is **TAVR (Transcatheter Aortic Valve Replacement)**.
-We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into five steps.
+We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into five steps, preceded by an introduction (step 0) that explains the symptoms that make the procedure necessary.
 `packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`) holds this plan. The step explanations are the team's patient explanation (the "Explanation" document), used word for word.
 Everything is **educational content** and is neither real patient data nor medical advice. The explanations still need review by someone with medical knowledge.
 
@@ -9,11 +9,12 @@ Everything is **educational content** and is neither real patient data nor medic
 
 | index | Title | short_title | What it shows | Instruments | animation_clip |
 |---|---|---|---|---|---|
-| 0 | Guiding a wire to your heart | Guidewire | A wire from the groin follows the aortic arch and passes through the narrowed valve | `guidewire` | `advance_guidewire` |
-| 1 | Bringing your new valve into position | Valve delivery | A catheter carries the compressed new valve along the wire into the old valve | `guidewire`, `delivery_catheter` | `deliver_valve` |
-| 2 | Expanding your new valve | Expansion | A balloon expands the metal frame, which pushes the old leaflets aside and anchors the new valve | `delivery_catheter`, `balloon` | `expand_valve` |
-| 3 | Removing the delivery equipment | Removal | The balloon is deflated, and the catheter and wire are withdrawn | `guidewire`, `delivery_catheter` | `withdraw_equipment` |
-| 4 | How your new valve works | Valve function | The frame holds the valve; its leaflets open with each heartbeat and close between beats | none | `valve_function` (loop) |
+| 0 | When your aortic valve narrows | Symptoms | **Introduction.** Only the heart, with no instruments and the new valve hidden. The panel explains aortic stenosis and the symptoms that lead to TAVR (shortness of breath, chest pain or pressure, dizziness or fainting, tiredness, palpitations) | none | none |
+| 1 | Guiding a wire to your heart | Guidewire | A wire from the groin follows the aortic arch and passes through the narrowed valve | `guidewire` | `advance_guidewire` |
+| 2 | Bringing your new valve into position | Valve delivery | A catheter carries the compressed new valve along the wire into the old valve | `guidewire`, `delivery_catheter` | `deliver_valve` |
+| 3 | Expanding your new valve | Expansion | A balloon expands the metal frame, which pushes the old leaflets aside and anchors the new valve | `delivery_catheter`, `balloon` | `expand_valve` |
+| 4 | Removing the delivery equipment | Removal | The balloon is deflated, and the catheter and wire are withdrawn | `guidewire`, `delivery_catheter` | `withdraw_equipment` |
+| 5 | How your new valve works | Valve function | The frame holds the valve; its leaflets open with each heartbeat and close between beats | none | `valve_function` (loop) |
 
 The valve type is decided by the explanation: a **balloon-expandable** valve.
 

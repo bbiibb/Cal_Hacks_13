@@ -138,7 +138,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
         id: 'three-d',
         question: 'What can I do in the 3D view?',
         answer: [
-          'Drag to turn the heart and scroll to zoom. Point at a part to see its name, and click it to pin it and read what it is. The slider under the model moves between the five steps of the procedure, and “Reset view” returns to the starting view.',
+          'Drag to turn the heart and scroll to zoom. Point at a part to see its name, and click it to pin it and read what it is. The slider under the model moves between the steps: step 0 explains why a narrowed valve needs replacing, and steps 1 to 5 show the procedure. “Reset view” returns to the starting view.',
         ],
       },
       {

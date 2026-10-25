@@ -28,16 +28,19 @@ const MODEL_COLOR = '#FFD3DE'
 
 const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5]
 
-/** How far the purple catheter is inserted at each step, 0 to 1 (step 1 first). Steps past the end: fully withdrawn. */
-const CATHETER_FILL_BY_STEP = [0, 1, 1, 0.4, 0] as const
+/**
+ * How far the purple catheter is inserted at each step, 0 to 1 (step 0 first: the introduction shows only the heart).
+ * Steps past the end: fully withdrawn.
+ */
+const CATHETER_FILL_BY_STEP = [0, 0, 1, 1, 0.4, 0] as const
 
 function catheterFillAt(stepIndex: number): number {
   return CATHETER_FILL_BY_STEP[stepIndex] ?? 0
 }
 
-/** The green catheter is fully in on every step except the last, where it is gone. */
+/** The green catheter is out of sight in step 0 (only the heart), fully in from step 1, and gone on the last step. */
 function greenCatheterFillAt(stepIndex: number): number {
-  return stepIndex >= TAVI_PROCEDURE.steps.length - 1 ? 0 : 1
+  return stepIndex === 0 || stepIndex >= TAVI_PROCEDURE.steps.length - 1 ? 0 : 1
 }
 
 /** A curve whose fill follows the current step. */
@@ -145,7 +148,7 @@ function Walkthroughs() {
   const [objects, setObjects] = useState<SceneObject[]>([])
   const [director] = useState(() => new SceneDirector(lookupStep))
   const [{ client: chatClient, guard: piiGuard }] = useState(() => createGuardedChat(TAVI_PROCEDURE, TAVI_STRUCTURES))
-  // ?step=N (from "Continue" on the landing page) opens the walkthrough at that step; otherwise it starts at step 1
+  // ?step=N (from "Continue" on the landing page) opens the walkthrough at that step; otherwise it starts at step 0, the introduction
   const [searchParams] = useSearchParams()
   const [stepIndex, setStepIndex] = useState(
     () => parseStepParam(searchParams.get(STEP_PARAM), TAVI_PROCEDURE.steps.length) ?? 0

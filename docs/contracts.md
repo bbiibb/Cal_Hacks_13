@@ -28,6 +28,7 @@ Scene = {
 
 - A structure that is not listed in `structures` is treated as being in the frontend's default state (opaque, not highlighted).
 - Step = `{ index, title, short_title, scene, side_panel }`. `short_title` is a short name for the timeline label, and `index` is a tick on the slider.
+- The step number people see is the step's `index`, so step 0 is allowed to be an introduction: TAVR's step 0 shows only the heart and explains the symptoms, and steps 1 to 5 are the procedure. The chatbot's "go to step 3" and the slider use the same numbers.
 - Procedure = `{ slug, title, summary, condition_slug, order, steps[] }`. `condition_slug` is the condition it treats (null if none), and `order` is the display order within the same condition.
 - Condition = `{ slug, name_en, description }`. A new heart condition only needs new content (a fixtures entry and a database row); no code change is needed.
 - Structure = `{ id, name_en, parent_id, description }` and Instrument = `{ id, name_en, description }`. Names are in English. If another language is needed later, add it as a new field (for example `name_ko`) through the `contract-change` procedure.
@@ -100,7 +101,7 @@ The frontend does not need this type. It is used by the backend and is described
 
 - `structures.json`, `instruments.json`
 - `conditions.json`
-- `procedure.tavr.json` (TAVR, five steps; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
+- `procedure.tavr.json` (TAVR, an introduction as step 0 and five steps; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
 - `knowledge.tavr.json` (the chatbot's reference facts, see [`docs/knowledge-base.md`](knowledge-base.md))
 - `chat-response.example.json`, `chat-request.example.json`
 
@@ -124,3 +125,4 @@ The database stores `scene`, `sidePanel`, and `sceneActions` with the same snake
 | 2026-10-24 | Replaced the four dummy TAVR steps with the five steps of the team's patient explanation, and added the `balloon` instrument (content only; the schema format is unchanged) | Backend: re-run `seed:run`. The chatbot prompt test on the backend branches expects "Step 2 of 4" and "Delivering the new valve" and needs updating |
 | 2026-10-24 | Removed the Korean name field `name_ko` from `Structure`, `Instrument`, and `Condition`, and translated all fixtures to English | **Breaking**: frontend code must not read `name_ko`. Use `name_en` |
 | 2026-10-24 | Added `KnowledgeChunkSchema` and the fixture `knowledge.tavr.json` (the chatbot's reference facts). `ChatResponse.sources` is now filled with the facts an answer is based on (the field already existed) | Frontend: no change needed. Optionally show `sources` under an answer |
+| 2026-10-25 | Added step 0 to the TAVR procedure: an introduction about the symptoms, with only the heart on screen. The existing steps moved from indexes 0 to 4 to 1 to 5, and the number shown to people is now the index (they keep the numbers 1 to 5). The schema is unchanged | Backend: re-run `seed:run` (it also rebuilds the vector index). Frontend and chatbot: step numbers are the index, no longer index plus one |

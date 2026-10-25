@@ -38,7 +38,7 @@ export interface ViewCommands {
   zoom: { direction: ZoomDirection; amount: ZoomAmount } | null;
   rotate: { direction: RotateDirection; degrees: number } | null;
   resetView: boolean;
-  /** 1-based step number */
+  /** Step number, the same as the step's index (step 0 is the introduction) */
   step: number | null;
 }
 
@@ -101,7 +101,7 @@ export function detectPartTarget(message: string, structures: readonly { id: str
 export function describeCameraCommands(commands: ViewCommands, stepCount: number, partName?: string): string {
   const done: string[] = [];
   if (partName) done.push(`showing the ${partName.toLowerCase()}`);
-  if (commands.step !== null && commands.step >= 1 && commands.step <= stepCount) done.push(`moved to step ${commands.step}`);
+  if (commands.step !== null && commands.step >= 0 && commands.step < stepCount) done.push(`moved to step ${commands.step}`);
   if (commands.zoom) done.push(`zoomed ${commands.zoom.direction}`);
   if (commands.rotate) {
     const verb = commands.rotate.direction === "up" || commands.rotate.direction === "down" ? "tilted" : "turned";
@@ -131,8 +131,8 @@ export function buildSceneActions(output: LlmOutput, context: ActionContext): Sc
   const actions: SceneAction[] = [];
 
   const step = output.step ?? commands.step;
-  if (step !== null && step >= 1 && step <= context.stepCount && step - 1 !== context.currentStepIndex) {
-    actions.push({ type: "goto_step", procedure_slug: context.procedureSlug, step_index: step - 1 });
+  if (step !== null && step >= 0 && step < context.stepCount && step !== context.currentStepIndex) {
+    actions.push({ type: "goto_step", procedure_slug: context.procedureSlug, step_index: step });
   }
 
   const ids = output.highlight.slice(0, MAX_HIGHLIGHTS);
