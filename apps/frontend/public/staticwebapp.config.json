@@ -1,0 +1,10 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/models/*", "/*.{svg,png,jpg,gif,ico,woff,woff2,wasm,glb,js,css,json}"]
+  },
+  "mimeTypes": {
+    ".glb": "model/gltf-binary",
+    ".wasm": "application/wasm"
+  }
+}
