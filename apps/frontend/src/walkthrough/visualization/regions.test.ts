@@ -50,6 +50,9 @@ describe('heart regions', () => {
     expect(at(-25, -130)).toBe('right_atrium')
     expect(at(5, -170)).toBe('right_ventricle')
     expect(at(55, -150)).toBe('left_ventricle')
+    expect(at(52, -191)).toBe('left_ventricle') // the apex
+    expect(at(60, -118)).toBe('left_ventricle') // the thick wall above the left ventricle
+    expect(at(-9.5, -80)).not.toBeNull() // the wall between the vena cava and the aorta
     expect(at(0, -30)).toBeNull()
   })
 })
