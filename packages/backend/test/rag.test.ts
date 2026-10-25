@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildLocalMessages, buildLocalSchema, buildLocalSystemPrompt, MAX_LOCAL_HISTORY_TURNS } from "../convex/lib/localPrompt";
 import { selectProvider, LlmError } from "../convex/lib/llm";
 import { EMBEDDING_DIMENSIONS } from "../convex/lib/ragConfig";
-import { allowedStructureIds, buildDocs, mergeDocs, pinnedDocs, MAX_CONTEXT_DOCS } from "../convex/lib/rag";
+import { allowedStructureIds, buildDocs, contentHash, mergeDocs, pinnedDocs, staleDocIds, MAX_CONTEXT_DOCS } from "../convex/lib/rag";
 import { promptData } from "./helpers";
 
 describe("buildDocs", () => {
@@ -104,5 +104,48 @@ describe("selectProvider", () => {
 describe("embedding size", () => {
   it("matches nomic-embed-text", () => {
     expect(EMBEDDING_DIMENSIONS).toBe(768);
+  });
+});
+
+describe("contentHash", () => {
+  const docs = buildDocs(promptData());
+
+  it("is the same for the same content in any order", () => {
+    expect(contentHash(docs)).toBe(contentHash([...docs].reverse()));
+    expect(contentHash(docs)).toMatch(/^[0-9a-f]{14}$/);
+  });
+
+  it("changes when a snippet is reworded, added or removed", () => {
+    const changed = docs.map((d, i) => (i === 3 ? { ...d, text: `${d.text} More.` } : d));
+    expect(contentHash(changed)).not.toBe(contentHash(docs));
+    expect(contentHash(docs.slice(1))).not.toBe(contentHash(docs));
+    expect(contentHash([...docs, { docId: "knowledge:new", kind: "knowledge" as const, title: "New", text: "New fact." }])).not.toBe(
+      contentHash(docs),
+    );
+  });
+
+  it("changes when only the embedded search text changes", () => {
+    const changed = docs.map((d, i) => (i === 5 ? { ...d, embedText: "other words" } : d));
+    expect(contentHash(changed)).not.toBe(contentHash(docs));
+  });
+});
+
+describe("staleDocIds", () => {
+  const stored = [
+    { docId: "structure:aorta", kind: "structure" as const },
+    { docId: "structure:old_part", kind: "structure" as const },
+    { docId: "step:tavr:0", kind: "step" as const, procedureSlug: "tavr" },
+    { docId: "step:tavr:9", kind: "step" as const, procedureSlug: "tavr" },
+    { docId: "knowledge:gone", kind: "knowledge" as const, procedureSlug: "tavr" },
+    { docId: "knowledge:other", kind: "knowledge" as const, procedureSlug: "other_procedure" },
+  ];
+
+  it("lists the snippets the content no longer has", () => {
+    const keep = new Set(["structure:aorta", "step:tavr:0"]);
+    expect(staleDocIds(stored, keep, "tavr").sort()).toEqual(["knowledge:gone", "step:tavr:9", "structure:old_part"]);
+  });
+
+  it("leaves another procedure's snippets alone", () => {
+    expect(staleDocIds(stored, new Set(), "tavr")).not.toContain("knowledge:other");
   });
 });

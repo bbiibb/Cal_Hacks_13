@@ -11,7 +11,7 @@ import {
   pinnedDocs,
   type RetrievedDoc,
 } from "./rag";
-import { retrieveDocs } from "./ragRun";
+import { ensureIndexFresh, retrieveDocs } from "./ragRun";
 
 export interface ModelRoute {
   provider: "groq" | "local";
@@ -65,6 +65,7 @@ export async function prepareModel(
   }
 
   const ollama = resolveOllamaConfig(env);
+  await ensureIndexFresh(ctx, data);
   const found = await retrieveDocs(ctx, ollama, data, message, undefined, (error) => {
     // A missing or unreachable model is a real problem the patient can be told about
     if (error instanceof LlmError) throw error;
