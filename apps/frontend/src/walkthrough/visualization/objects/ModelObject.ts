@@ -165,6 +165,11 @@ export class ModelObject extends SceneObject {
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
+          if (((uGlowMask >> int(vRegion + 0.5)) & 1) == 1) {
+            // A glowing region takes the highlight color and shows through the see-through model
+            diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.702, 0.278), 0.6);
+            diffuseColor.a = max(diffuseColor.a, 0.92);
+          }
           if (uRegionDebug > 0.5 && vRegion > 0.5) diffuseColor.rgb = 0.5 + 0.5 * cos(6.2831 * (vRegion * 0.37 + vec3(0.0, 0.33, 0.67)));`
         )
         .replace(
