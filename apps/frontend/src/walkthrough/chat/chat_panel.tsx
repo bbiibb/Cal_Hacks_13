@@ -277,10 +277,7 @@ function ChatPanel({
   return (
     <aside className={styles.panel} aria-label="TAVR assistant">
       <header className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Ask about TAVR</h2>
-          <p className={styles.subtitle}>Questions, side effects, and the 3D view</p>
-        </div>
+        <h2 className={styles.title}>Ask about TAVR</h2>
         <span
           className={client.mode === 'live' ? styles.badgeLive : styles.badgeDemo}
           title={client.mode === 'live' ? 'Answers come from the assistant' : 'Prepared answers, no AI involved'}

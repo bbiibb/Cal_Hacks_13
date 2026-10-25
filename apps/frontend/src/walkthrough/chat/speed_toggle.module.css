@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 0 1.1rem 0.6rem;
+  padding: 0 1.1rem 0.4rem;
 }
 
 .group {
@@ -21,7 +21,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.05rem;
-  padding: 0.4rem 0.65rem;
+  padding: 0.3rem 0.65rem;
   border: 0;
   border-radius: 0.5rem;
   background: transparent;
