@@ -28,3 +28,6 @@ packages/backend/.agents/
 packages/backend/.claude/
 packages/backend/AGENTS.md
 packages/backend/skills-lock.json
+
+# SpacetimeDB: the chosen database name is per developer
+packages/progress/spacetime.local.json

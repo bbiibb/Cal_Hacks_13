@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "packages/progress/spacetimedb"
 
 # Allow the esbuild postinstall script (used by convex dev)
 allowBuilds:

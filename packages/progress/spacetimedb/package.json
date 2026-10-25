@@ -1,0 +1,20 @@
+{
+  "name": "@cal-hacks/progress",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "spacetime build",
+    "publish": "spacetime publish",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "spacetimedb": "2.13.*"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2"
+  },
+  "private": true
+}
