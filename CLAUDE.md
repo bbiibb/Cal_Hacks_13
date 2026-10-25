@@ -9,17 +9,18 @@
 
 ## Product context
 The app is called **Simple Surgeries**. A patient watches a procedure in 3D, selects a part to read about it, and asks a chatbot that answers in the context of the current scene and highlights the related parts.
-`docs/product-roadmap.md` is the reference for the feature list, backend needs, and implementation status. When you build a feature or the plan changes, update that document too.
+`docs/product-roadmap.md` is the reference for the feature list, backend needs, and implementation status. When you build a feature or the plan changes, update that document too. `docs/architecture.md` shows how the parts fit together.
 
 ## Folder structure and ownership
 ```
 .
 ├── CLAUDE.md                 # This file (shared root rules)
 ├── .claude/skills/           # Project skills
-├── docs/contracts.md         # Frontend-backend contract
+├── docs/                     # Documents (contracts.md is the frontend-backend contract)
 ├── apps/frontend/            # Frontend owner's area
 ├── packages/backend/         # Convex project (includes convex/) — backend owner's (the user's) area
-└── packages/shared/          # Contract: zod schemas, types, and example fixtures
+├── packages/shared/          # Contract: zod schemas, types, and example fixtures
+└── packages/progress/        # SpacetimeDB module that stores viewing progress (see its README)
 ```
 
 - `packages/backend`: the user's (backend owner's) area. Edit freely. Detailed rules are in `packages/backend/CLAUDE.md`.
@@ -34,7 +35,7 @@ pnpm dev:frontend            # the ask-ray website (Vite dev server)
 pnpm build:frontend          # type-check and build the website
 pnpm typecheck               # tsc in every package
 pnpm lint                    # eslint for the packages, oxlint for apps/frontend
-pnpm test                    # vitest (packages/shared, packages/backend)
+pnpm test                    # vitest (packages/shared, packages/backend, apps/frontend)
 pnpm --filter @cal-hacks/shared test   # run one package
 ```
 The frontend is a Vite app (React, TypeScript, three.js). See `apps/frontend/README.md`.

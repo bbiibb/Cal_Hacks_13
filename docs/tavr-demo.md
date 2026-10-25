@@ -1,7 +1,7 @@
 # TAVR Demo Plan (First Version)
 
 The first topic of the patient-education demo is **TAVR (Transcatheter Aortic Valve Replacement)**.
-We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into five steps, preceded by an introduction (step 0) that explains the symptoms that make the procedure necessary.
+We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into five steps (1 to 5), preceded by an introduction (step 0) that explains the symptoms that make the procedure necessary. The number shown to people is the step's index. A second, smaller walkthrough (the eye) is described in [`eye-prototype.md`](eye-prototype.md).
 `packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`) holds this plan. The step explanations are the team's patient explanation (the "Explanation" document), used word for word.
 Everything is **educational content** and is neither real patient data nor medical advice. The explanations still need review by someone with medical knowledge.
 
@@ -31,8 +31,7 @@ A `structure_id` should match a GLB mesh name one to one. The models in use are 
 | Frame of the new valve | `transcatheter_valve.frame` | Built in code (`TavrValve`) |
 | Leaflets of the new valve | `transcatheter_valve.leaflets` | Built in code (`TavrValve`) |
 
-While there is no model for the leaflets of the new valve, a temporary treatment is needed: hide `transcatheter_valve.leaflets` (opacity 0) or show only the frame.
-When the model is ready, adjust the opacity in the fixtures.
+The new valve's frame and leaflets are built in code, so there is nothing to hide. The `transcatheter_valve*` structures in the fixtures still point at the aortic root model, so pointing at the new valve names the root. Replace the binding if a model file of the valve is ever added.
 
 ## Animation and the contract
 
@@ -70,4 +69,4 @@ does at each step is `deviceStateForStep`:
 | 4 | The balloon deflates, the catheter is withdrawn, the open valve stays |
 | 5 | Only the valve, its leaflets opening and closing |
 
-`walkthrough.tsx` holds the catheter path (`TAVR_DEVICE_PATH`) and where the valve ends up (`TAVR_VALVE_POSITION`); move them together with the aortic root model. Open **`/devices-lab`** to see each device on its own (with sliders) and all of them together by step, without the heart.
+`walkthrough.tsx` holds the catheter path (`TAVR_DEVICE_PATH`) and where the valve ends up (`TAVR_VALVE_POSITION`); move them together with the aortic root model. The path ends in the gap between the leaflets of the narrowed old valve, and its last bend tilts the catheter head, balloon and valve (about 34 degrees from vertical) so they lie along the old valve's opening. The green catheter shares the route. Open **`/devices-lab`** to see each device on its own (with sliders) and all of them together by step, without the heart.

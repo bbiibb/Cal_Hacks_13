@@ -103,6 +103,7 @@ The frontend does not need this type. It is used by the backend and is described
 - `conditions.json`
 - `procedure.tavr.json` (TAVR, an introduction as step 0 and five steps; see [`docs/tavr-demo.md`](tavr-demo.md) for the scene plan and 3D asset status)
 - `knowledge.tavr.json` (the chatbot's reference facts, see [`docs/knowledge-base.md`](knowledge-base.md))
+- `structures.eye.json`, `procedure.eye.json` (the eye anatomy prototype: 8 structures and 5 steps of placeholder text, no condition; see [`docs/eye-prototype.md`](eye-prototype.md))
 - `chat-response.example.json`, `chat-request.example.json`
 
 Everything is **educational dummy content** and not real patient data.
@@ -126,3 +127,4 @@ The database stores `scene`, `sidePanel`, and `sceneActions` with the same snake
 | 2026-10-24 | Removed the Korean name field `name_ko` from `Structure`, `Instrument`, and `Condition`, and translated all fixtures to English | **Breaking**: frontend code must not read `name_ko`. Use `name_en` |
 | 2026-10-24 | Added `KnowledgeChunkSchema` and the fixture `knowledge.tavr.json` (the chatbot's reference facts). `ChatResponse.sources` is now filled with the facts an answer is based on (the field already existed) | Frontend: no change needed. Optionally show `sources` under an answer |
 | 2026-10-25 | Added step 0 to the TAVR procedure: an introduction about the symptoms, with only the heart on screen. The existing steps moved from indexes 0 to 4 to 1 to 5, and the number shown to people is now the index (they keep the numbers 1 to 5). The schema is unchanged | Backend: re-run `seed:run` (it also rebuilds the vector index). Frontend and chatbot: step numbers are the index, no longer index plus one |
+| 2026-10-25 | Added the fixtures `structures.eye.json` and `procedure.eye.json` for the eye anatomy prototype (content only; the schema format is unchanged). The Convex seed does not load them | Frontend: the eye page reads them directly. Backend: nothing to do unless the eye should be served from Convex |
