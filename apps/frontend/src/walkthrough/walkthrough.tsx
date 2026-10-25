@@ -7,6 +7,7 @@ import Visualization, { type CameraOptions } from './visualization/visualization
 import type { SceneObject } from './visualization/objects/SceneObject'
 import { ModelObject } from './visualization/objects/ModelObject'
 import { SlicedModelObject } from './visualization/objects/SlicedModelObject'
+import { CurveFollower } from './visualization/objects/CurveFollower'
 import { OrbitCameraController } from './visualization/camera/OrbitCameraController'
 import type { CameraControllerFactory } from './visualization/camera/CameraController'
 import { SceneDirector, type StepLookup } from './visualization/scene_director'
@@ -22,10 +23,17 @@ const CAMERA: CameraOptions = {
   position: [0, 1.5, 4],
 }
 
-const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
+const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5]
 
-/** Builds a fresh set of scene objects. Called once per mount. */
-function createSceneObjects(): SceneObject[] {
+/** How far the catheter is inserted at each step, 0 to 1 (step 1 first). Steps past the end: fully withdrawn. */
+const CATHETER_FILL_BY_STEP = [0.4, 1, 1, 0.4, 0] as const
+
+function catheterFillAt(stepIndex: number): number {
+  return CATHETER_FILL_BY_STEP[stepIndex] ?? 0
+}
+
+/** Builds a fresh set of scene objects, opened at the given step. Called once per mount. */
+function createSceneObjects(initialStep: number): SceneObject[] {
   return [
     // The aortic root sits on the heart's aortic valve, at the base of the heart's own ascending aorta
     new SlicedModelObject({
@@ -58,6 +66,28 @@ function createSceneObjects(): SceneObject[] {
       rotation: [-0.1745, 3.14159, 0.3595],
       scale: [1.6, 1.6, 1.6],
       slice: { space: 'world', point: [0, 0, 0.08], normal: [0, 0, 1] },
+    }),
+    // The catheter: its insertion depth follows the current step
+    new CurveFollower({
+      points: [
+        [-1, 0, -0.15],
+        [-0.6, 0.7, -0.07],
+        [-0.05, 0.6, -0.07],
+        [-0.1, 0, -0.07],
+        [-0.2, -0.4, -0.07],
+        [-0.15, -0.7, 0.03],
+        [-0.1, -1, 0.05],
+        [-0.2, -1.15, 0.05],
+        [-0.4, -1.35, 0.05],
+        [-0.6, -1.65, 0.15],
+        [-0.8, -2.15, 0.15],
+        [-0.9, -2.15, 0.15],
+        [-0.9, -1.9, 0.15],
+        [-0.88, -1.9, 0.15],
+      ],
+      radius: 0.01,
+      fill: catheterFillAt(initialStep), // opens at the right insertion depth
+      color: '#D7C4F0', // pastel lavender
     }),
   ]
 }
@@ -97,6 +127,9 @@ function Walkthroughs() {
     stepRef.current = stepIndex
   }, [stepIndex])
 
+  // The live catheter, so step changes can move it
+  const catheterRef = useRef<CurveFollower | null>(null)
+
   const pin = useCallback(
     (structureId: string | null) => {
       setSelectedStructureId(structureId)
@@ -135,7 +168,8 @@ function Walkthroughs() {
 
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
-    const created = createSceneObjects()
+    const created = createSceneObjects(stepRef.current)
+    catheterRef.current = created.find((o): o is CurveFollower => o instanceof CurveFollower) ?? null
     // Open the page with ?regions to color each named part of a model, for checking where the regions lie
     if (new URLSearchParams(window.location.search).has('regions')) {
       for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
@@ -145,10 +179,16 @@ function Walkthroughs() {
     const step = TAVI_PROCEDURE.steps[stepRef.current]
     if (step) director.showStep(step.scene)
     return () => {
+      catheterRef.current = null
       director.setObjects([])
       created.forEach((o) => o.dispose())
     }
   }, [director])
+
+  // The catheter advances or withdraws to the current step's insertion depth
+  useEffect(() => {
+    catheterRef.current?.animateFillTo(catheterFillAt(stepIndex))
+  }, [stepIndex])
 
   const changeStep = useCallback(
     (index: number) => {
