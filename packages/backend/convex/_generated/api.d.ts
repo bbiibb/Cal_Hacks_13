@@ -20,6 +20,7 @@ import type * as lib_chatParse from "../lib/chatParse.js";
 import type * as lib_chatPipeline from "../lib/chatPipeline.js";
 import type * as lib_chatPrompt from "../lib/chatPrompt.js";
 import type * as lib_chatRun from "../lib/chatRun.js";
+import type * as lib_chatSummary from "../lib/chatSummary.js";
 import type * as lib_knowledge from "../lib/knowledge.js";
 import type * as lib_llm from "../lib/llm.js";
 import type * as lib_localPrompt from "../lib/localPrompt.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "lib/chatPipeline": typeof lib_chatPipeline;
   "lib/chatPrompt": typeof lib_chatPrompt;
   "lib/chatRun": typeof lib_chatRun;
+  "lib/chatSummary": typeof lib_chatSummary;
   "lib/knowledge": typeof lib_knowledge;
   "lib/llm": typeof lib_llm;
   "lib/localPrompt": typeof lib_localPrompt;

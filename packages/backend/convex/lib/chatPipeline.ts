@@ -67,7 +67,7 @@ const NO_MODEL_OUTPUT: LlmOutput = {
 const DECLINES = /\b(can'?t|cannot|can not|unable to|not able to|don'?t have|do not have|not sure)\b[^.?!]*\b(care team|doctor|pharmacist|medical team|provide|help|advice|information)\b/i;
 
 /** "Zoom in" or "go to step 3": a command, not a medical question. */
-function isCameraOnly(message: string): boolean {
+export function isCameraOnly(message: string): boolean {
   const c = detectViewCommands(message);
   const hasCommand = c.zoom !== null || c.rotate !== null || c.resetView || c.step !== null;
   return hasCommand && !message.includes("?") && message.length < 80;

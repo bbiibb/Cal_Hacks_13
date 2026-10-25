@@ -57,6 +57,13 @@ function Walkthroughs() {
   const [director] = useState(() => new SceneDirector(lookupStep))
   const [chatClient] = useState(() => createChatClient(TAVI_PROCEDURE, TAVI_STRUCTURES))
   const [stepIndex, setStepIndex] = useState(0)
+
+  // The conversation lasts until the window is closed: then the backend deletes it
+  useEffect(() => {
+    const onPageHide = () => chatClient.close?.()
+    window.addEventListener('pagehide', onPageHide)
+    return () => window.removeEventListener('pagehide', onPageHide)
+  }, [chatClient])
   const [selectedStructureId, setSelectedStructureId] = useState<string | null>(null)
   const [hover, setHover] = useState<Hover | null>(null)
 

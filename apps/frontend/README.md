@@ -62,6 +62,8 @@ Where answers come from, set in `apps/frontend/.env.local`:
 | `VITE_CHAT_BACKEND=convex` and `VITE_CONVEX_URL=http://127.0.0.1:3210` | The chatbot with the **model on your own computer** (Llama through Ollama and a local Convex backend). See `docs/local-llm.md` |
 | `VITE_CHAT_TIMEOUT_MS=120000` (optional) | How long the chat waits for an answer. The default is 30 seconds, which is too short for a local model next to the 3D view |
 
+**Conversation lifetime.** With the Convex backend, a conversation lasts until the window is closed: the page asks the backend to delete it when it is hidden or closed (`pagehide`, `ConvexChatClient.close`). The backend also deletes conversations idle for 2 hours. Older messages are shortened by the backend, see `docs/chatbot.md` ("Conversation memory").
+
 **Voice questions.** With the Convex backend, a microphone button next to Send records up to 30 seconds. The recording is uploaded (`speech.generateUploadUrl`), then `chat.askByVoice` transcribes and answers it. The heard text appears as your message, and the answer moves the 3D view like a typed one. The demo answers do not support voice, so the button is hidden; in browsers without microphone recording it is disabled with an explanation. Needs the backend's `CARTESIA_API_KEY`, a secure page (https or localhost), and microphone permission. Code: `chat/voice_recorder.ts`, `ConvexChatClient.askByVoice`.
 
 The demo answers are educational dummy content and must be reviewed by someone with medical knowledge before patients see them. Tests for the demo answers and response checks: `pnpm --filter @cal-hacks/frontend test`.
