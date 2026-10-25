@@ -1,6 +1,6 @@
-# Cal_Hacks_13
+# Ask-Ray (for Cal_Hacks_13)
 
-A patient-education website (called **Simple Surgeries**, shown as **asX-ray** in the header) that shows 3D human organs and surgical procedures step by step (Cal Hacks 13).
+A patient-education website that shows 3D human organs and surgical procedures step by step.
 
 - Walkthroughs: **TAVR** (transcatheter aortic valve replacement), the first and complete demo, and an **eye anatomy** prototype with placeholder text (`docs/eye-prototype.md`)
 - What a patient can do: step through the procedure in 3D, point at or click a part to read about it, and ask a chatbot (typed or spoken) that answers from the team's TAVR fact base (not yet clinically reviewed) and moves the 3D view
