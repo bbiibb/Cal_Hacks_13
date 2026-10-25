@@ -1,0 +1,460 @@
+/* Privacy UI inside the chat panel. Colors come from the custom properties set on the panel (.panel). */
+
+/* Input with live highlighting: the mirror and the textarea share every text metric */
+.inputWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  position: relative;
+}
+
+.mirror,
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  tab-size: 4;
+}
+
+.mirror {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: transparent;
+}
+
+.textarea {
+  position: relative;
+  display: block;
+  resize: none;
+  outline: 0;
+  background: transparent;
+  color: var(--panel-ink);
+  overflow-y: auto;
+  scrollbar-width: none; /* no scrollbar, so the mirror wraps at exactly the same width */
+}
+
+.textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.textarea::placeholder {
+  color: var(--panel-muted);
+}
+
+.flag {
+  color: transparent;
+  background: rgba(251, 191, 36, 0.16);
+  border-radius: 0.2rem;
+  text-decoration: underline wavy #fbbf24;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.found {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  min-height: 0;
+}
+
+.found:not(:empty) {
+  margin-top: 0.3rem;
+}
+
+.foundLabel {
+  color: var(--panel-muted);
+  font-size: 0.68rem;
+}
+
+.typeChip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fde7b0;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.chipKind {
+  font-weight: 400;
+  color: var(--panel-muted);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Status line and drawer */
+.dock {
+  margin: 0.5rem 1.1rem 0;
+  max-height: 45%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.2rem 0.75rem;
+}
+
+.summary {
+  margin: 0;
+  color: #d6d4e4;
+  font-size: 0.7rem;
+}
+
+.detector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--panel-muted);
+  font-size: 0.68rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot_ok {
+  background: #6ee7b7;
+}
+
+.dot_busy {
+  background: #fbbf24;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.dot_off {
+  background: transparent;
+  border: 1.5px solid var(--panel-muted);
+}
+
+@keyframes dotPulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.voiceNote {
+  margin: 0.15rem 0 0;
+  color: var(--panel-muted);
+  font-size: 0.66rem;
+}
+
+.toggle {
+  margin-top: 0.3rem;
+  padding: 0.2rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--panel-accent);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+.chevron {
+  display: inline-block;
+  width: 1em;
+}
+
+.count {
+  font-weight: 400;
+  color: var(--panel-muted);
+}
+
+.drawer {
+  margin-top: 0.3rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--panel-line);
+  background: var(--panel-surface);
+}
+
+.drawer[hidden] {
+  display: none;
+}
+
+.drawerTitle {
+  margin: 0.6rem 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--panel-ink);
+}
+
+.hint {
+  margin: 0;
+  color: var(--panel-muted);
+  font-size: 0.7rem;
+}
+
+.auditList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0 0 0.4rem;
+  padding: 0;
+  list-style: none;
+}
+
+.auditSent,
+.auditBlocked {
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.55rem;
+  background: var(--panel-raised);
+  border-left: 3px solid #6ee7b7;
+}
+
+.auditBlocked {
+  border-left-color: var(--panel-accent);
+}
+
+.auditHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.1rem 0.6rem;
+}
+
+.auditStatus {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.auditMeta {
+  color: var(--panel-muted);
+  font-size: 0.66rem;
+}
+
+.sentText {
+  margin: 0.25rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.redactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--panel-accent);
+  font: inherit;
+  font-size: 0.68rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Demo intake form */
+.intake {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--panel-line);
+}
+
+.intakeSummary {
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--panel-ink);
+}
+
+.intake[open] > .intakeSummary {
+  margin-bottom: 0.45rem;
+}
+
+.demoNotice {
+  display: inline-block;
+  margin: 0 0 0.35rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fde7b0;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.label {
+  color: var(--panel-muted);
+  font-size: 0.66rem;
+}
+
+.textInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--panel-line);
+  background: var(--panel-bg);
+  color: var(--panel-ink);
+  font: inherit;
+}
+
+.textInput::placeholder {
+  color: #7d7b92;
+}
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.primary,
+.secondary {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  background: var(--panel-accent);
+  color: var(--panel-accent-ink);
+}
+
+.secondary {
+  border: 1px solid var(--panel-line);
+  background: transparent;
+  color: var(--panel-ink);
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.status {
+  min-height: 1em;
+  margin: 0.4rem 0 0;
+  color: #d6d4e4;
+  font-size: 0.7rem;
+}
+
+.savedBox {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.4rem 0 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.55rem;
+  border: 1px solid rgba(110, 231, 183, 0.4);
+  background: rgba(110, 231, 183, 0.07);
+  font-size: 0.72rem;
+}
+
+.savedBox div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.savedBox dt {
+  color: var(--panel-muted);
+}
+
+.savedBox dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Calm "not sent" message in the conversation */
+.blockedBubble {
+  align-self: flex-start;
+  max-width: 94%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(185, 182, 255, 0.45);
+  background: rgba(185, 182, 255, 0.1);
+  color: #e6e4ff;
+}
+
+.blockedTitle {
+  margin: 0 0 0.2rem;
+  font-weight: 600;
+  color: var(--panel-accent);
+}
+
+.blockedText {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot_busy {
+    animation: none;
+  }
+}
+
+.dock button:focus-visible,
+.dock summary:focus-visible,
+.dock input:focus-visible {
+  outline: 2px solid var(--panel-accent);
+  outline-offset: 2px;
+}

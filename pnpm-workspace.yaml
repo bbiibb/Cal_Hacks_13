@@ -6,3 +6,7 @@ packages:
 # Allow the esbuild postinstall script (used by convex dev)
 allowBuilds:
   esbuild: true
+
+# transformers.js only runs in the browser here; its Node-only install scripts are not needed
+  onnxruntime-node: false
+  protobufjs: false
