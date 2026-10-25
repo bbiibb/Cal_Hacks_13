@@ -107,8 +107,25 @@
   }
 }
 
+/* Current page: indigo underline (the dark walkthrough header uses its own accent) */
+.signUpActive {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+
+.greeting {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Translucent light pill: readable on light, dark, and transparent headers */
 .logIn {
+  font: inherit;
+  cursor: pointer;
   padding: 0.8rem 1.6rem;
   color: #1d2233;
   text-decoration: none;
