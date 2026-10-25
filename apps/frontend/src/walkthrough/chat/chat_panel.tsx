@@ -4,15 +4,24 @@ import type { ChatClient, ChatResponse, SceneAction } from './chat_types'
 import { ChatError, MAX_CHAT_MESSAGE_LENGTH } from './chat_types'
 import { STARTER_QUESTIONS } from './follow_ups'
 import { canRecordVoice, MAX_RECORDING_MS, VoiceError, VoiceRecorder } from './voice_recorder'
+import type { PiiGuard } from '../privacy'
+import { PiiBlockedError } from '../privacy'
+import PrivacyDock from './privacy_dock'
+import PrivacyInput from './privacy_input'
 import styles from './chat_panel.module.css'
+import privacyStyles from './privacy.module.css'
 
 type Message =
   | { id: number; role: 'user'; text: string }
   | { id: number; role: 'assistant'; text: string; response?: ChatResponse; followUps: string[] }
   | { id: number; role: 'error'; text: string; retry: string | null }
+  /** A question the privacy layer refused to send. It offers no retry and keeps no copy of the text. */
+  | { id: number; role: 'blocked'; text: string }
 
 type Props = {
   client: ChatClient
+  /** The on-device privacy guard the client is wrapped with. Adds highlighting, the audit panel and the intake form. */
+  guard?: PiiGuard
   procedure: Procedure
   stepIndex: number
   /** The part the patient pinned, sent with each question as context. */
@@ -83,6 +92,7 @@ function Paragraphs({ text }: { text: string }) {
 
 function ChatPanel({
   client,
+  guard,
   procedure,
   stepIndex,
   selectedStructureId,
@@ -144,7 +154,8 @@ function ChatPanel({
     const message = raw.trim().slice(0, MAX_CHAT_MESSAGE_LENGTH)
     if (message === '' || pending) return
 
-    setMessages((list) => [...list, { id: nextId.current++, role: 'user', text: message }])
+    const userId = nextId.current++
+    setMessages((list) => [...list, { id: userId, role: 'user', text: message }])
     setInput('')
     setPending(true)
 
@@ -166,6 +177,14 @@ function ChatPanel({
     } catch (error) {
       if (!mounted.current) return
       console.error('Chat: the question could not be answered', error)
+      if (error instanceof PiiBlockedError) {
+        // Drop the typed text from the log: it was not sent, and there is nothing to retry as is
+        setMessages((list) => [
+          ...list.map((m): Message => (m.id === userId ? { id: m.id, role: 'user', text: 'Message not sent (see below)' } : m)),
+          { id: nextId.current++, role: 'blocked', text: error.message },
+        ])
+        return
+      }
       setMessages((list) => [...list, { id: nextId.current++, role: 'error', text: errorText(error), retry: message }])
     } finally {
       if (mounted.current) setPending(false)
@@ -315,6 +334,14 @@ function ChatPanel({
               </div>
             )
           }
+          if (m.role === 'blocked') {
+            return (
+              <div key={m.id} className={privacyStyles.blockedBubble} role="alert">
+                <p className={privacyStyles.blockedTitle}>Not sent, to keep you private</p>
+                <p className={privacyStyles.blockedText}>{m.text}</p>
+              </div>
+            )
+          }
           if (m.role === 'error') {
             return (
               <div key={m.id} className={styles.errorBubble}>
@@ -402,16 +429,27 @@ function ChatPanel({
         <label htmlFor="tavi-chat-input" className={styles.visuallyHidden}>
           Your question
         </label>
-        <textarea
-          id="tavi-chat-input"
-          className={styles.input}
-          value={input}
-          onChange={(e) => setInput(e.target.value.slice(0, MAX_CHAT_MESSAGE_LENGTH))}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask about side effects, recovery, or a step…"
-          rows={2}
-          maxLength={MAX_CHAT_MESSAGE_LENGTH}
-        />
+        {guard ? (
+          <PrivacyInput
+            id="tavi-chat-input"
+            value={input}
+            onChange={setInput}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about side effects, recovery, or a step…"
+            guard={guard}
+          />
+        ) : (
+          <textarea
+            id="tavi-chat-input"
+            className={styles.input}
+            value={input}
+            onChange={(e) => setInput(e.target.value.slice(0, MAX_CHAT_MESSAGE_LENGTH))}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about side effects, recovery, or a step…"
+            rows={2}
+            maxLength={MAX_CHAT_MESSAGE_LENGTH}
+          />
+        )}
         <div className={styles.composerRow}>
           <span className={styles.counter} aria-live="polite">
             {remaining <= 100 ? `${remaining} characters left` : ''}
@@ -457,6 +495,8 @@ function ChatPanel({
           </div>
         </div>
       </form>
+
+      {guard && <PrivacyDock guard={guard} />}
 
       <p className={styles.disclaimer}>
         Educational information only, not medical advice. Always follow your care team's instructions.

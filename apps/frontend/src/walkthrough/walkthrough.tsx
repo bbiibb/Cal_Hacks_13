@@ -10,7 +10,7 @@ import { SceneDirector, type StepLookup } from './visualization/scene_director'
 import { PartPicker } from './visualization/part_picker'
 import ChatPanel from './chat/chat_panel'
 import type { SceneAction } from './chat/chat_types'
-import { createChatClient } from './chat/create_chat_client'
+import { createGuardedChat, disposePageGuard } from './chat/create_chat_client'
 import StepSlider from './step_slider/step_slider'
 import { structureInfo, structureName, TAVI_PROCEDURE, TAVI_STRUCTURES } from './tavi_content'
 
@@ -70,12 +70,16 @@ type Hover = { id: string; x: number; y: number }
 function Walkthroughs() {
   const [objects, setObjects] = useState<SceneObject[]>([])
   const [director] = useState(() => new SceneDirector(lookupStep))
-  const [chatClient] = useState(() => createChatClient(TAVI_PROCEDURE, TAVI_STRUCTURES))
+  const [{ client: chatClient, guard: piiGuard }] = useState(() => createGuardedChat(TAVI_PROCEDURE, TAVI_STRUCTURES))
   const [stepIndex, setStepIndex] = useState(0)
 
   // The conversation lasts until the window is closed: then the backend deletes it
   useEffect(() => {
-    const onPageHide = () => chatClient.close?.()
+    const onPageHide = (event: PageTransitionEvent) => {
+      chatClient.close?.()
+      // A page kept for back/forward navigation (persisted) is restored later, so keep its guard
+      if (!event.persisted) disposePageGuard()
+    }
     window.addEventListener('pagehide', onPageHide)
     return () => window.removeEventListener('pagehide', onPageHide)
   }, [chatClient])
@@ -195,6 +199,7 @@ function Walkthroughs() {
       <div className={styles.panel}>
         <ChatPanel
           client={chatClient}
+          guard={piiGuard}
           procedure={TAVI_PROCEDURE}
           stepIndex={stepIndex}
           selectedStructureId={selectedStructureId}
