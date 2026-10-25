@@ -28,7 +28,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 1rem 1.1rem 0.75rem;
+  padding: 0.7rem 1.1rem 0.5rem;
 }
 
 .title {
@@ -69,8 +69,8 @@
 /* Current step */
 .step {
   flex-shrink: 0;
-  /* Never more than about half the panel, so the conversation keeps room; the card scrolls instead */
-  max-height: 40%;
+  /* Never more than about 9rem, so the conversation keeps room; the card scrolls instead */
+  max-height: min(28%, 9rem);
   overflow-y: auto;
   margin: 0 1.1rem;
   padding: 0.75rem 0.85rem;
@@ -78,6 +78,28 @@
   background: var(--panel-surface);
   border: 1px solid var(--panel-line);
   scrollbar-width: thin;
+}
+
+.stepHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.stepToggle {
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--panel-line);
+  background: transparent;
+  color: var(--panel-muted);
+  font: inherit;
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.stepToggle:hover {
+  color: var(--panel-ink);
 }
 
 .stepLabel {
@@ -448,7 +470,7 @@
 
 .disclaimer {
   margin: 0;
-  padding: 0.55rem 1.1rem 0.8rem;
+  padding: 0.35rem 1.1rem 0.5rem;
   color: var(--panel-muted);
   font-size: 0.65rem;
 }

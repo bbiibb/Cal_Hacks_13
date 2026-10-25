@@ -112,6 +112,7 @@ function ChatPanel({
   ])
   const [input, setInput] = useState('')
   const [speed, setSpeed] = useState<ChatSpeed>('slow')
+  const [stepOpen, setStepOpen] = useState(true)
   const [pending, setPending] = useState(false)
   const [voice, setVoice] = useState<'idle' | 'recording' | 'transcribing'>('idle')
   const [seconds, setSeconds] = useState(0)
@@ -290,12 +291,22 @@ function ChatPanel({
 
       {step && (
         <section className={styles.step} aria-label="Current step">
-          <p className={styles.stepLabel}>
-            Step {stepIndex} of {procedure.steps.length - 1}
-          </p>
+          <div className={styles.stepHead}>
+            <p className={styles.stepLabel}>
+              Step {stepIndex} of {procedure.steps.length - 1}
+            </p>
+            <button
+              type="button"
+              className={styles.stepToggle}
+              onClick={() => setStepOpen((open) => !open)}
+              aria-expanded={stepOpen}
+            >
+              {stepOpen ? 'Hide details' : 'Show details'}
+            </button>
+          </div>
           <h3 className={styles.stepTitle}>{step.title}</h3>
-          <p className={styles.stepBody}>{step.side_panel.body_markdown}</p>
-          {step.side_panel.related_structure_ids.length > 0 && (
+          {stepOpen && <p className={styles.stepBody}>{step.side_panel.body_markdown}</p>}
+          {stepOpen && step.side_panel.related_structure_ids.length > 0 && (
             <div className={styles.parts}>
               {step.side_panel.related_structure_ids.map((id) => (
                 <button
