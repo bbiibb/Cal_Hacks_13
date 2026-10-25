@@ -62,9 +62,11 @@ function Visualization({ objects, camera, controller }: Props) {
     )
     perspective.position.set(...position)
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, stencil: true })
+    renderer.localClippingEnabled = true
     renderer.setSize(mount.clientWidth, mount.clientHeight)
     mount.appendChild(renderer.domElement)
+
 
     const cameraController =
       initialConfig.current.controller?.(perspective, renderer.domElement) ?? null
