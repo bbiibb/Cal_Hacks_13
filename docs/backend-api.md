@@ -56,9 +56,9 @@ const { text } = await transcribe({ storageId, language: "en" });
 - Accepted audio: webm, ogg, mp4, m4a, mp3, wav, flac. Up to 10 MB.
 - Errors are thrown as `ConvexError` and carry `{ code, message }` in `error.data`. Codes: `stt_not_configured`, `invalid_language`, `audio_not_found`, `audio_too_large`, `audio_empty`, `unsupported_audio_type`, `stt_timeout`, `stt_request_failed`, `stt_bad_response`.
 - The server needs the secret `CARTESIA_API_KEY` as a Convex environment variable (`npx convex env set CARTESIA_API_KEY <key>`). Without it the error code is `stt_not_configured`.
-- Not built yet: rate limiting. Until it exists, anyone who knows the deployment URL could use up the speech-to-text quota.
+- Not built yet: rate limiting. Until it exists, anyone who knows the deployment URL could use up the speech-to-text quota. The frontend keeps the microphone available even while the on-device privacy layer is on, so spoken details are not redacted on the device (see [`privacy-layer.md`](privacy-layer.md)).
 
-## Chatbot (free language model)
+## Chatbot (language model)
 
 | Function | Kind | args | Returns |
 |---|---|---|---|
@@ -67,7 +67,7 @@ const { text } = await transcribe({ storageId, language: "en" });
 
 - `scene_actions` are already validated against our content, so the frontend can apply them directly: `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, `reset_view`.
 - Errors are thrown as `ConvexError` with `{ code, message }` in `error.data`. Codes: `invalid_message`, `context_not_found`, `too_many_requests`, `llm_not_configured`, `llm_rate_limited`, `llm_timeout`, `llm_request_failed`, `llm_bad_response`, and for the local model `llm_local_unavailable` and `llm_model_missing`. Which model answers (`LLM_PROVIDER`: cloud or local) never changes the arguments or the reply.
-- The server needs `LLM_API_KEY` (and optionally `LLM_BASE_URL` and `LLM_MODEL`) as Convex environment variables. Free setup and the way it works are in [`docs/chatbot.md`](chatbot.md).
+- The server needs `LLM_API_KEY` (and optionally `LLM_BASE_URL` and `LLM_MODEL`) as Convex environment variables for the cloud model: Groq by default, or any OpenAI-compatible provider such as Google Gemini (`gemini-3.1-flash-lite`). Setup and the way it works are in [`docs/chatbot.md`](chatbot.md).
 - **Safety behavior** (see [`safety.md`](safety.md)): questions asking for medicine or personal medical decisions get a fixed reply without the model; answers with advice or facts that are not in our content are replaced; replies about risks carry the standing note in `safety`; personal details in the question are removed. `doctor_question` is a suggested question for the doctor.
 - **Slow or fast** (`speed`, optional): `"slow"` answers with the local Llama on this computer (free), `"fast"` answers with the cloud model through `LLM_API_KEY`, `LLM_BASE_URL` and `LLM_MODEL` (a paid service). Without `speed`, `LLM_PROVIDER` decides, as before. The chat panel's Slow / Fast switch sends it, and warns before fast mode. Fast mode without `LLM_API_KEY` returns the error code `llm_not_configured`.
 - `api.chat.deleteSession({ sessionId })` erases a conversation and its messages. The frontend calls it when the page closes (`pagehide`). Conversations that were idle for 2 hours are deleted every hour in any case (`chat.purgeInactiveSessions`, `convex/crons.ts`).
@@ -94,4 +94,4 @@ const { text } = await transcribe({ storageId, language: "en" });
 
 ## Not built yet
 
-The comprehension quiz, rate limiting, and authentication are not implemented.
+The comprehension quiz and rate limiting are not implemented. Accounts exist (`users.viewer`, sign-in through `@convex-dev/auth`; see [`auth.md`](auth.md)), but the chat and speech functions do not require a signed-in user yet.

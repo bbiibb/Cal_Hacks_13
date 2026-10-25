@@ -65,7 +65,7 @@ question
 
 ## 5. Limits you should know
 
-- **The local Convex backend listens on all network interfaces** (`*:3210`), and there is no login. Someone on the same network can call the chatbot (and use your speech-to-text quota); they cannot read other people's conversations, because those can only be read by internal functions. Do not leave it running on a shared network, and add authentication and rate limits before any real use.
+- **The local Convex backend listens on all network interfaces** (`*:3210`), and its chat functions do not require a login (accounts only guard the walkthrough pages in the website). Someone on the same network can call the chatbot (and use your speech-to-text quota); they cannot read other people's conversations, because those can only be read by internal functions. Do not leave it running on a shared network, and add authentication and rate limits before any real use.
 - **Names, addresses, and hospital record numbers are not removed** from questions; only emails, phone numbers, ID-like numbers, and birth dates are.
 - Deleting on window close is a best effort: a browser may not send the request (a crash, a phone that suspends the page). The 2-hour idle cleanup is the safety net, so a conversation can stay for up to about 3 hours in that case (2 hours idle plus up to one hour until the next run).
 - The local database is a plain file on the computer. Turn on disk encryption (FileVault on a Mac).
@@ -74,15 +74,15 @@ question
 - The grounding check is a **word-level** check. It catches invented numbers and unfamiliar terms, but it cannot tell that a sentence built from correct words says something wrong. It also errs on the side of caution: some correct paraphrases may be replaced by our own text.
 - The gate uses patterns in English. A question that avoids those patterns can slip past it, and other languages are not covered. The advice filter and the grounding check are a second line of defense for the answer.
 - A 3B model words things loosely. For "does the equipment you just put in stay in my body?" it began with "No" although the new valve stays. Review real answers regularly.
-- No authentication and no rate limiting yet. Anyone who can reach the backend can ask questions and create conversations.
+- No rate limiting yet, and the chat and speech functions do not check who is signed in. Anyone who can reach the backend can ask questions, create conversations and use up the cloud model's quota (Fast mode is a paid service).
 
 ## 6. Recommended next steps
 
 1. **Clinical review** of every piece of content and of a set of real answers before patients use it.
-2. Show a **permanent disclaimer** in the UI ("educational, not medical advice, call your doctor or emergency number") and the emergency notice prominently. Show the `safety` and `urgent` fields of every reply.
+2. ~~Show a permanent disclaimer~~ Done: the chat panel shows it under the question box, and `safety` and `urgent` are shown with each reply.
 3. Keep a **red-team question set** and run it before each release (start from `test/redteam.test.ts`); add questions that real testers find.
-4. Add **citations**: attach the snippet that supports each answer (`sources` is empty today).
-5. Set up the daily **purge** of old conversations, and decide whether to store conversations at all.
-6. Add **authentication and rate limits** before any public use.
+4. ~~Add citations~~ Done: `sources` lists the facts an answer is based on (see `knowledge-base.md`).
+5. ~~Set up the purge of old conversations~~ Done (hourly job, 2 hours idle); still decide whether to store conversations at all.
+6. Add **rate limits**, a daily budget for Fast mode, and a check for a signed-in user on the chat functions before any public use.
 7. For voice in local-only mode, add a local speech-to-text model.
 8. Write a short **privacy notice** for patients: what is stored, where, and how to delete it.

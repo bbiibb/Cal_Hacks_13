@@ -37,11 +37,11 @@ Screen layout (main page mockup): on the left the 3D image with a **timeline (sl
 | F8 | Expand to other organs and tumors | A data model that can hold many structures and procedures | ✅ The model is general. Add content with the `seed-content` skill |
 | F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | ✅ 84 TAVR and anatomy facts (`docs/knowledge-base.md`), keyword plus vector search, both models read them, `sources` is filled in each answer and shown under it in the chat panel. The facts from the team's document are taken as correct |
 | F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | 🟡 Length limit and a 1.5 s wait between questions of one session exist, but a question without a session id, new sessions and upload URLs have no limit. Fast mode (paid cloud model) asks the patient first. Real rate limit, usage log and a daily budget ⬜ |
-| F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`): scope gate, advice filter, grounding, personal-detail removal on the server and an on-device PII guard in the frontend, local-only mode, deletion of conversations including a scheduled purge, UI disclaimer, citations. Authentication 🟡 backend built (Convex Auth, username + password, see `docs/auth.md`), needs the one-time setup commands and the frontend form |
+| F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`): scope gate, advice filter, grounding, personal-detail removal on the server and an on-device PII guard in the frontend, local-only mode, deletion of conversations including a scheduled purge, UI disclaimer, citations. Accounts ✅ (Convex Auth with username and password, login and sign-up pages, and a route guard on the walkthrough pages; see `docs/auth.md`; each new deployment needs the one-time setup commands). The chat and speech functions do not check who is signed in yet 🟡 |
 | F11 | **Add heart conditions** (more procedures per condition later) | Link conditions (`conditions`) and procedures (`procedures.condition_slug`) so the app grows by content, without code changes | ✅ Structure ready (only `aortic_stenosis` for now). Candidates to add: coronary artery disease (PCI, CABG) and others |
 | F12 | **Voice questions** (a microphone button in the chatbot) | Turn a recording into text with Cartesia speech-to-text and delete the recording right away | ✅ Microphone button (PR #11) and backend: `speech.generateUploadUrl` -> upload -> `chat.askByVoice`; needs `CARTESIA_API_KEY`, and `ALLOW_CLOUD_STT=true` when the model runs locally. The microphone stays available while the on-device privacy layer is on, but audio cannot be redacted on the device (a known gap, see `docs/privacy-layer.md`). Rate limiting ⬜ |
 | F13 | **3D control by the chatbot** (zoom, rotate, highlight, go to a step) | Produce validated camera and step commands from the model's answer and from simple spoken commands | ✅ Backend (`zoom`, `rotate`, `reset_view`, `focus`, `highlight`, `goto_step`) and frontend. "Zoom in", "can you zoom in?" and "show me the right atrium" are read by rules, so they answer in under a second |
-| F15 | **Choose how the chatbot answers** (slow or fast) | Answer with the local Llama (slow, free) or the cloud model (fast, paid) as the patient chooses per question | ✅ `speed` argument of `chat.ask` and `chat.askByVoice`, and a Slow / Fast switch under the chat that warns before fast mode |
+| F15 | **Choose how the chatbot answers** (slow or fast) | Answer with the local Llama (slow, free) or the cloud model (fast, paid) as the patient chooses per question | ✅ `speed` argument of `chat.ask` and `chat.askByVoice`, and a Slow / Fast switch under the chat that warns before fast mode. Fast uses the model set in `LLM_BASE_URL` and `LLM_MODEL` (tested with Gemini). Slow needs Ollama next to the backend, so a deployed site cannot offer it yet (see section 7) |
 | F16 | **A second walkthrough: eye anatomy** (prototype) | Content for a topic other than the heart, to show that the page works with more than TAVR | 🟡 Frontend prototype only: 8 eye parts, 5 steps of placeholder text, demo chat answers. No Convex content and no clinical review (`docs/eye-prototype.md`) |
 
 ### 3.1 What the chatbot (F4) needs
@@ -52,7 +52,7 @@ Chatbot behavior the planning note asks for:
 - Let the patient **ask in connection with the scene being watched**. Example: "Does the equipment you just put in remain in my body?"
 - At the end, briefly check what the patient understood and organize the questions to ask the doctor in charge.
 
-Decided building blocks: speech-to-text with **Cartesia** (F12, done on the backend) and answers from a **free open-weight model through Groq** (`openai/gpt-oss-20b`; Groq retired its Llama models; any OpenAI-compatible endpoint works), using the JSON answer format of the Mana prototype (`answer`, `highlight`, `safety`, `doctorQuestion`, `urgent`) extended with `zoom`, `rotate`, `step`, and `reset_view`. See `docs/chatbot.md`.
+Decided building blocks: speech-to-text with **Cartesia** (F12), a **local Llama 3.2 3B** for Slow answers (F15), and an OpenAI-compatible cloud model for Fast answers: **Google Gemini** (`gemini-3.1-flash-lite`) or Groq (`openai/gpt-oss-20b`; Groq retired its Llama models), using the JSON answer format of the Mana prototype (`answer`, `highlight`, `safety`, `doctorQuestion`, `urgent`) extended with `zoom`, `rotate`, `step`, and `reset_view`. See `docs/chatbot.md`.
 
 Components needed:
 1. **Request contract** (`ChatRequest`): `{ message, context: { procedure_slug, step_index, selected_structure_id | null } }` ✅ in `packages/shared`.
@@ -108,11 +108,12 @@ The heart model is a single mesh, so a heart part is named by an outline on the 
 ## 7. Suggested next work (in priority order)
 
 1. Real rate limits, including questions without a session id, new sessions and upload URLs, and a daily budget for fast mode (F10)
-2. Keep the vector index in step with the content: today `seed:run` and `rag:indexContent` must be run by hand after every content change
+2. Deploying: set the model keys on the production Convex deployment, choose a host for the website (see `docs/architecture.md`), and offer only the speeds that work there (Slow needs a model on the visitor's side: in the browser, or Ollama on their computer)
 3. A usage log (provider, speed, latency, camera-only or model, safety events; never the patient's words) so cost and speed can be seen
-4. Tie sessions to the user database a teammate is building (login)
+4. Tie sessions to the signed-in user (accounts exist; the chat functions do not use them yet)
 5. Reading step-specific part explanations (`annotations` seed and query) (F2)
 6. The comprehension check and organizing questions for the doctor (F7)
 7. Approach variants of a procedure (F5)
-8. Models and step scenes for the guidewire, catheter and balloon (a teammate)
+8. Speech-to-text on the device, so voice can be redacted like typed questions (F12, F14)
 9. More named heart parts (left atrium, valves, pulmonary veins): they need exported meshes or clear outlines
+10. Load the step and part content (TAVR and eye) from Convex instead of the shared fixtures, and seed the eye content (F16)

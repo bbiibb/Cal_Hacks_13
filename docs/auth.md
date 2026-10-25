@@ -1,6 +1,6 @@
 # Accounts (Convex Auth, username login)
 
-Status: backend built and unit tested; not yet run against a deployment (it needs the setup below).
+Status: built and unit tested, and sign-up and login were checked against a Convex dev deployment (the shared `hack-13` dev deployment is the default for local development, see `apps/frontend/.env.development`). Each new deployment still needs the setup below. Accounts only guard the walkthrough pages; the chat and speech functions do not require a signed-in user yet.
 
 ## How login works
 - Library: `@convex-dev/auth` (beta) with its `Password` provider. Passwords are hashed by the library (Scrypt). We do not hash anything ourselves.
