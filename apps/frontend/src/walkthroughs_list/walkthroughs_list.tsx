@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import tavrCover from '../assets/tavr_cover.svg'
 import WalkthroughCard from './walkthrough_card'
 import styles from './walkthroughs_list.module.css'
 
@@ -13,7 +14,13 @@ type WalkthroughItem = {
 
 // Static for now. Later this list can come from the backend (conditions and procedures).
 const WALKTHROUGHS: WalkthroughItem[] = [
-  { id: 'tavi', title: 'TAVI', to: '/walkthrough' },
+  {
+    id: 'tavi',
+    title: 'TAVR',
+    to: '/walkthrough',
+    imageSrc: tavrCover,
+    imageAlt: 'Illustration of a heart with a thin tube carrying a new valve into the aortic valve',
+  },
 ]
 
 // Keeps the grid full (two rows of three) while more procedures are on the way.

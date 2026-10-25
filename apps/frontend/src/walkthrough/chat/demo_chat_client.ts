@@ -30,7 +30,7 @@ const CURRENT_STEP_INTENT =
   /\b(this step|happening here|happening now|what am i (looking at|seeing)|what is this|what's this|explain this|this part)\b/
 
 /**
- * Answers TAVI questions from the hard-coded demo content, and understands simple view commands
+ * Answers TAVR questions from the hard-coded demo content, and understands simple view commands
  * such as "zoom in", "rotate left 90 degrees", or "go to step 3".
  * Used when no backend is configured, so the chat panel works offline and in demos.
  */
