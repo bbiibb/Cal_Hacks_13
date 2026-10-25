@@ -12,6 +12,8 @@ import Signup from './auth/signup.tsx'
 import Faqs from './faqs/faqs.tsx'
 import DevicesLab from './devices_lab/devices_lab.tsx'
 import ComingSoon from './coming_soon/coming_soon.tsx'
+import { AuthProvider } from './auth/auth_state.tsx'
+import RequireAuth from './auth/require_auth.tsx'
 
 const container = document.getElementById('root')
 
@@ -21,13 +23,17 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
+    <AuthProvider>
     <BrowserRouter>
       <Routes>
         {/* The header lives in SiteLayout, so it stays put while pages change */}
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/walkthrough" element={<Walkthrough />} />
-          <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
+          {/* Needs an account when REQUIRE_AUTH is on and Convex is configured (src/auth/config.ts) */}
+          <Route element={<RequireAuth />}>
+            <Route path="/walkthrough" element={<Walkthrough />} />
+            <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
+          </Route>
           <Route path="/faqs" element={<Faqs />} />
           <Route path="/devices-lab" element={<DevicesLab />} />
           <Route path="/login" element={<Login />} />
@@ -36,5 +42,6 @@ createRoot(container).render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   </StrictMode>,
 )

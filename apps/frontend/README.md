@@ -22,12 +22,12 @@ pnpm --filter @cal-hacks/frontend lint
 src/
 ├── main.tsx                 Routes. Every page is rendered inside SiteLayout
 ├── layout/                  SiteLayout: the header stays on every page, pages render below it
-├── site_header/             SiteHeader: logo, navigation, Sign up and Log in
+├── site_header/             SiteHeader: logo, navigation, Sign up and Log in (or the user's name and Log out)
 ├── walkthroughs_list/       The list of walkthrough cards
 ├── progress/                Saves and shows viewing progress (SpacetimeDB client, "Your progress" card)
 ├── walkthrough/             The 3D page
 │   └── visualization/       three.js scene, objects (cubes, glTF models), camera controllers
-├── auth/                    Log in page, Sign up placeholder, startSignIn (the one place sign-in begins)
+├── auth/                    Log in and Sign up pages, auth state, route guard, validation, `REQUIRE_AUTH`
 └── coming_soon/             Placeholder for pages that are not built yet
 public/models/               glTF (.glb) organ models
 ```
@@ -38,16 +38,16 @@ public/models/               glTF (.glb) organ models
 
 ## Routes
 
-`/` landing, `/walkthroughs-list`, `/walkthrough` (3D), `/login`, `/signup` (placeholder: "Sign-up is coming soon"), anything else shows "Coming soon".
+`/` landing, `/walkthroughs-list`, `/walkthrough` (3D), `/login`, `/signup`, anything else shows "Coming soon".
 
-## Sign-in (Microsoft Entra External ID)
+## Accounts (Convex Auth)
 
-The Log in page has a "Continue with Microsoft" button. The app never handles passwords; sign-in will use the hosted Entra page. Two optional variables, set in `apps/frontend/.env.local` (they are public identifiers, not secrets):
+Username and password accounts use `@convex-dev/auth` (`signIn('password', formData)` with `flow`, `username`, `password`; sign-up adds `firstName`, `lastName`, `email`). The signed-in user comes from the query `users:viewer`, referenced in one place (`src/auth/viewer.ts`; switch it to `api.users.viewer` after `convex codegen`).
 
-- `VITE_ENTRA_CLIENT_ID`: the app registration's client id
-- `VITE_ENTRA_AUTHORITY`: the tenant authority URL
-
-While they are unset, the button shows "Sign-in is not set up yet in this demo". The MSAL redirect login is a TODO in `src/auth/start_sign_in.ts`.
+- `VITE_CONVEX_URL` (in `apps/frontend/.env.local`): the Convex deployment URL. If it is missing, the app still runs: there is no auth provider, the pages show "Accounts are not available in this demo yet." on submit, and no route is guarded.
+- `REQUIRE_AUTH` (`src/auth/config.ts`, default `true`): protects `/walkthrough` and `/walkthroughs-list`. Signed-out visitors go to `/login?next=<path>` and return after signing in. `next` must be an internal path (`src/auth/redirect.ts`). It has no effect without `VITE_CONVEX_URL`. Set it to `false` to open the walkthroughs to everyone.
+- Log in shows one message for every failure ("Incorrect username or password"), so usernames are never revealed. Sign up validates in the browser first (`src/auth/validation.ts`) and maps backend error codes to messages under the right field.
+- Passwords are never stored or logged. Name and email are used only for the auth calls and the header greeting, and are never sent to the chat or any AI prompt.
 
 ## 3D models
 

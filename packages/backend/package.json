@@ -20,7 +20,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@auth/core": "0.37.0",
     "@cal-hacks/shared": "workspace:*",
+    "@convex-dev/auth": "^0.0.96",
     "convex": "^1.47.0",
     "zod": "^4.6.7"
   }

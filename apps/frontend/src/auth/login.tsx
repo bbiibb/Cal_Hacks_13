@@ -1,68 +1,84 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import '@fontsource/sora/400.css'
 import '@fontsource/sora/600.css'
-import { startSignIn } from './start_sign_in'
+import { useAuth } from './auth_context'
+import { PasswordField, TextField } from './auth_fields'
+import { LOGIN_ERROR, normalizeUsername } from './validation'
+import { safeNext } from './redirect'
 import styles from './auth_page.module.css'
 
-/** The Microsoft four-square mark, drawn from four rectangles so no outside asset is needed. */
-function MicrosoftMark() {
-  return (
-    <svg className={styles.logo} viewBox="0 0 21 21" aria-hidden="true">
-      <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-      <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-      <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-      <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-    </svg>
-  )
-}
+const NOT_AVAILABLE = 'Accounts are not available in this demo yet.'
 
 function Login() {
-  const [notConfigured, setNotConfigured] = useState(false)
+  const { configured, status, signIn } = useAuth()
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const next = safeNext(params.get('next'))
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const mounted = useRef(true)
 
-  function handleContinue() {
-    const result = startSignIn()
-    if (result.status === 'not_configured') setNotConfigured(true)
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+    }
+  }, [])
+
+  // Signed in (just now, or already): go where the visitor wanted to go
+  useEffect(() => {
+    if (status === 'signed_in') navigate(next, { replace: true })
+  }, [status, next, navigate])
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError('')
+    setNotice('')
+    if (!configured) {
+      setNotice(NOT_AVAILABLE)
+      return
+    }
+    const data = new FormData(event.currentTarget)
+    const form = new FormData()
+    form.set('flow', 'signIn')
+    form.set('username', normalizeUsername(String(data.get('username') ?? '')))
+    form.set('password', String(data.get('password') ?? ''))
+    setBusy(true)
+    try {
+      // Any failure gets the same message, so usernames are never revealed
+      if (!(await signIn(form)) && mounted.current) setError(LOGIN_ERROR)
+    } catch {
+      if (mounted.current) setError(LOGIN_ERROR)
+    } finally {
+      if (mounted.current) setBusy(false)
+    }
   }
 
   return (
     <main className={styles.main}>
       <section className={styles.card} aria-labelledby="login-title">
         <h1 id="login-title" className={styles.title}>
-          Welcome back
+          Log in
         </h1>
-        <p className={styles.lead}>Sign in to pick up where you left off. Your progress follows you across devices.</p>
+        <p className={styles.lead}>Welcome back to asX-ray.</p>
 
-        <div className={styles.actions}>
-          <button type="button" className={styles.primary} onClick={handleContinue}>
-            <MicrosoftMark />
-            Continue with Microsoft
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <TextField label="Username" name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} />
+          <PasswordField label="Password" name="password" autoComplete="current-password" error={error} />
+          <div role="status">{notice && <p className={styles.notice}>{notice}</p>}</div>
+          <button type="submit" className={styles.primary} disabled={busy}>
+            {busy ? 'Logging in...' : 'Log in'}
           </button>
-          <Link to="/walkthroughs-list" className={styles.secondary}>
-            Continue without signing in
-          </Link>
-        </div>
-
-        {/* role="status" must exist before its text changes, so screen readers announce it */}
-        <div role="status">
-          {notConfigured && (
-            <p className={styles.status}>
-              Sign-in is not set up yet in this demo. You can still use the walkthrough without an account.
-            </p>
-          )}
-        </div>
+        </form>
 
         <p className={styles.switch}>
           New here?{' '}
           <Link to="/signup" className={styles.textLink}>
-            Sign up
+            Create an account
           </Link>
         </p>
-
-        <div className={styles.note}>
-          <p>We never ask for medical or ID numbers. Your name stays on your device.</p>
-          <p>Educational, not medical advice.</p>
-        </div>
       </section>
     </main>
   )

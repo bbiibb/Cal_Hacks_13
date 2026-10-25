@@ -8,12 +8,15 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
 import type * as chatContext from "../chatContext.js";
 import type * as chatStore from "../chatStore.js";
 import type * as conditions from "../conditions.js";
 import type * as crons from "../crons.js";
+import type * as http from "../http.js";
 import type * as instruments from "../instruments.js";
+import type * as lib_authProfile from "../lib/authProfile.js";
 import type * as lib_cartesia from "../lib/cartesia.js";
 import type * as lib_chatActions from "../lib/chatActions.js";
 import type * as lib_chatParse from "../lib/chatParse.js";
@@ -42,6 +45,7 @@ import type * as sceneActions from "../sceneActions.js";
 import type * as seed from "../seed.js";
 import type * as speech from "../speech.js";
 import type * as structures from "../structures.js";
+import type * as users from "../users.js";
 import type * as validators from "../validators.js";
 
 import type {
@@ -51,12 +55,15 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   chat: typeof chat;
   chatContext: typeof chatContext;
   chatStore: typeof chatStore;
   conditions: typeof conditions;
   crons: typeof crons;
+  http: typeof http;
   instruments: typeof instruments;
+  "lib/authProfile": typeof lib_authProfile;
   "lib/cartesia": typeof lib_cartesia;
   "lib/chatActions": typeof lib_chatActions;
   "lib/chatParse": typeof lib_chatParse;
@@ -85,6 +92,7 @@ declare const fullApi: ApiFromModules<{
   seed: typeof seed;
   speech: typeof speech;
   structures: typeof structures;
+  users: typeof users;
   validators: typeof validators;
 }>;
 

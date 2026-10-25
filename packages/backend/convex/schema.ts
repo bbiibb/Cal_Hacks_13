@@ -1,9 +1,33 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { EMBEDDING_DIMENSIONS } from "./lib/ragConfig";
 import { vScene, vSceneAction, vSidePanel, vSource, vVec3 } from "./validators";
 
 export default defineSchema({
+  // Convex Auth tables (sessions, accounts, refresh tokens, ...) with the users table overridden below.
+  ...authTables,
+
+  // Accounts. Fields from the library are kept; `email` holds the lowercased USERNAME (it is the
+  // account id, not a real address). The real email the person typed is contactEmail: personal data,
+  // never sent to the chatbot or any model, and never returned by users.viewer. See docs/auth.md.
+  users: defineTable({
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    username: v.optional(v.string()), // lowercase
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+  })
+    .index("email", ["email"])
+    .index("phone", ["phone"])
+    .index("by_username", ["username"]),
+
   // Anatomical structures. structureId is the shared key that matches a GLB mesh name one to one.
   structures: defineTable({
     structureId: v.string(),

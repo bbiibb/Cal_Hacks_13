@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 // Sora: open-source font (SIL Open Font License), bundled through @fontsource
 import '@fontsource/sora/400.css'
 import '@fontsource/sora/600.css'
+import { useAuth } from '../auth/auth_context'
 import styles from './site_header.module.css'
 
 type NavItem = {
@@ -28,6 +29,7 @@ type Props = {
 
 /** Site-wide header. It stretches across the whole width of the page. */
 function SiteHeader({ backgroundColor = 'transparent', textColor, accentColor }: Props) {
+  const { status, user, signOut } = useAuth()
   // Custom properties let one component work on light, dark, and transparent backgrounds
   const style = {
     backgroundColor,
@@ -57,12 +59,26 @@ function SiteHeader({ backgroundColor = 'transparent', textColor, accentColor }:
         ))}
       </nav>
       <div className={styles.auth}>
-        <Link to="/signup" className={styles.signUp}>
-          Sign up
-        </Link>
-        <Link to="/login" className={styles.logIn}>
-          Log in
-        </Link>
+        {status === 'signed_in' && user ? (
+          <>
+            <span className={styles.greeting}>{user.firstName}</span>
+            <button type="button" className={styles.logIn} onClick={() => void signOut()}>
+              Log out
+            </button>
+          </>
+        ) : status === 'loading' ? null : (
+          <>
+            <NavLink
+              to="/signup"
+              className={({ isActive }) => (isActive ? `${styles.signUp} ${styles.signUpActive}` : styles.signUp)}
+            >
+              Sign up
+            </NavLink>
+            <Link to="/login" className={styles.logIn}>
+              Log in
+            </Link>
+          </>
+        )}
       </div>
     </header>
   )
