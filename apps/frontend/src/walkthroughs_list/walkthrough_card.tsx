@@ -1,7 +1,7 @@
 import styles from './walkthrough_card.module.css'
 
 type Props = {
-  /** Name shown in the footer bar, e.g. "TAVI". Leave empty for a placeholder. */
+  /** Name shown in the footer bar, e.g. "TAVR". Leave empty for a placeholder. */
   title?: string
   /** Illustration of the condition. A neutral block is shown when omitted. */
   imageSrc?: string

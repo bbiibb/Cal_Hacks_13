@@ -39,15 +39,15 @@ public/models/               glTF (.glb) organ models
 The models in `public/models/` are large (about 130 MB in total, and `aortic_arch.glb` alone is about 72 MB). GitHub rejects files over 100 MB, so move them to Git LFS before they grow.
 Mesh names must match the `structure_id` values of the contract (see `docs/contracts.md`) so the chatbot can highlight parts.
 
-## TAVI walkthrough page
+## TAVR walkthrough page
 
 - **Step slider** (`src/walkthrough/step_slider/`): along the bottom of the 3D view. Drag the handle, click a label, or use the arrows or keyboard to change step. The filled part shows how far along the patient is. On narrow screens the labels become step numbers.
 - **Pointing at parts** (`src/walkthrough/visualization/part_picker.ts`): hovering over a model shows its name next to the pointer and its description in the panel. A click (not a drag) pins it, and the pinned part is sent to the chatbot as context. A whole model stands in for its parts until the GLB mesh names match the contract.
 - **Steps** come from `packages/shared/fixtures/procedure.tavr.json`: the five steps of the team's patient explanation.
 
-## TAVI chat panel
+## TAVR chat panel
 
-The walkthrough page has a chat panel next to the 3D view. Patients ask about TAVI and its side effects, and each answer can move the 3D view: change the step, focus on or highlight a part, zoom, rotate, or reset the camera. Answers also show a safety note, a question to ask the care team, and suggested follow-up questions.
+The walkthrough page has a chat panel next to the 3D view. Patients ask about TAVR and its side effects, and each answer can move the 3D view: change the step, focus on or highlight a part, zoom, rotate, or reset the camera. Answers also show a safety note, a question to ask the care team, and suggested follow-up questions.
 
 - `src/walkthrough/chat/`: the panel, the chat clients, and the frontend copy of the chat contract (`chat_types.ts`)
 - `src/walkthrough/visualization/scene_director.ts`: applies the answer's `scene_actions` to the models and the camera
@@ -57,7 +57,7 @@ Where answers come from, set in `apps/frontend/.env.local`:
 
 | Setting | Answers |
 |---|---|
-| nothing (default) | Built-in demo answers about TAVI (`chat/demo_answers.ts`), with simple commands such as "zoom in", "rotate left 90 degrees", or "go to step 3". Works offline |
+| nothing (default) | Built-in demo answers about TAVR (`chat/demo_answers.ts`), with simple commands such as "zoom in", "rotate left 90 degrees", or "go to step 3". Works offline |
 | `VITE_CHAT_BACKEND=convex` and `VITE_CONVEX_URL=https://<deployment>.convex.cloud` | The backend chatbot (`chat.createSession` and `chat.ask`). Needs the backend's chat functions deployed |
 | `VITE_CHAT_BACKEND=convex` and `VITE_CONVEX_URL=http://127.0.0.1:3210` | The chatbot with the **model on your own computer** (Llama through Ollama and a local Convex backend). See `docs/local-llm.md` |
 | `VITE_CHAT_TIMEOUT_MS=120000` (optional) | How long the chat waits for an answer. The default is 30 seconds, which is too short for a local model next to the 3D view |

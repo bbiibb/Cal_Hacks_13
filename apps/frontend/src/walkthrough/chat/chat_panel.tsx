@@ -38,7 +38,7 @@ type Props = {
 }
 
 const WELCOME =
-  'Hi! I can walk you through TAVI and its possible side effects. Ask a question, or tell me to move the view, for example "zoom in" or "go to step 3". Point at the 3D model to see what each part is.'
+  'Hi! I can walk you through TAVR and its possible side effects. Ask a question, or tell me to move the view, for example "zoom in" or "go to step 3". Point at the 3D model to see what each part is.'
 
 /** Friendly wording for the error codes the backend uses. */
 function errorText(error: unknown): string {
@@ -268,10 +268,10 @@ function ChatPanel({
   const remaining = MAX_CHAT_MESSAGE_LENGTH - input.length
 
   return (
-    <aside className={styles.panel} aria-label="TAVI assistant">
+    <aside className={styles.panel} aria-label="TAVR assistant">
       <header className={styles.header}>
         <div>
-          <h2 className={styles.title}>Ask about TAVI</h2>
+          <h2 className={styles.title}>Ask about TAVR</h2>
           <p className={styles.subtitle}>Questions, side effects, and the 3D view</p>
         </div>
         <span

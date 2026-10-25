@@ -27,7 +27,7 @@ describe('demo answers', () => {
   })
 
   it('answers side-effect questions with a safety note and a question for the doctor', () => {
-    const reply = ask('What are the side effects of TAVI?')
+    const reply = ask('What are the side effects of TAVR?')
     expect(reply.response.message).toContain('pacemaker')
     expect(reply.response.safety).not.toBe('')
     expect(reply.response.doctor_question).not.toBe('')
@@ -88,7 +88,7 @@ describe('emergency symptoms', () => {
     }
   )
 
-  it.each(['Will I have chest pain afterwards?', 'Is fainting a risk after TAVI?'])(
+  it.each(['Will I have chest pain afterwards?', 'Is fainting a risk after TAVR?'])(
     'does not flag questions about the future: %s',
     (message) => {
       expect(ask(message).response.urgent).toBe(false)
