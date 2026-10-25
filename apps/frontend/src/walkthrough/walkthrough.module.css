@@ -36,6 +36,23 @@
   pointer-events: none;
 }
 
+.credit {
+  position: absolute;
+  left: 0.75rem;
+  top: 2.9rem;
+  margin: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: #4a475e;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 0.6rem;
+}
+
+.credit a {
+  color: inherit;
+}
+
 .reset {
   position: absolute;
   right: 0.75rem;

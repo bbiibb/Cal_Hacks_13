@@ -1,0 +1,368 @@
+{
+  "slug": "eye_anatomy",
+  "title": "Eye anatomy (prototype, dummy)",
+  "summary": "A short tour of the main parts of the eye, shown in five steps. This is a prototype with placeholder text; it is not medical advice.",
+  "condition_slug": null,
+  "order": 1,
+  "steps": [
+    {
+      "index": 0,
+      "title": "A look inside the eye",
+      "short_title": "Overview",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.3,
+            3.2
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "cornea",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "iris",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "lens",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "suspensory_ligaments",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "sclera",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "choroid",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "retina",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "optic_nerve",
+            "opacity": 1,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": null
+      },
+      "side_panel": {
+        "title": "A look inside the eye",
+        "body_markdown": "Your eye works like a camera. Light enters at the front, is focused, and lands on the back of the eye, where it becomes a signal for your brain. This view shows the eye cut in half so you can see its parts. Point at a part to see its name.",
+        "related_structure_ids": []
+      }
+    },
+    {
+      "index": 1,
+      "title": "The front of the eye",
+      "short_title": "Front",
+      "scene": {
+        "camera": {
+          "position": [
+            1.6,
+            0.2,
+            2.2
+          ],
+          "target": [
+            0.7,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "cornea",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "iris",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "lens",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "suspensory_ligaments",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "sclera",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "choroid",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "retina",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "optic_nerve",
+            "opacity": 0.35,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": null
+      },
+      "side_panel": {
+        "title": "The front of the eye",
+        "body_markdown": "Light first passes through the cornea, the clear dome at the front. Behind it, the iris opens and closes the pupil to control how much light gets in.",
+        "related_structure_ids": [
+          "cornea",
+          "iris"
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "title": "Focusing the light",
+      "short_title": "Focusing",
+      "scene": {
+        "camera": {
+          "position": [
+            1.2,
+            0.2,
+            1.6
+          ],
+          "target": [
+            0.6,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "cornea",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "iris",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "lens",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "suspensory_ligaments",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "sclera",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "choroid",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "retina",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "optic_nerve",
+            "opacity": 0.35,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": null
+      },
+      "side_panel": {
+        "title": "Focusing the light",
+        "body_markdown": "Behind the pupil of the iris, the lens fine-tunes the focus. Tiny fibers called suspensory ligaments hold the lens in place and let it change shape for near and far objects.",
+        "related_structure_ids": [
+          "lens",
+          "suspensory_ligaments",
+          "iris"
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "title": "The layers of the eye wall",
+      "short_title": "Eye wall",
+      "scene": {
+        "camera": {
+          "position": [
+            -0.4,
+            0.3,
+            3.0
+          ],
+          "target": [
+            -0.2,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "cornea",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "iris",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "lens",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "suspensory_ligaments",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "sclera",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "choroid",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "retina",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "optic_nerve",
+            "opacity": 0.35,
+            "highlight": false
+          }
+        ],
+        "instruments": [],
+        "animation_clip": null
+      },
+      "side_panel": {
+        "title": "The layers of the eye wall",
+        "body_markdown": "The wall of the eye has layers. The tough white sclera is on the outside, the choroid with its blood vessels is in the middle, and the retina lines the inside.",
+        "related_structure_ids": [
+          "sclera",
+          "choroid",
+          "retina"
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "title": "Sending the picture to the brain",
+      "short_title": "To the brain",
+      "scene": {
+        "camera": {
+          "position": [
+            -1.5,
+            0.3,
+            2.6
+          ],
+          "target": [
+            -0.8,
+            0,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "cornea",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "iris",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "lens",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "suspensory_ligaments",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "sclera",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "choroid",
+            "opacity": 0.35,
+            "highlight": false
+          },
+          {
+            "id": "retina",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "optic_nerve",
+            "opacity": 1,
+            "highlight": true
+          }
+        ],
+        "instruments": [],
+        "animation_clip": null
+      },
+      "side_panel": {
+        "title": "Sending the picture to the brain",
+        "body_markdown": "The retina turns light into nerve signals. The optic nerve carries them from the back of the eye to the brain, which builds the picture you see.",
+        "related_structure_ids": [
+          "retina",
+          "optic_nerve"
+        ]
+      }
+    }
+  ]
+}

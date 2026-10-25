@@ -29,6 +29,29 @@ const STRUCTURE_WORDS: readonly [RegExp, string[]][] = [
   [/\b(old valve|native valve|aortic valve|valve)\b/, ['aortic_valve']],
 ]
 
+/** What a demo client knows about one topic: part words, prepared answers and suggested questions. */
+export type DemoContent = {
+  structureWords: readonly (readonly [RegExp, string[]])[]
+  topics: readonly DemoTopic[]
+  fallback: string
+  starterQuestions: readonly string[]
+  followUpsForStep: (stepIndex: number) => string[]
+  /** Questions offered after an answer about a part. */
+  partFollowUps: readonly string[]
+  /** Answer any question that names a part ("what does the retina do?") with that part's description. */
+  answerPartQuestions?: boolean
+}
+
+/** The TAVR content, used unless another is given. */
+export const TAVR_DEMO_CONTENT: DemoContent = {
+  structureWords: STRUCTURE_WORDS,
+  topics: DEMO_TOPICS,
+  fallback: FALLBACK_MESSAGE,
+  starterQuestions: STARTER_QUESTIONS,
+  followUpsForStep,
+  partFollowUps: ['What is happening in this step?', 'What are the side effects?', 'Reset the view'],
+}
+
 const SHOW_INTENT = /\b(show|where|point|find|look at|focus|highlight|zoom (in )?on)\b/
 const CURRENT_STEP_INTENT =
   /\b(this step|happening here|happening now|what am i (looking at|seeing)|what is this|what's this|explain this|this part)\b/
@@ -42,8 +65,10 @@ export class DemoChatClient implements ChatClient {
   readonly mode = 'demo' as const
   private readonly procedure: Procedure
   private readonly structures: Map<string, Structure>
+  private readonly content: DemoContent
 
-  constructor(procedure: Procedure, structures: readonly Structure[]) {
+  constructor(procedure: Procedure, structures: readonly Structure[], content: DemoContent = TAVR_DEMO_CONTENT) {
+    this.content = content
     this.procedure = procedure
     this.structures = new Map(structures.map((s) => [s.id, s]))
   }
@@ -65,8 +90,8 @@ export class DemoChatClient implements ChatClient {
     }
 
     const commands = this.viewCommands(text, context.step_index)
-    const structureIds = SHOW_INTENT.test(text) ? findStructures(text) : []
-    const topic = DEMO_TOPICS.find((t) => t.patterns.some((p) => p.test(text)))
+    const structureIds = SHOW_INTENT.test(text) ? findStructures(text, this.content.structureWords) : []
+    const topic = this.content.topics.find((t) => t.patterns.some((p) => p.test(text)))
 
     // A question about a part ("where is the new valve?") wins over a general topic
     if (structureIds.length > 0) {
@@ -75,18 +100,22 @@ export class DemoChatClient implements ChatClient {
     if (topic) {
       return this.topicReply(topic, commands)
     }
+    if (this.content.answerPartQuestions) {
+      const named = findStructures(text, this.content.structureWords)
+      if (named.length > 0) return this.structureReply(named, commands)
+    }
     if (CURRENT_STEP_INTENT.test(text)) {
       return this.stepReply(context.step_index, context.selected_structure_id, commands)
     }
     if (commands.actions.length > 0) {
       return {
         response: emptyResponse({ message: commands.notes.join(' '), scene_actions: commands.actions }),
-        followUps: followUpsForStep(commands.stepIndex ?? context.step_index),
+        followUps: this.content.followUpsForStep(commands.stepIndex ?? context.step_index),
       }
     }
     return {
-      response: emptyResponse({ message: FALLBACK_MESSAGE }),
-      followUps: [...STARTER_QUESTIONS],
+      response: emptyResponse({ message: this.content.fallback }),
+      followUps: [...this.content.starterQuestions],
     }
   }
 
@@ -118,13 +147,13 @@ export class DemoChatClient implements ChatClient {
     ]
     return {
       response: emptyResponse({
-        message: message || FALLBACK_MESSAGE,
+        message: message || this.content.fallback,
         scene_actions: actions,
         side_panel: first
           ? { title: first.name_en, body_markdown: first.description, related_structure_ids: structureIds }
           : null,
       }),
-      followUps: ['What is happening in this step?', 'What are the side effects?', 'Reset the view'],
+      followUps: [...this.content.partFollowUps],
     }
   }
 
@@ -141,14 +170,14 @@ export class DemoChatClient implements ChatClient {
         ],
         side_panel: step.side_panel,
       }),
-      followUps: followUpsForStep(step.index),
+      followUps: this.content.followUpsForStep(step.index),
     }
   }
 
   /** A step's title and its explanation, word for word from the step data. */
   private stepText(stepIndex: number): string {
     const step = this.procedure.steps[stepIndex]
-    if (!step) return FALLBACK_MESSAGE
+    if (!step) return this.content.fallback
     return `Step ${step.index} of ${this.procedure.steps.length - 1}: ${step.title}\n\n${step.side_panel.body_markdown}`
   }
 
@@ -222,7 +251,7 @@ export class DemoChatClient implements ChatClient {
     const seeThrough = /\b(see.?through|transparent|fade)\b/.test(text)
     const solid = /\b(solid|opaque|show it again|unhide)\b/.test(text)
     if (seeThrough || solid) {
-      const ids = findStructures(text)
+      const ids = findStructures(text, this.content.structureWords)
       for (const id of ids) {
         result.actions.push({ type: 'set_opacity', structure_id: id, opacity: seeThrough ? 0.25 : 1 })
       }
@@ -245,8 +274,8 @@ function isEmergency(text: string): boolean {
   return EMERGENCY_SYMPTOMS.test(text) && HAPPENING_NOW.test(text) && !ABOUT_THE_FUTURE.test(text)
 }
 
-function findStructures(text: string): string[] {
-  for (const [pattern, ids] of STRUCTURE_WORDS) {
+function findStructures(text: string, words: DemoContent['structureWords']): string[] {
+  for (const [pattern, ids] of words) {
     if (pattern.test(text)) return ids
   }
   return []

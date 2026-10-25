@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import Landing from './landing/landing.tsx'
 import Walkthrough from './walkthrough/walkthrough.tsx'
+import EyeWalkthrough from './eye/eye_walkthrough.tsx'
 import WalkthroughsList from './walkthroughs_list/walkthroughs_list.tsx'
 import SiteLayout from './layout/site_layout.tsx'
 import Login from './auth/login.tsx'
@@ -32,6 +33,7 @@ createRoot(container).render(
           {/* Needs an account when REQUIRE_AUTH is on and Convex is configured (src/auth/config.ts) */}
           <Route element={<RequireAuth />}>
             <Route path="/walkthrough" element={<Walkthrough />} />
+            <Route path="/walkthrough/eye" element={<EyeWalkthrough />} />
             <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
           </Route>
           <Route path="/faqs" element={<Faqs />} />
