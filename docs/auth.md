@@ -67,3 +67,12 @@ Run after the commands above, with `pnpm dev:frontend` and `VITE_CONVEX_URL` set
 9. **Open redirect check.** Open `/login?next=//evil.example`. Sign in. Expect: you land on the walkthroughs list, not on another site.
 10. **Demo switch.** Set `REQUIRE_AUTH` to false in `apps/frontend/src/auth/config.ts`. Expect: `/walkthrough` opens without signing in.
 11. **No backend.** Remove `VITE_CONVEX_URL` and restart. Expect: the whole site works, the forms show "Accounts are not available in this demo yet.", and nothing is guarded.
+
+## Deploying to the team project (hack-13)
+The auth keys are set per deployment, so the shared deployment needs its own. Whoever has access to the team's Convex project does this once, from `packages/backend`, using Node 22:
+1. Merge this branch and pull `main`.
+2. Connect to the shared dev deployment first: `npx convex dev --configure existing --team <team_slug> --project hack-13`. Check that the chatbot still answers.
+3. Run `npx @convex-dev/auth`. Give the real site URL (or `http://localhost:5173` for local work) and answer **no** to any file overwrite.
+4. For production, run the same setup against the production deployment (generate separate keys; never copy dev keys), then `npx convex deploy`. The `users` and `auth*` tables are new, so existing chatbot data is untouched.
+5. Every developer sets `VITE_CONVEX_URL` in `apps/frontend/.env.local` to the deployment they use. For a hosted site, set it as a build variable: without it, accounts are off and the walkthroughs are NOT protected.
+6. To open the walkthroughs without a login for a demo, set `REQUIRE_AUTH` to `false` in `apps/frontend/src/auth/config.ts`.
