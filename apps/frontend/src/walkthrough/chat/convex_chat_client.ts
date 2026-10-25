@@ -1,4 +1,4 @@
-import type { ChatClient, ChatReply, ChatRequest } from './chat_types'
+import type { ChatClient, ChatContext, ChatReply, ChatRequest, ChatResponse } from './chat_types'
 import { ChatError } from './chat_types'
 import { followUpsForStep } from './follow_ups'
 import { normalizeChatResponse } from './normalize_response'
@@ -41,10 +41,52 @@ export class ConvexChatClient implements ChatClient {
       context: request.context,
       ...(sessionId ? { sessionId } : {}),
     })
-    const response = normalizeChatResponse(value)
+    return this.toReply(normalizeChatResponse(value), request.context)
+  }
+
+  /** Uploads the recording to Convex file storage, then asks `chat:askByVoice` to transcribe and answer it. */
+  async askByVoice(audio: Blob, context: ChatContext): Promise<ChatReply & { transcript: string }> {
+    const storageId = await this.upload(audio)
+    const sessionId = await this.sessionId()
+    const value = await this.call('action', 'chat:askByVoice', {
+      storageId,
+      context,
+      ...(sessionId ? { sessionId } : {}),
+    })
+    const result = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {}
+    const transcript = typeof result.transcript === 'string' ? result.transcript.trim() : ''
+    if (transcript === '') throw new ChatError('no_speech_detected', 'No speech was detected.')
+    return { ...this.toReply(normalizeChatResponse(result.response), context), transcript }
+  }
+
+  private toReply(response: ChatResponse, context: ChatContext): ChatReply {
     const stepAction = response.scene_actions.find((a) => a.type === 'goto_step')
-    const stepIndex = stepAction?.type === 'goto_step' ? stepAction.step_index : request.context.step_index
+    const stepIndex = stepAction?.type === 'goto_step' ? stepAction.step_index : context.step_index
     return { response, followUps: response.urgent ? [] : followUpsForStep(stepIndex) }
+  }
+
+  /** Sends the recording to a one-time upload URL and returns the storage id. */
+  private async upload(audio: Blob): Promise<string> {
+    const uploadUrl = await this.call('mutation', 'speech:generateUploadUrl', {})
+    if (typeof uploadUrl !== 'string' || uploadUrl === '') {
+      throw new ChatError('bad_response', 'The assistant could not accept the recording.')
+    }
+    const httpResponse = await this.fetchWithTimeout(uploadUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': audio.type || 'application/octet-stream' },
+      body: audio,
+    })
+    let body: unknown
+    try {
+      body = await httpResponse.json()
+    } catch {
+      body = null
+    }
+    const storageId = typeof body === 'object' && body !== null ? (body as { storageId?: unknown }).storageId : null
+    if (!httpResponse.ok || typeof storageId !== 'string' || storageId === '') {
+      throw new ChatError('upload_failed', 'The recording could not be sent. Please try again.')
+    }
+    return storageId
   }
 
   /**
@@ -63,24 +105,11 @@ export class ConvexChatClient implements ChatClient {
   }
 
   private async call(kind: 'action' | 'mutation', path: string, args: Record<string, unknown>): Promise<unknown> {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), requestTimeoutMs())
-
-    let httpResponse: Response
-    try {
-      httpResponse = await fetch(`${this.baseUrl}/api/${kind}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path, args, format: 'json' }),
-        signal: controller.signal,
-      })
-    } catch {
-      throw controller.signal.aborted
-        ? new ChatError('timeout', 'The assistant took too long to answer. Please try again.')
-        : new ChatError('network', 'Could not reach the assistant. Check your connection and try again.')
-    } finally {
-      clearTimeout(timer)
-    }
+    const httpResponse = await this.fetchWithTimeout(`${this.baseUrl}/api/${kind}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path, args, format: 'json' }),
+    })
 
     let result: ConvexResult
     try {
@@ -98,5 +127,20 @@ export class ConvexChatClient implements ChatClient {
       throw new ChatError(String(code), typeof message === 'string' ? message : 'The assistant could not answer.')
     }
     throw new ChatError('server_error', result.errorMessage ?? 'The assistant could not answer.')
+  }
+
+  /** fetch with the shared timeout; network and timeout failures become ChatErrors. */
+  private async fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), requestTimeoutMs())
+    try {
+      return await fetch(url, { ...init, signal: controller.signal })
+    } catch {
+      throw controller.signal.aborted
+        ? new ChatError('timeout', 'The assistant took too long to answer. Please try again.')
+        : new ChatError('network', 'Could not reach the assistant. Check your connection and try again.')
+    } finally {
+      clearTimeout(timer)
+    }
   }
 }
