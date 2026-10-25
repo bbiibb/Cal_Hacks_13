@@ -2,7 +2,8 @@ import type { LlmMessage } from "./chatPrompt";
 
 /**
  * Client for any OpenAI-compatible chat completions endpoint.
- * Free options that work with it: Groq (open-weight models such as gpt-oss), OpenRouter (":free" models), and others.
+ * Options that work with it: Google Gemini (https://generativelanguage.googleapis.com/v1beta/openai), Groq (open-weight
+ * models such as gpt-oss), OpenRouter (":free" models), and others.
  * Nothing here is tied to one provider; the endpoint, key, and model come from environment variables.
  */
 
@@ -10,6 +11,7 @@ export const DEFAULT_LLM_BASE_URL = "https://api.groq.com/openai/v1";
 // Groq retired its Llama chat models on 2026-08-16. openai/gpt-oss-20b is a small, fast, free open-weight model there.
 export const DEFAULT_LLM_MODEL = "openai/gpt-oss-20b";
 export const LLM_TIMEOUT_MS = 25_000;
+const GEMINI_MIN_OUTPUT_TOKENS = 2048;
 
 export type LlmErrorCode =
   | "llm_not_configured"
@@ -96,8 +98,17 @@ export async function completeChat(params: CompletionParams): Promise<string> {
   let jsonMode = true;
   // A short rate limit (for example "try again in 2 seconds") is waited out once.
   let waitedForRateLimit = false;
-  // gpt-oss models think before they answer; a low effort keeps answers fast and cheap.
-  const reasoning = config.model.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" } : {};
+  // gpt-oss and Gemini models think before they answer. Thinking costs output tokens, so keep it low, and turn it
+  // off on Gemini 2.5 models (the cheap Flash-Lite ones), which allow that.
+  const isGemini = config.model.startsWith("gemini");
+  const geminiThinkingOff = config.model.startsWith("gemini-2.5");
+  const reasoning = geminiThinkingOff
+    ? { reasoning_effort: "none" }
+    : config.model.startsWith("openai/gpt-oss") || isGemini
+      ? { reasoning_effort: "low" }
+      : {};
+  // Gemini counts thinking tokens against the output limit, so a small limit could cut the JSON answer short.
+  const outputLimit = isGemini && !geminiThinkingOff ? Math.max(maxTokens, GEMINI_MIN_OUTPUT_TOKENS) : maxTokens;
 
   for (let attempt = 0; attempt < 4; attempt++) {
     const controller = new AbortController();
@@ -114,7 +125,7 @@ export async function completeChat(params: CompletionParams): Promise<string> {
           model: config.model,
           messages,
           temperature,
-          max_tokens: maxTokens,
+          max_tokens: outputLimit,
           stream: false,
           ...reasoning,
           ...(jsonMode ? { response_format: { type: "json_object" } } : {}),

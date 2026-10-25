@@ -42,7 +42,15 @@ pnpm exec convex env set LLM_BASE_URL https://api.groq.com/openai/v1
 pnpm exec convex env set LLM_MODEL openai/gpt-oss-20b
 ```
 
-For the **Fast** choice in the chat panel, set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
+For the **Fast** choice in the chat panel, point the three variables at any OpenAI-compatible provider, for example Google Gemini:
+
+```bash
+pnpm exec convex env set LLM_API_KEY <your Google AI Studio key>
+pnpm exec convex env set LLM_BASE_URL https://generativelanguage.googleapis.com/v1beta/openai
+pnpm exec convex env set LLM_MODEL gemini-3.1-flash-lite
+```
+
+`gemini-3.1-flash-lite` is the small, low-cost Gemini model used for Fast mode. `gemini-2.5-flash-lite` was tried first but returns HTTP 404 ("no longer available to new users") for new API keys; check Google's pricing page for current prices. For Gemini 2.5 models the backend sends `reasoning_effort: "none"` so no thinking tokens are paid for. Other Gemini models get `reasoning_effort: "low"` and an output limit of at least 2048 tokens, because Gemini counts its thinking tokens against the limit. Or set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
 
 For speech-to-text, set `CARTESIA_API_KEY` the same way (see `docs/backend-api.md`).
 
@@ -110,7 +118,7 @@ When to revisit: if real conversations often need details from more than 8 quest
 - Short, numbered rules instead of long prose.
 - The list of allowed part ids is in the prompt, and ids not in the list are dropped afterwards.
 - **The exact JSON format is repeated at the very end of the system prompt** ("OUTPUT FORMAT"), and two worked examples are given as earlier turns.
-- Low temperature (0.2) and the provider's JSON mode (retried without it if the model rejects it). For gpt-oss models the reasoning effort is set to low, which keeps answers fast.
+- Low temperature (0.2) and the provider's JSON mode (retried without it if the model rejects it). For gpt-oss and Gemini models the reasoning effort is set to low, which keeps answers fast.
 - A rule that keeps the model on topic: other subjects get a polite "I can only help with the procedure, the heart, and the 3D model".
 - The screen state (`[Screen] Step 3 of 5 ... Selected part: ...`) is added to every question so "this valve" or "what you just put in" can be understood.
 - Prompt size is kept small because free tiers limit tokens per minute.
