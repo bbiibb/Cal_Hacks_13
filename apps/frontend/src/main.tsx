@@ -9,6 +9,7 @@ import WalkthroughsList from './walkthroughs_list/walkthroughs_list.tsx'
 import SiteLayout from './layout/site_layout.tsx'
 import Login from './auth/login.tsx'
 import Signup from './auth/signup.tsx'
+import Faqs from './faqs/faqs.tsx'
 import ComingSoon from './coming_soon/coming_soon.tsx'
 
 const container = document.getElementById('root')
@@ -26,6 +27,7 @@ createRoot(container).render(
           <Route path="/" element={<Landing />} />
           <Route path="/walkthrough" element={<Walkthrough />} />
           <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
+          <Route path="/faqs" element={<Faqs />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<ComingSoon />} />
