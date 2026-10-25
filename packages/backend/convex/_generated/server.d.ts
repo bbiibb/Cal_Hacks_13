@@ -32,6 +32,8 @@ type Env = {
   readonly CONVEX_SITE_URL: string;
   readonly ALLOW_CLOUD_STT: string | undefined;
   readonly CARTESIA_API_KEY: string | undefined;
+  readonly JWKS: string | undefined;
+  readonly JWT_PRIVATE_KEY: string | undefined;
   readonly LLM_API_KEY: string | undefined;
   readonly LLM_BASE_URL: string | undefined;
   readonly LLM_MODEL: string | undefined;
@@ -39,6 +41,7 @@ type Env = {
   readonly OLLAMA_BASE_URL: string | undefined;
   readonly OLLAMA_EMBED_MODEL: string | undefined;
   readonly OLLAMA_MODEL: string | undefined;
+  readonly SITE_URL: string | undefined;
 };
 
 /**
