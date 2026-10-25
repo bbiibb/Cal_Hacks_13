@@ -98,6 +98,14 @@ describe("completeChat", () => {
     expect(JSON.parse((other.mock.calls[0] as [string, RequestInit])[1].body as string).reasoning_effort).toBeUndefined();
   });
 
+  it("asks Gemini models for low reasoning effort and room for the thinking tokens", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(reply("ok"));
+    await completeChat({ config: { ...config, model: "gemini-flash" }, messages, fetchImpl });
+    const body = JSON.parse((fetchImpl.mock.calls[0] as [string, RequestInit])[1].body as string);
+    expect(body.reasoning_effort).toBe("low");
+    expect(body.max_tokens).toBeGreaterThanOrEqual(2048);
+  });
+
   it("reports rate limits so the UI can ask the patient to wait", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response("slow down test-key", { status: 429 }));
     const error = await expectLlmError(completeChat({ config, messages, fetchImpl }), "llm_rate_limited");
