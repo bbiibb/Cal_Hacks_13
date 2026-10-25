@@ -27,13 +27,27 @@ src/
 ├── progress/                Saves and shows viewing progress (SpacetimeDB client, "Your progress" card)
 ├── walkthrough/             The 3D page
 │   └── visualization/       three.js scene, objects (cubes, glTF models), camera controllers
+├── auth/                    Log in page, Sign up placeholder, startSignIn (the one place sign-in begins)
 └── coming_soon/             Placeholder for pages that are not built yet
 public/models/               glTF (.glb) organ models
 ```
 
 - Pages use CSS Modules (`*.module.css`). Folder and file names are `snake_case`.
 - `SiteHeader` accepts `backgroundColor`, `textColor`, and `accentColor`. `SiteLayout` picks the look per page (`lookFor` in `src/layout/site_layout.tsx`).
-- Routes that do not exist yet (About us, FAQs, Contact, Log in, Sign up) show the "Coming soon" page and keep the header.
+- Routes that do not exist yet (About us, FAQs, Contact) show the "Coming soon" page and keep the header.
+
+## Routes
+
+`/` landing, `/walkthroughs-list`, `/walkthrough` (3D), `/login`, `/signup` (placeholder: "Sign-up is coming soon"), anything else shows "Coming soon".
+
+## Sign-in (Microsoft Entra External ID)
+
+The Log in page has a "Continue with Microsoft" button. The app never handles passwords; sign-in will use the hosted Entra page. Two optional variables, set in `apps/frontend/.env.local` (they are public identifiers, not secrets):
+
+- `VITE_ENTRA_CLIENT_ID`: the app registration's client id
+- `VITE_ENTRA_AUTHORITY`: the tenant authority URL
+
+While they are unset, the button shows "Sign-in is not set up yet in this demo". The MSAL redirect login is a TODO in `src/auth/start_sign_in.ts`.
 
 ## 3D models
 
