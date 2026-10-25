@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import styles from './walkthrough.module.css'
+import { parseStepParam, STEP_PARAM } from '../progress/progress_helpers'
+import { useSaveProgress } from '../progress/use_save_progress'
 import Visualization, { type CameraOptions } from './visualization/visualization'
 import type { SceneObject } from './visualization/objects/SceneObject'
 import { ModelObject } from './visualization/objects/ModelObject'
@@ -64,7 +67,12 @@ function Walkthroughs() {
   const [objects, setObjects] = useState<SceneObject[]>([])
   const [director] = useState(() => new SceneDirector(lookupStep))
   const [chatClient] = useState(() => createChatClient(TAVI_PROCEDURE, TAVI_STRUCTURES))
-  const [stepIndex, setStepIndex] = useState(0)
+  // ?step=N (from "Continue" on the landing page) opens the walkthrough at that step; otherwise it starts at step 1
+  const [searchParams] = useSearchParams()
+  const [stepIndex, setStepIndex] = useState(
+    () => parseStepParam(searchParams.get(STEP_PARAM), TAVI_PROCEDURE.steps.length) ?? 0
+  )
+  useSaveProgress(TAVI_PROCEDURE.slug, stepIndex, TAVI_PROCEDURE.steps.length)
 
   // The conversation lasts until the window is closed: then the backend deletes it
   useEffect(() => {

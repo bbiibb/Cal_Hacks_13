@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import '@fontsource/sora/400.css'
 import '@fontsource/sora/600.css'
 import { TAVI_PROCEDURE } from '../walkthrough/tavi_content'
+import ProgressCard from '../progress/progress_card'
 import styles from './landing.module.css'
 
 /** Short step names come from the procedure content, so this page cannot drift from the walkthrough. */
@@ -183,6 +184,9 @@ function Landing() {
         </div>
         <ProductPreview />
       </section>
+
+      {/* Shows only when saved progress exists; a login feature can pass displayName here later */}
+      <ProgressCard />
 
       <section className={styles.section} aria-labelledby="how-title">
         <h2 id="how-title" className={styles.sectionTitle}>

@@ -24,6 +24,7 @@ src/
 ├── layout/                  SiteLayout: the header stays on every page, pages render below it
 ├── site_header/             SiteHeader: logo, navigation, Sign up and Log in
 ├── walkthroughs_list/       The list of walkthrough cards
+├── progress/                Saves and shows viewing progress (SpacetimeDB client, "Your progress" card)
 ├── walkthrough/             The 3D page
 │   └── visualization/       three.js scene, objects (cubes, glTF models), camera controllers
 └── coming_soon/             Placeholder for pages that are not built yet
@@ -69,7 +70,21 @@ Where answers come from, set in `apps/frontend/.env.local`:
 The demo answers are educational dummy content and must be reviewed by someone with medical knowledge before patients see them. Tests for the demo answers and response checks: `pnpm --filter @cal-hacks/frontend test`.
 
 
-The app does not call the backend yet. When it does, use the workspace packages:
+## Viewing progress (SpacetimeDB)
+
+The walkthrough saves which step the patient is on, and the landing page shows a "Your progress" card with a Continue button (`?step=N` opens the walkthrough at step N, counting from 1) and a Start over button.
+It talks to the module in `packages/progress`. The identity is anonymous: the server gives the browser a token, kept in localStorage, and no names or personal details are sent. Without the server, the database, or localStorage, the card stays hidden and everything else works; the app retries quietly in the background (2 s, doubling up to 60 s).
+
+| Setting (`apps/frontend/.env.local`) | Default | Meaning |
+|---|---|---|
+| `VITE_SPACETIME_URI` | `ws://127.0.0.1:3000` | SpacetimeDB server |
+| `VITE_SPACETIME_DB` | `ask-ray-progress` | Database name or address |
+
+Try it locally: `spacetime start`, then `spacetime publish ask-ray-progress --server local --module-path packages/progress/spacetimedb --yes`. If the local server is wiped, clear the site's localStorage so the old token is not reused.
+Typed bindings in `src/progress/module_bindings/` are generated; after changing the module, run `spacetime generate --lang typescript --out-dir apps/frontend/src/progress/module_bindings --module-path packages/progress/spacetimedb`.
+Pure helpers (relative time, summary, step parsing) are tested in `src/progress/progress_helpers.test.ts`.
+
+The app does not call the Convex backend directly yet. When it does, use the workspace packages:
 
 ```ts
 // Contract types and schemas
