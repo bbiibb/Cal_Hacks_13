@@ -10,6 +10,7 @@ import { SlicedModelObject } from './visualization/objects/SlicedModelObject'
 import { OrbitCameraController } from './visualization/camera/OrbitCameraController'
 import type { CameraControllerFactory } from './visualization/camera/CameraController'
 import { SceneDirector, type StepLookup } from './visualization/scene_director'
+import { HEART_PART_2_REGIONS } from './visualization/heart_regions'
 import { PartPicker } from './visualization/part_picker'
 import ChatPanel from './chat/chat_panel'
 import type { SceneAction } from './chat/chat_types'
@@ -41,6 +42,7 @@ function createSceneObjects(): SceneObject[] {
       position: [0 + heartTranslate[0], -1 + heartTranslate[1], 0 + heartTranslate[2]],
       rotation: [0, 3.14159, 0],
       scale: [3, 3, 3],
+      regions: HEART_PART_2_REGIONS,
     }),
     /*new ModelObject({
       path: '/models/normal_aortic_arch.glb',
@@ -134,6 +136,10 @@ function Walkthroughs() {
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
     const created = createSceneObjects()
+    // Open the page with ?regions to color each named part of a model, for checking where the regions lie
+    if (new URLSearchParams(window.location.search).has('regions')) {
+      for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
+    }
     setObjects(created)
     director.setObjects(created)
     const step = TAVI_PROCEDURE.steps[stepRef.current]

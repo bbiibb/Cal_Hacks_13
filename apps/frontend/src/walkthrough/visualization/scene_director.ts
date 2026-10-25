@@ -59,6 +59,8 @@ export class SceneDirector {
   /** Bumped whenever the models change, so a late async focus on old models is dropped. */
   private generation = 0
   private glowing: THREE.MeshStandardMaterial[] = []
+  /** Models that glow only in some of their regions, with the regions that glow. */
+  private regionGlows: { model: ModelObject; ids: Set<string> }[] = []
   private glowTime = 0
   private readonly reduceMotion =
     typeof window !== 'undefined' &&
@@ -107,7 +109,8 @@ export class SceneDirector {
 
   /**
    * The part under a ray from the camera, or null.
-   * Returns the model's main part, because the model files do not have per-part meshes yet.
+   * A model with named regions reports the region under the ray; any other model reports its main part,
+   * because those model files do not have per-part meshes.
    */
   pickStructure(raycaster: THREE.Raycaster): string | null {
     const candidates = this.models.filter((m) => m.status === 'ready' && MODEL_BINDINGS[m.path])
@@ -115,14 +118,19 @@ export class SceneDirector {
       candidates.map((m) => m.root),
       true
     )
-    const owners = hits.flatMap((hit) => {
+    // A hit outside every region of a model is skipped, so the ray goes on to what is behind it
+    const pointed = hits.flatMap((hit) => {
       const model = this.ownerOf(hit.object, candidates)
-      return model ? [model] : []
+      if (!model) return []
+      // A cut-away part of a sliced model is not drawn, so the pointer must go through it
+      if (model.material?.clippingPlanes?.some((plane) => plane.distanceToPoint(hit.point) < 0)) return []
+      const id = model.hasRegions ? model.regionAt(hit) : (MODEL_BINDINGS[model.path]?.primary ?? null)
+      return id ? [{ model, id }] : []
     })
     // Prefer a solid model; a faded one in front only counts when nothing solid is behind it
-    const solid = owners.find((m) => (m.material?.opacity ?? 1) >= SOLID_ENOUGH)
-    const chosen = solid ?? owners.find((m) => (m.material?.opacity ?? 1) > 0.05)
-    return chosen ? (MODEL_BINDINGS[chosen.path]?.primary ?? null) : null
+    const solid = pointed.find((p) => (p.model.material?.opacity ?? 1) >= SOLID_ENOUGH)
+    const chosen = solid ?? pointed.find((p) => (p.model.material?.opacity ?? 1) > 0.05)
+    return chosen?.id ?? null
   }
 
   /** Show a step: its highlights and opacities replace the current ones. */
@@ -159,11 +167,12 @@ export class SceneDirector {
 
   /** Call once per frame. Pulses the glow of highlighted parts. */
   tick(delta: number): void {
-    if (this.glowing.length === 0) return
+    if (this.glowing.length === 0 && this.regionGlows.length === 0) return
     this.glowTime += delta
     const wave = this.reduceMotion ? 1 : 0.5 + 0.5 * Math.sin(this.glowTime * GLOW_SPEED)
     const intensity = GLOW_MIN + (GLOW_MAX - GLOW_MIN) * wave
     for (const material of this.glowing) material.emissiveIntensity = intensity
+    for (const { model, ids } of this.regionGlows) model.setRegionGlow(ids, intensity)
   }
 
   /** Back to the camera placement the page started with. */
@@ -253,6 +262,7 @@ export class SceneDirector {
   private async focusStructures(structureIds: readonly string[], durationMs: number): Promise<void> {
     const models = [...new Set(structureIds.flatMap((id) => this.byStructure.get(id) ?? []))]
     if (models.length === 0) return
+    // A part inside a bigger model is framed on its own area, not on the whole model
 
     const generation = this.generation
     await Promise.all(models.map((m) => m.loaded.catch(() => undefined)))
@@ -260,10 +270,17 @@ export class SceneDirector {
     if (generation !== this.generation || !controller) return
 
     const box = new THREE.Box3()
-    for (const model of models) {
-      if (model.status !== 'ready') continue
-      model.root.updateWorldMatrix(true, true)
-      box.expandByObject(model.root)
+    for (const id of structureIds) {
+      for (const model of this.byStructure.get(id) ?? []) {
+        if (model.status !== 'ready') continue
+        const part = model.regionBounds(id)
+        if (part) {
+          box.union(part)
+        } else {
+          model.root.updateWorldMatrix(true, true)
+          box.expandByObject(model.root)
+        }
+      }
     }
     if (box.isEmpty()) return
 
@@ -282,6 +299,7 @@ export class SceneDirector {
   /** Push the highlight and opacity state into each model's material. */
   private refreshMaterials(): void {
     this.glowing = []
+    this.regionGlows = []
     for (const model of this.models) {
       const material = model.material
       if (!(material instanceof THREE.MeshStandardMaterial)) continue
@@ -289,9 +307,20 @@ export class SceneDirector {
       const ids = structuresOf(model.path)
       if (ids.length === 0) continue
 
-      const glow = ids.some((id) => this.highlighted.has(id) || id === this.selected)
-      // Several structures share one model, so the model is as visible as its most visible structure
-      const levels = ids.flatMap((id) => {
+      // A model with named regions glows only where a region is highlighted or pinned
+      let glow = false
+      if (model.hasRegions) {
+        const lit = new Set(model.regionNames.filter((id) => this.highlighted.has(id) || id === this.selected))
+        model.setRegionGlow(lit, GLOW_MAX)
+        if (lit.size > 0) this.regionGlows.push({ model, ids: lit })
+      } else {
+        glow = ids.some((id) => this.highlighted.has(id) || id === this.selected)
+      }
+      // Several structures share one model, so the model is as visible as its most visible structure.
+      // A model with named regions is one see-through body: only its main part sets how visible it is.
+      const primary = MODEL_BINDINGS[model.path]?.primary
+      const opacityIds = model.hasRegions && primary ? [primary] : ids
+      const levels = opacityIds.flatMap((id) => {
         const level = this.opacity.get(id)
         return level === undefined ? [] : [level]
       })

@@ -1,3 +1,6 @@
+import { HEART_PART_2_REGIONS } from './heart_regions'
+import type { RegionMap } from './regions'
+
 /**
  * Which structure_id values each model file stands for.
  *
@@ -14,6 +17,11 @@ export type ModelBinding = {
   primary: string
   /** Every structure this model stands for. */
   structures: readonly string[]
+  /**
+   * For a single-mesh model that holds several named parts: where each part is (see regions.ts).
+   * The model must be created with the same map. Pointing at the model then names the part under the pointer.
+   */
+  regions?: RegionMap
 }
 
 export const MODEL_BINDINGS: Readonly<Record<string, ModelBinding>> = {
@@ -35,8 +43,13 @@ export const MODEL_BINDINGS: Readonly<Record<string, ModelBinding>> = {
     ],
   },
   '/models/aortic_arch.glb': { primary: 'aorta', structures: ['aorta', 'aorta.ascending'] },
+  '/models/aortic_arch_fixed.glb': { primary: 'aorta', structures: ['aorta', 'aorta.ascending'] },
   '/models/heart_part_1.glb': { primary: 'left_ventricle', structures: ['left_ventricle'] },
-  '/models/heart_part_2.glb': { primary: 'left_ventricle', structures: ['left_ventricle'] },
+  '/models/heart_part_2.glb': {
+    primary: 'left_ventricle',
+    structures: Object.keys(HEART_PART_2_REGIONS),
+    regions: HEART_PART_2_REGIONS,
+  },
 }
 
 /** The structures a model file stands for, or none. */
