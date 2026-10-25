@@ -166,6 +166,16 @@ export async function completeChat(params: CompletionParams): Promise<string> {
 /** Which language model pipeline answers questions. */
 export type LlmProvider = "groq" | "local";
 
+/** What the patient picks in the chat: "slow" runs on this computer (local Llama), "fast" uses the cloud model. */
+export type ChatSpeed = "slow" | "fast";
+
+/** The pipeline a speed choice stands for, or undefined when the patient did not choose (LLM_PROVIDER decides). */
+export function providerForSpeed(speed: ChatSpeed | undefined): LlmProvider | undefined {
+  if (speed === "fast") return "groq";
+  if (speed === "slow") return "local";
+  return undefined;
+}
+
 /** Reads LLM_PROVIDER. "groq" (any OpenAI-compatible API) is the default; "local" is Llama through Ollama. */
 export function selectProvider(env: { LLM_PROVIDER?: string }): LlmProvider {
   const value = (env.LLM_PROVIDER ?? "groq").trim().toLowerCase();

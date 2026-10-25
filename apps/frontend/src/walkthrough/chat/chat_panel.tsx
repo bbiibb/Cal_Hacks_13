@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import type { Procedure } from '@cal-hacks/shared'
-import type { ChatClient, ChatResponse, SceneAction } from './chat_types'
+import type { ChatClient, ChatResponse, ChatSpeed, SceneAction } from './chat_types'
 import { ChatError, MAX_CHAT_MESSAGE_LENGTH } from './chat_types'
 import { STARTER_QUESTIONS } from './follow_ups'
 import { canRecordVoice, MAX_RECORDING_MS, VoiceError, VoiceRecorder } from './voice_recorder'
@@ -8,6 +8,7 @@ import type { PiiGuard } from '../privacy'
 import { PiiBlockedError } from '../privacy'
 import PrivacyDock from './privacy_dock'
 import PrivacyInput from './privacy_input'
+import SpeedToggle from './speed_toggle'
 import styles from './chat_panel.module.css'
 import privacyStyles from './privacy.module.css'
 
@@ -44,6 +45,9 @@ const WELCOME =
 function errorText(error: unknown): string {
   if (error instanceof ChatError) {
     if (error.code === 'llm_rate_limited') return 'The assistant is busy right now. Please try again in a moment.'
+    if (error.code === 'llm_not_configured') {
+      return 'The assistant is not set up on the server yet. If you chose fast mode, try slow mode instead.'
+    }
     return error.message
   }
   return 'Something went wrong. Please try again.'
@@ -107,6 +111,7 @@ function ChatPanel({
     { id: 0, role: 'assistant', text: WELCOME, followUps: [...STARTER_QUESTIONS] },
   ])
   const [input, setInput] = useState('')
+  const [speed, setSpeed] = useState<ChatSpeed>('slow')
   const [pending, setPending] = useState(false)
   const [voice, setVoice] = useState<'idle' | 'recording' | 'transcribing'>('idle')
   const [seconds, setSeconds] = useState(0)
@@ -161,6 +166,7 @@ function ChatPanel({
 
     try {
       const { response, followUps } = await client.ask({
+        speed,
         message,
         context: {
           procedure_slug: procedure.slug,
@@ -201,7 +207,7 @@ function ChatPanel({
     setVoice('transcribing')
     setPending(true)
     try {
-      const { transcript, response, followUps } = await client.askByVoice(audio, currentContext())
+      const { transcript, response, followUps } = await client.askByVoice(audio, currentContext(), speed)
       if (!mounted.current) return
       setMessages((list) => [
         ...list,
@@ -495,6 +501,8 @@ function ChatPanel({
           </div>
         </div>
       </form>
+
+      {client.mode === 'live' && <SpeedToggle value={speed} onChange={setSpeed} />}
 
       {guard && <PrivacyDock guard={guard} />}
 

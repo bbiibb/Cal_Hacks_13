@@ -6,7 +6,7 @@ import type { ActionCtx } from "../_generated/server";
 import { isCameraOnly, runChat } from "./chatPipeline";
 import { redactPersonalInfo } from "./safety";
 import { MAX_HISTORY_TURNS, type PromptData } from "./chatPrompt";
-import { LlmError } from "./llm";
+import { LlmError, providerForSpeed, type ChatSpeed } from "./llm";
 import { knowledgeFor } from "./knowledge";
 import { cameraOnlyRoute, prepareModel } from "./modelRoute";
 
@@ -17,6 +17,8 @@ export interface QuestionArgs {
   message: string;
   context: { procedure_slug: string; step_index: number; selected_structure_id: string | null };
   sessionId?: Id<"chatSessions">;
+  /** "slow" answers with the local model, "fast" with the cloud model. Without it, LLM_PROVIDER decides. */
+  speed?: ChatSpeed;
 }
 
 /**
@@ -63,10 +65,10 @@ export async function answerQuestion(ctx: ActionCtx, args: QuestionArgs): Promis
 
     // The context above already lists every real part and step, so existence checks need no more reads
     const structureIds = new Set(data.structures.map((s) => s.id));
-    // LLM_PROVIDER decides which model answers ("groq" or "local"); everything else stays the same
+    // The patient's speed choice, or else LLM_PROVIDER, decides which model answers; everything else stays the same
     // A pure camera command ("zoom in", "show me the right atrium") needs no model, so no embedding or search either
     const cameraOnly = isCameraOnly(message, data.structures);
-    const route = cameraOnly ? cameraOnlyRoute() : await prepareModel(ctx, data, message);
+    const route = cameraOnly ? cameraOnlyRoute() : await prepareModel(ctx, data, message, providerForSpeed(args.speed));
     const result = await runChat({
       message,
       data,

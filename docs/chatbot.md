@@ -42,6 +42,8 @@ pnpm exec convex env set LLM_BASE_URL https://api.groq.com/openai/v1
 pnpm exec convex env set LLM_MODEL openai/gpt-oss-20b
 ```
 
+For the **Fast** choice in the chat panel, set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
+
 For speech-to-text, set `CARTESIA_API_KEY` the same way (see `docs/backend-api.md`).
 
 ## How one question is answered
