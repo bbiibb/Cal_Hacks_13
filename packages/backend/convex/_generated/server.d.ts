@@ -30,7 +30,15 @@ import type { DataModel } from "./dataModel.js";
 type Env = {
   readonly CONVEX_CLOUD_URL: string;
   readonly CONVEX_SITE_URL: string;
+  readonly ALLOW_CLOUD_STT: string | undefined;
   readonly CARTESIA_API_KEY: string | undefined;
+  readonly LLM_API_KEY: string | undefined;
+  readonly LLM_BASE_URL: string | undefined;
+  readonly LLM_MODEL: string | undefined;
+  readonly LLM_PROVIDER: string | undefined;
+  readonly OLLAMA_BASE_URL: string | undefined;
+  readonly OLLAMA_EMBED_MODEL: string | undefined;
+  readonly OLLAMA_MODEL: string | undefined;
 };
 
 /**

@@ -30,5 +30,6 @@ A condition is added with content only, without code changes.
 4. **Timeline label**: give every step a `short_title` (a short timeline label, 16 characters or fewer).
 5. **Update the tests**: make `packages/shared/test/fixtures.test.ts` check the new file and references, and confirm with `pnpm test`.
 6. **Seed the database**: the seed mutation (`convex/seed.ts`; create a new one if needed) reads the fixtures and inserts them in the order `structures`, `instruments`, `procedures`, `steps`. Upsert with the `by_structure_id` and `by_slug` indexes so that running it again creates no duplicates (apply the `convex-function` checklist).
-7. **Docs**: if the contract format changes, follow `contract-change`. If the format is the same and only the content grew, `docs/contracts.md` does not need an update.
-8. **Verify**: `pnpm typecheck && pnpm test && pnpm lint`
+7. **Knowledge facts for the chatbot**: if the procedure has patient-education text, add chunks to `packages/shared/fixtures/knowledge.<name>.json` (`docs/knowledge-base.md`: one topic per chunk, answer first, example `questions`, `keywords`, `structure_ids` that exist) and load the file in `convex/lib/knowledge.ts`. For local mode, run `rag:indexContent` again.
+8. **Docs**: if the contract format changes, follow `contract-change`. If the format is the same and only the content grew, `docs/contracts.md` does not need an update.
+9. **Verify**: `pnpm typecheck && pnpm test && pnpm lint`

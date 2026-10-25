@@ -31,6 +31,7 @@ const LANGUAGE_PATTERN = /^[a-z]{2,3}$/;
 
 export type SttErrorCode =
   | "stt_not_configured"
+  | "cloud_stt_disabled"
   | "invalid_language"
   | "audio_not_found"
   | "audio_too_large"

@@ -23,6 +23,16 @@
       "type": "set_opacity",
       "structure_id": "aortic_valve",
       "opacity": 0.4
+    },
+    {
+      "type": "zoom",
+      "direction": "in",
+      "amount": "medium"
+    },
+    {
+      "type": "rotate",
+      "direction": "left",
+      "degrees": 45
     }
   ],
   "side_panel": {
@@ -38,5 +48,8 @@
       "title": "Dummy source (replace with real reference material)",
       "url": null
     }
-  ]
+  ],
+  "safety": "Ask your care team before changing anything about how you prepare for the procedure.",
+  "doctor_question": "Which kind of valve will be used in my procedure, and how is it expanded?",
+  "urgent": false
 }

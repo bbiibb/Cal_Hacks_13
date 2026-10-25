@@ -85,5 +85,10 @@ async function findMissingReference(
         }
       }
       return null;
+    // Camera-only commands do not reference anything in the database
+    case "zoom":
+    case "rotate":
+    case "reset_view":
+      return null;
   }
 }
