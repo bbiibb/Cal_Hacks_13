@@ -150,3 +150,14 @@
     gap: 1.5rem;
   }
 }
+
+/* Small phones: four links must fit in one row */
+@media (max-width: 480px) {
+  .nav {
+    gap: 0.9rem;
+  }
+
+  .link {
+    font-size: 0.85rem;
+  }
+}

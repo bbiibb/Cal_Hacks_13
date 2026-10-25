@@ -58,3 +58,11 @@
   background: radial-gradient(circle at 30% 28%, #fff4f6 0%, #f6c6d6 60%, #eba5be 100%);
   box-shadow: 0 10px 20px rgba(235, 165, 190, 0.3);
 }
+
+/* The decorative spheres would sit on top of the text on a phone */
+@media (max-width: 720px) {
+  .pastel::before,
+  .pastel::after {
+    display: none;
+  }
+}
