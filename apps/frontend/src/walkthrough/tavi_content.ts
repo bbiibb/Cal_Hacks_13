@@ -3,7 +3,7 @@ import procedureJson from '@cal-hacks/shared/fixtures/procedure.tavr.json'
 import structuresJson from '@cal-hacks/shared/fixtures/structures.json'
 
 /*
- * The TAVI walkthrough content: steps, scenes, and part descriptions.
+ * The TAVR walkthrough content: steps, scenes, and part descriptions.
  * Read from the shared fixtures (the same data the backend seeds), checked against the contract on load.
  * When the frontend reads from Convex, replace this with `api.procedures.getBySlug({ slug: "tavr" })`
  * and `api.structures.list`.

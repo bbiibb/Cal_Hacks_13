@@ -1,7 +1,7 @@
 import type { SceneAction } from './chat_types'
 
 /*
- * Hard-coded TAVI answers used until the backend chatbot is connected.
+ * Hard-coded TAVR answers used until the backend chatbot is connected.
  * Educational dummy content written from general public information. It is not medical advice and must be
  * reviewed by someone with medical knowledge before patients see it.
  */
@@ -76,7 +76,7 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 0,
     actions: [highlight('aorta')],
     message:
-      'In most TAVI procedures the thin tube goes in through an artery at the top of the leg, in the groin, through a small puncture rather than a large cut. At the end the puncture is closed, and you lie flat for a few hours so it can seal.\n\nBruising there is common and usually fades within a couple of weeks. Less often there is bleeding or damage to the artery, which the team checks for before you go home.',
+      'In most TAVR procedures the thin tube goes in through an artery at the top of the leg, in the groin, through a small puncture rather than a large cut. At the end the puncture is closed, and you lie flat for a few hours so it can seal.\n\nBruising there is common and usually fades within a couple of weeks. Less often there is bleeding or damage to the artery, which the team checks for before you go home.',
     safety: 'If the site bleeds heavily or swells quickly, press firmly on it and get help right away.',
     doctorQuestion: 'Which artery will be used for my procedure, and how should I look after the site at home?',
     followUps: ['How long is recovery?', 'Is the contrast dye hard on my kidneys?', 'Go to the next step'],
@@ -134,7 +134,7 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 4,
     actions: [],
     message:
-      'After TAVI most people take medicine for a while to stop clots forming on the new valve. Which medicine, and for how long, depends on your health and on the other medicines you take, so your care team decides this with you.',
+      'After TAVR most people take medicine for a while to stop clots forming on the new valve. Which medicine, and for how long, depends on your health and on the other medicines you take, so your care team decides this with you.',
     safety: 'Do not start, stop, or change any medicine without talking to your care team first.',
     doctorQuestion: 'Which medicines will I take after the procedure, and for how long?',
     followUps: ['How is stroke risk reduced?', 'How long is recovery?', 'What are the side effects?'],
@@ -145,7 +145,7 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 0,
     actions: [],
     message:
-      'Many TAVI procedures are done with sedation: medicine that makes you relaxed and drowsy while the groin is numbed, so you keep breathing on your own. Some hospitals use general anaesthesia instead, where you are fully asleep.\n\nYou should not feel the valve being placed. Afterwards the groin may be sore and bruised for a few days.',
+      'Many TAVR procedures are done with sedation: medicine that makes you relaxed and drowsy while the groin is numbed, so you keep breathing on your own. Some hospitals use general anaesthesia instead, where you are fully asleep.\n\nYou should not feel the valve being placed. Afterwards the groin may be sore and bruised for a few days.',
     safety: '',
     doctorQuestion: 'Will I be sedated or fully asleep, and how will my pain be managed afterwards?',
     followUps: ['What should I watch for at the groin site?', 'How long is recovery?', 'What are the side effects?'],
@@ -202,7 +202,7 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 2,
     actions: [highlight('aortic_valve', 'aortic_annulus')],
     message:
-      "Most people recover from TAVI without serious problems, but like any heart procedure it has possible side effects. The ones care teams talk about most are:\n\n• Bleeding or bruising where the tube went in, usually the groin.\n• Changes to the heart's rhythm. Some people need a pacemaker afterwards.\n• A small risk of stroke, because bits of calcium can break loose while the valve is placed.\n• A small leak around the edge of the new valve.\n• Strain on the kidneys from the contrast dye used for X-ray pictures.\n\nAsk me about any of them to learn more.",
+      "Most people recover from TAVR without serious problems, but like any heart procedure it has possible side effects. The ones care teams talk about most are:\n\n• Bleeding or bruising where the tube went in, usually the groin.\n• Changes to the heart's rhythm. Some people need a pacemaker afterwards.\n• A small risk of stroke, because bits of calcium can break loose while the valve is placed.\n• A small leak around the edge of the new valve.\n• Strain on the kidneys from the contrast dye used for X-ray pictures.\n\nAsk me about any of them to learn more.",
     safety: 'Your own risk depends on your health, so go over these with your care team before the procedure.',
     doctorQuestion: 'Which of these side effects am I most at risk of, and what is done to prevent them?',
     followUps: ['Why might I need a pacemaker?', 'How is stroke risk reduced?', 'What should I watch for at the groin site?'],
@@ -216,7 +216,7 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 4,
     actions: [],
     message:
-      'Recovery after TAVI is usually quicker than after open-heart surgery, because there is no large cut in the chest. Many people are up and walking within a day and go home after a few days.\n\nYou are usually asked to avoid heavy lifting for a short time while the groin heals. You will also have follow-up visits and an ultrasound scan of the new valve. Your care team gives you instructions that fit your own recovery.',
+      'Recovery after TAVR is usually quicker than after open-heart surgery, because there is no large cut in the chest. Many people are up and walking within a day and go home after a few days.\n\nYou are usually asked to avoid heavy lifting for a short time while the groin heals. You will also have follow-up visits and an ultrasound scan of the new valve. Your care team gives you instructions that fit your own recovery.',
     safety:
       'Call your care team if you get a fever, swelling or bleeding at the groin, or new shortness of breath after you go home.',
     doctorQuestion: 'When can I drive, lift things, and go back to my usual activities?',
@@ -228,10 +228,10 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 0,
     actions: [focusOn('aortic_valve.calcification')],
     message:
-      'In aortic stenosis the aortic valve, which lets blood out of the heart, becomes stiff and narrow. This is often because calcium builds up on its leaflets over many years. The left ventricle then has to push harder to force blood through the small opening.\n\nOver time this can cause breathlessness, chest tightness, tiredness, or fainting. TAVI places a new valve inside the old one to open the way again.',
+      'In aortic stenosis the aortic valve, which lets blood out of the heart, becomes stiff and narrow. This is often because calcium builds up on its leaflets over many years. The left ventricle then has to push harder to force blood through the small opening.\n\nOver time this can cause breathlessness, chest tightness, tiredness, or fainting. TAVR places a new valve inside the old one to open the way again.',
     safety: '',
     doctorQuestion: 'How severe is my valve narrowing, and what happens if I wait?',
-    followUps: ['What is TAVI?', 'Go to the next step', 'What are the side effects?'],
+    followUps: ['What is TAVR?', 'Go to the next step', 'What are the side effects?'],
   },
   {
     id: 'overview',
@@ -243,16 +243,16 @@ export const DEMO_TOPICS: readonly DemoTopic[] = [
     step: 0,
     actions: [],
     message:
-      'TAVI, also called TAVR, replaces a narrowed aortic valve without open-heart surgery. This walkthrough shows it in five steps:\n\n1. A thin wire is guided from the groin to the heart.\n2. A catheter carries the folded new valve into position.\n3. A balloon expands the new valve inside the old one.\n4. The balloon, catheter, and wire are taken out.\n5. The new valve opens and closes with each heartbeat.\n\nDrag the slider under the 3D model, or ask me to go to a step.',
+      'TAVR, also called TAVI, replaces a narrowed aortic valve without open-heart surgery. This walkthrough shows it in five steps:\n\n1. A thin wire is guided from the groin to the heart.\n2. A catheter carries the folded new valve into position.\n3. A balloon expands the new valve inside the old one.\n4. The balloon, catheter, and wire are taken out.\n5. The new valve opens and closes with each heartbeat.\n\nDrag the slider under the 3D model, or ask me to go to a step.',
     safety: '',
-    doctorQuestion: 'Is TAVI the best option for me, or should I also consider open-heart valve surgery?',
+    doctorQuestion: 'Is TAVR the best option for me, or should I also consider open-heart valve surgery?',
     followUps: ['Why is my valve narrowed?', 'What are the side effects?', 'Go to step 2'],
   },
 ]
 
 /** Answer for a question that no topic matches. */
 export const FALLBACK_MESSAGE =
-  "I have prepared answers about TAVI's side effects, recovery, and each step of the procedure, but not about that yet. Try one of the questions below, or ask your care team."
+  "I have prepared answers about TAVR's side effects, recovery, and each step of the procedure, but not about that yet. Try one of the questions below, or ask your care team."
 
 /** Answer when the patient describes emergency symptoms happening now. */
 export const URGENT_MESSAGE =
