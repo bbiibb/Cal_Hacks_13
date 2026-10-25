@@ -1,18 +1,57 @@
-.window {
+/* The 3D view on the left and the chat panel on the right; stacked on narrow screens */
+.page {
   position: absolute;
   inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  grid-template-rows: minmax(0, 1fr);
   background: #000;
-
-  width: 100%;
-  height: 100%;
   overflow: hidden;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-.window canvas {
+.viewer {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.viewer canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
+}
+
+.hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(13, 13, 19, 0.6);
+  color: #f2f1f8;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.panel {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* On narrow screens the page scrolls, so the chat keeps a usable height under the 3D view */
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(220px, 40svh) minmax(560px, auto);
+    overflow-y: auto;
+  }
+
+  .panel {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }
