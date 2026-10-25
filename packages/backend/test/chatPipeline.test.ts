@@ -119,3 +119,44 @@ describe("runChat safety", () => {
     expect(result.response.doctor_question).toContain("watch for");
   });
 });
+
+describe("runChat camera commands", () => {
+  const noModel = async (message: string) => {
+    const { result, callModel } = await run(message, []);
+    expect(callModel).not.toHaveBeenCalled();
+    return result.response;
+  };
+
+  it("answers a polite zoom request without asking the model", async () => {
+    const r = await noModel("Can you zoom in?");
+    expect(r.scene_actions).toEqual([{ type: "zoom", direction: "in", amount: "medium" }]);
+    expect(r.message).toBe("Done: zoomed in.");
+  });
+
+  it("points at a part named in a show command without asking the model", async () => {
+    const r = await noModel("Show me the aortic valve");
+    expect(r.scene_actions).toEqual([
+      { type: "focus", structure_id: "aortic_valve" },
+      { type: "highlight", structure_ids: ["aortic_valve"], enabled: true },
+    ]);
+    expect(r.message).toBe("Done: showing the native aortic valve.");
+    expect(r.side_panel?.title).toBe("Native aortic valve");
+  });
+
+  it("can zoom and point at a part in one command", async () => {
+    const r = await noModel("Zoom in on the left ventricle");
+    expect(r.scene_actions.map((a) => a.type)).toEqual(["focus", "highlight", "zoom"]);
+  });
+
+  it("picks the longest part name", async () => {
+    const r = await noModel("Show me the ascending aorta");
+    expect(r.scene_actions[0]).toEqual({ type: "focus", structure_id: "aorta.ascending" });
+  });
+
+  it("still asks the model when the patient wants an explanation", async () => {
+    for (const question of ["What is the aortic valve?", "Why does the aortic valve matter?", "Show me what happens to the aortic valve"]) {
+      const { callModel } = await run(question, [json({ answer: "It keeps blood from flowing backward." })]);
+      expect(callModel).toHaveBeenCalled();
+    }
+  });
+});

@@ -42,6 +42,8 @@ pnpm exec convex env set LLM_BASE_URL https://api.groq.com/openai/v1
 pnpm exec convex env set LLM_MODEL openai/gpt-oss-20b
 ```
 
+For the **Fast** choice in the chat panel, set `LLM_MODEL` to the Qwen model you want from the Groq list above, next to `LLM_API_KEY`. The **Slow** choice uses the local Llama through Ollama and needs no key (see [`local-llm.md`](local-llm.md)). Both choices work at the same time on a local backend that can reach Ollama: the patient picks per question. Fast mode is a paid service, so the panel asks before it is turned on.
+
 For speech-to-text, set `CARTESIA_API_KEY` the same way (see `docs/backend-api.md`).
 
 ## How one question is answered
@@ -74,7 +76,7 @@ A conversation lasts until the window is closed. The model sees only the latest 
 1. After each answer, only the latest 6 messages stay in the database in full. Older ones are folded into the session's `summary` and **deleted**.
 2. The summary holds two lists, built by rules: the patient's earlier questions (each cut to 90 characters, the newest 8 kept) and the topics already explained (the titles of the reference facts that earlier answers cited, the newest 6 kept). It never keeps the assistant's own sentences.
 3. It is rendered as one paragraph of at most 600 characters (the oldest questions are dropped first) and added to the prompt as `EARLIER IN THIS CONVERSATION (older messages, shortened): The patient earlier asked: "..."; "...". Already explained: ...`.
-4. A pure camera command ("zoom in") is not stored, so it does not use up the memory. Any single earlier message is cut at 300 characters in the prompt.
+4. A pure camera command ("zoom in", "can you zoom in?", "show me the right atrium") is read from the patient's words by rules: no model is asked and nothing is embedded or searched, so it answers in under a second. A part is found by its name; a question that asks for an explanation ("what is the right atrium?") still goes to the model. Such a command is not stored, so it does not use up the memory. Any single earlier message is cut at 300 characters in the prompt.
 5. The conversation ends when the window closes: the page asks the backend to delete it (`chat.deleteSession`, sent with `keepalive` on `pagehide`). Because a browser may not send that request, a job deletes every conversation that was idle for 2 hours, every hour (`chat.purgeInactiveSessions`, `convex/crons.ts`). A question that arrives with the id of a deleted conversation is still answered, without history, and does not bring the conversation back.
 
 ### Decision record: why the summary is built by rules and not by a model

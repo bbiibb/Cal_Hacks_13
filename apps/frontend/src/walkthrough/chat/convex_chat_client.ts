@@ -1,4 +1,4 @@
-import type { ChatClient, ChatContext, ChatReply, ChatRequest, ChatResponse } from './chat_types'
+import type { ChatClient, ChatContext, ChatReply, ChatRequest, ChatResponse, ChatSpeed } from './chat_types'
 import { ChatError } from './chat_types'
 import { followUpsForStep } from './follow_ups'
 import { normalizeChatResponse } from './normalize_response'
@@ -42,18 +42,20 @@ export class ConvexChatClient implements ChatClient {
       message: request.message,
       context: request.context,
       ...(sessionId ? { sessionId } : {}),
+      ...(request.speed ? { speed: request.speed } : {}),
     })
     return this.toReply(normalizeChatResponse(value), request.context)
   }
 
   /** Uploads the recording to Convex file storage, then asks `chat:askByVoice` to transcribe and answer it. */
-  async askByVoice(audio: Blob, context: ChatContext): Promise<ChatReply & { transcript: string }> {
+  async askByVoice(audio: Blob, context: ChatContext, speed?: ChatSpeed): Promise<ChatReply & { transcript: string }> {
     const storageId = await this.upload(audio)
     const sessionId = await this.sessionId()
     const value = await this.call('action', 'chat:askByVoice', {
       storageId,
       context,
       ...(sessionId ? { sessionId } : {}),
+      ...(speed ? { speed } : {}),
     })
     const result = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {}
     const transcript = typeof result.transcript === 'string' ? result.transcript.trim() : ''

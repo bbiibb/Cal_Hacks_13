@@ -1,6 +1,6 @@
 import { env, type ActionCtx } from "../_generated/server";
 import { buildMessages as buildCloudMessages, type ChatTurn, type LlmMessage, type PromptData } from "./chatPrompt";
-import { completeChat, LlmError, resolveLlmConfig, selectProvider } from "./llm";
+import { completeChat, LlmError, resolveLlmConfig, selectProvider, type LlmProvider } from "./llm";
 import { buildLocalMessages, buildLocalSchema } from "./localPrompt";
 import { chatOllama, resolveOllamaConfig } from "./ollama";
 import {
@@ -24,13 +24,34 @@ export interface ModelRoute {
 }
 
 /**
- * Chooses how this question is answered, from the LLM_PROVIDER environment variable:
+ * For a pure camera command: no model is asked, so nothing is embedded or searched either.
+ * The pipeline answers such a command from the patient's words and never calls `callModel`.
+ */
+export function cameraOnlyRoute(): ModelRoute {
+  return {
+    provider: selectProvider(env),
+    callModel: async () => {
+      throw new Error("A camera command does not ask the model.");
+    },
+    contextDocs: [],
+  };
+}
+
+/**
+ * Chooses how this question is answered: the patient's choice (slow or fast) when there is one, otherwise the
+ * LLM_PROVIDER environment variable:
  * - "groq" (default): any OpenAI-compatible API, with the full prompt plus the best-matching reference facts
  * - "local": Llama through Ollama, with retrieved context (vector plus keyword search) and a JSON schema
  * The caller does not care which one runs: both return raw text that the same pipeline reads.
  */
-export async function prepareModel(ctx: ActionCtx, data: PromptData, message: string): Promise<ModelRoute> {
-  const provider = selectProvider(env);
+export async function prepareModel(
+  ctx: ActionCtx,
+  data: PromptData,
+  message: string,
+  /** The pipeline the patient picked for this question. Without it, LLM_PROVIDER decides. */
+  chosen?: LlmProvider,
+): Promise<ModelRoute> {
+  const provider = chosen ?? selectProvider(env);
 
   if (provider === "groq") {
     const config = resolveLlmConfig(env);

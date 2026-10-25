@@ -137,6 +137,9 @@ export const vProcedure = v.object({
 
 // --- Chat ---
 
+/** How the patient wants the question answered: "slow" (local model) or "fast" (cloud model, paid API). */
+export const vChatSpeed = v.union(v.literal("slow"), v.literal("fast"));
+
 export const vChatContext = v.object({
   procedure_slug: v.string(),
   step_index: v.number(),
