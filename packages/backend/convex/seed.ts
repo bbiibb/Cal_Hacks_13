@@ -10,6 +10,7 @@ import conditionsJson from "@cal-hacks/shared/fixtures/conditions.json";
 import instrumentsJson from "@cal-hacks/shared/fixtures/instruments.json";
 import procedureJson from "@cal-hacks/shared/fixtures/procedure.tavr.json";
 import structuresJson from "@cal-hacks/shared/fixtures/structures.json";
+import { internal } from "./_generated/api";
 import { internalMutation } from "./_generated/server";
 import {
   fromCondition,
@@ -35,6 +36,8 @@ export const run = internalMutation({
     procedure: v.string(),
     steps: v.number(),
     removedSteps: v.number(),
+    // True when the vector index is being rebuilt in the background (see rag.ts)
+    indexScheduled: v.boolean(),
   }),
   handler: async (ctx) => {
     // First check that the fixtures themselves follow the contract
@@ -130,6 +133,10 @@ export const run = internalMutation({
       }
     }
 
+    // The seeded parts and steps feed the vector index, so rebuild it in the background. If Ollama is not running
+    // this only logs a line; the next question that finds the index out of date tries again.
+    await ctx.scheduler.runAfter(0, internal.rag.refreshIndex, { procedureSlug: procedure.slug });
+
     return {
       conditions: conditions.length,
       structures: structures.length,
@@ -137,6 +144,7 @@ export const run = internalMutation({
       procedure: procedure.slug,
       steps: procedure.steps.length,
       removedSteps,
+      indexScheduled: true,
     };
   },
 });

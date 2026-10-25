@@ -180,3 +180,38 @@ export function pickSources(answer: string, docs: RetrievedDoc[], max = 2): { ti
   scored = scored.filter((s) => s.shared >= best * SECOND_SOURCE_MIN_SHARE).slice(0, max);
   return scored.map((s) => ({ title: s.doc.sourceTitle as string, url: null }));
 }
+
+/**
+ * A short fingerprint of what the index should hold: it changes when any snippet is added, removed or reworded.
+ * The order of the documents does not matter. (A 53-bit string hash: enough to notice a change, not for security.)
+ */
+export function contentHash(docs: readonly RagDocInput[]): string {
+  const text = [...docs]
+    .sort((a, b) => (a.docId < b.docId ? -1 : a.docId > b.docId ? 1 : 0))
+    .map((d) => [d.docId, d.kind, d.structureId ?? "", d.procedureSlug ?? "", d.stepIndex ?? "", d.title, d.text, d.embedText ?? ""].join("\u0001"))
+    .join("\u0002");
+  let h1 = 0xdeadbeef;
+  let h2 = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
+}
+
+/**
+ * The stored snippets that the content no longer has and that belong to this procedure (its steps and knowledge
+ * facts) or are shared parts. Another procedure's snippets are left alone.
+ */
+export function staleDocIds(
+  stored: readonly { docId: string; kind: RetrievedDoc["kind"]; procedureSlug?: string }[],
+  keep: ReadonlySet<string>,
+  procedureSlug: string,
+): string[] {
+  return stored
+    .filter((d) => !keep.has(d.docId) && (d.kind === "structure" || d.procedureSlug === procedureSlug))
+    .map((d) => d.docId);
+}

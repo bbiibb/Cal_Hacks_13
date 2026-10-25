@@ -97,11 +97,7 @@ Size: the whole prompt is kept under about 1500 tokens, so it fits the 2048-toke
 
 1. Edit the chunks (the fixture is generated text; edit the JSON directly): keep one topic per chunk, answer first, a few example `questions`, everyday `keywords`, and copy numbers exactly.
 2. `pnpm test` checks the schema, unique ids, that `structure_ids` exist, that risk chunks keep their percentages, and the retrieval questions.
-3. Local mode: rebuild the vector index. Cloud mode needs nothing else (the fixture is bundled).
-
-```bash
-npx convex run rag:indexContent '{"procedureSlug":"tavr"}'
-```
+3. Local mode: the vector index rebuilds itself. After you push the code, the next question notices that the content changed and rebuilds in the background (and `seed:run` starts a rebuild too); stale snippets are deleted. To do it at once, run `npx convex run rag:indexContent '{"procedureSlug":"tavr"}'`. Cloud mode needs nothing else (the fixture is bundled).
 
 A new procedure needs its own file next to `knowledge.tavr.json` and a line in `convex/lib/knowledge.ts` that loads it.
 

@@ -3,7 +3,7 @@ import type { ActionCtx } from "../_generated/server";
 import type { PromptData } from "./chatPrompt";
 import { embedOllama, type OllamaConfig } from "./ollama";
 import { QUERY_PREFIX } from "./ragConfig";
-import { RETRIEVE_LIMIT, docFromChunk, fuseRankings, keywordDocs, type RetrievedDoc } from "./rag";
+import { RETRIEVE_LIMIT, buildDocs, contentHash, docFromChunk, fuseRankings, keywordDocs, type RetrievedDoc } from "./rag";
 
 /** Finds the snippets most similar to the question with Convex vector search. */
 export async function vectorDocs(
@@ -54,4 +54,21 @@ export async function retrieveDocs(
     onVectorError(error);
   }
   return fuseRankings([vector, keyword], limit);
+}
+
+/**
+ * Checks that the vector index was built from the content as it is now. If it was not (the content changed after
+ * the last build), a rebuild starts in the background; this question is still answered, with the keyword results
+ * and the knowledge text, which always come straight from our files. Never fails a question.
+ */
+export async function ensureIndexFresh(ctx: ActionCtx, data: PromptData): Promise<void> {
+  try {
+    const hash = contentHash(buildDocs(data));
+    const built = await ctx.runQuery(internal.rag.indexedHash, { procedureSlug: data.procedureSlug });
+    if (built === hash) return;
+    const started = await ctx.runMutation(internal.rag.claimReindex, { procedureSlug: data.procedureSlug, hash });
+    if (started) console.log("[index] the content changed since the index was built; rebuilding it in the background");
+  } catch (error) {
+    console.log("[index] could not check the index:", String(error instanceof Error ? error.message : error));
+  }
 }
