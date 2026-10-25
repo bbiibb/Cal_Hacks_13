@@ -1,42 +1,42 @@
 {
   "slug": "tavr",
   "title": "Transcatheter aortic valve replacement, TAVR (dummy)",
-  "summary": "An educational dummy simplification of a procedure that places a new valve inside a narrowed aortic valve using a catheter, shown in four scenes.",
+  "summary": "An educational simplification of a procedure that places a new valve inside a narrowed aortic valve using a catheter, shown in five steps. The step explanations were written by the team for patients; they are not medical advice.",
   "condition_slug": "aortic_stenosis",
   "order": 0,
   "steps": [
     {
       "index": 0,
-      "title": "The narrowed original valve",
-      "short_title": "Narrowing",
+      "title": "Guiding a wire to your heart",
+      "short_title": "Guidewire",
       "scene": {
         "camera": {
           "position": [
             0,
-            0.15,
-            0.9
+            0.4,
+            1.4
           ],
           "target": [
             0,
-            0,
+            0.1,
             0
           ],
-          "duration_ms": 1200
+          "duration_ms": 1500
         },
         "structures": [
           {
             "id": "aorta",
-            "opacity": 0.25,
-            "highlight": false
+            "opacity": 1,
+            "highlight": true
           },
           {
             "id": "aorta.ascending",
-            "opacity": 0.25,
-            "highlight": false
+            "opacity": 1,
+            "highlight": true
           },
           {
             "id": "aorta.root",
-            "opacity": 0.4,
+            "opacity": 0.5,
             "highlight": false
           },
           {
@@ -67,11 +67,11 @@
           {
             "id": "aortic_valve.calcification",
             "opacity": 1,
-            "highlight": true
+            "highlight": false
           },
           {
             "id": "left_ventricle",
-            "opacity": 0.4,
+            "opacity": 0.3,
             "highlight": false
           },
           {
@@ -100,26 +100,46 @@
             "highlight": false
           }
         ],
-        "instruments": [],
+        "instruments": [
+          {
+            "id": "guidewire",
+            "transform": {
+              "position": [
+                0,
+                0.1,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          }
+        ],
         "animation_clip": {
-          "name": "native_valve_stenosis",
-          "loop": true
+          "name": "advance_guidewire",
+          "loop": false
         }
       },
       "side_panel": {
-        "title": "The narrowed original valve",
-        "body_markdown": "In aortic valve stenosis the leaflets become stiff and calcium builds up, so the valve cannot open fully. The left ventricle has to push blood through a narrow opening, which puts extra strain on the heart. (Dummy educational content)",
+        "title": "Guiding a wire to your heart",
+        "body_markdown": "Your doctor guides a thin, flexible wire through an artery in your groin and toward your heart. It follows the curved part of your body’s main artery, called the aortic arch, and passes through your narrowed aortic valve. This wire acts like a rail to guide the equipment carrying your new valve.",
         "related_structure_ids": [
-          "aortic_valve",
-          "aortic_valve.calcification",
-          "left_ventricle"
+          "aorta",
+          "aortic_valve"
         ]
       }
     },
     {
       "index": 1,
-      "title": "Delivering the new valve",
-      "short_title": "Delivery",
+      "title": "Bringing your new valve into position",
+      "short_title": "Valve delivery",
       "scene": {
         "camera": {
           "position": [
@@ -137,17 +157,17 @@
         "structures": [
           {
             "id": "aorta",
-            "opacity": 0.2,
+            "opacity": 0.25,
             "highlight": false
           },
           {
             "id": "aorta.ascending",
-            "opacity": 0.2,
+            "opacity": 0.25,
             "highlight": false
           },
           {
             "id": "aorta.root",
-            "opacity": 0.35,
+            "opacity": 0.4,
             "highlight": false
           },
           {
@@ -217,7 +237,7 @@
             "transform": {
               "position": [
                 0,
-                0.2,
+                0.1,
                 0
               ],
               "rotation": [
@@ -237,7 +257,7 @@
             "transform": {
               "position": [
                 0,
-                0.35,
+                0.3,
                 0
               ],
               "rotation": [
@@ -259,18 +279,18 @@
         }
       },
       "side_panel": {
-        "title": "Delivering the new valve",
-        "body_markdown": "The new valve is folded small, loaded on a catheter, and carried through the blood vessels to the position of the original valve. A guidewire first creates the path. (Dummy educational content)",
+        "title": "Bringing your new valve into position",
+        "body_markdown": "A flexible tube called a catheter carries your replacement valve along the guidewire to your heart. The new valve contains soft tissue flaps supported by a metal frame. It is compressed to fit through your blood vessels, then positioned inside your narrowed aortic valve.",
         "related_structure_ids": [
           "transcatheter_valve",
-          "aortic_valve",
-          "aortic_annulus"
+          "transcatheter_valve.frame",
+          "aortic_valve"
         ]
       }
     },
     {
       "index": 2,
-      "title": "Expanding the new valve",
+      "title": "Expanding your new valve",
       "short_title": "Expansion",
       "scene": {
         "camera": {
@@ -383,6 +403,26 @@
                 1
               ]
             }
+          },
+          {
+            "id": "balloon",
+            "transform": {
+              "position": [
+                0,
+                0,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
           }
         ],
         "animation_clip": {
@@ -391,27 +431,176 @@
         }
       },
       "side_panel": {
-        "title": "Expanding the new valve",
-        "body_markdown": "As the new valve opens, its frame presses into the annulus and anchors there, and the stiff original leaflets are pushed aside against the vessel wall. It is important that the new valve does not block the openings of the coronary arteries. (Dummy educational content)",
+        "title": "Expanding your new valve",
+        "body_markdown": "Once the new valve is in position, a balloon inside it is briefly inflated. This expands the metal frame and pushes the old valve’s stiff flaps aside, securing the new valve in place. Your original valve is not removed—the new valve sits inside it and takes over its job.",
         "related_structure_ids": [
           "transcatheter_valve.frame",
           "aortic_annulus",
-          "aortic_valve",
-          "left_coronary_artery",
-          "right_coronary_artery"
+          "aortic_valve"
         ]
       }
     },
     {
       "index": 3,
-      "title": "Final position after the equipment is removed",
-      "short_title": "Final position",
+      "title": "Removing the delivery equipment",
+      "short_title": "Removal",
+      "scene": {
+        "camera": {
+          "position": [
+            0,
+            0.3,
+            0.9
+          ],
+          "target": [
+            0,
+            0.05,
+            0
+          ],
+          "duration_ms": 1500
+        },
+        "structures": [
+          {
+            "id": "aorta",
+            "opacity": 0.25,
+            "highlight": true
+          },
+          {
+            "id": "aorta.ascending",
+            "opacity": 0.25,
+            "highlight": false
+          },
+          {
+            "id": "aorta.root",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "aortic_annulus",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve",
+            "opacity": 0.3,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_right",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_left",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.leaflet_noncoronary",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "aortic_valve.calcification",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "left_ventricle",
+            "opacity": 0.4,
+            "highlight": false
+          },
+          {
+            "id": "left_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "right_coronary_artery",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve",
+            "opacity": 1,
+            "highlight": true
+          },
+          {
+            "id": "transcatheter_valve.frame",
+            "opacity": 1,
+            "highlight": false
+          },
+          {
+            "id": "transcatheter_valve.leaflets",
+            "opacity": 1,
+            "highlight": false
+          }
+        ],
+        "instruments": [
+          {
+            "id": "guidewire",
+            "transform": {
+              "position": [
+                0,
+                0.4,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "id": "delivery_catheter",
+            "transform": {
+              "position": [
+                0,
+                0.6,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          }
+        ],
+        "animation_clip": {
+          "name": "withdraw_equipment",
+          "loop": false
+        }
+      },
+      "side_panel": {
+        "title": "Removing the delivery equipment",
+        "body_markdown": "The balloon is deflated and the delivery catheter is carefully withdrawn. Your new valve stays in place while your care team checks how well it is working. The guidewire is also removed before the procedure is finished.",
+        "related_structure_ids": [
+          "transcatheter_valve",
+          "aorta"
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "title": "How your new valve works",
+      "short_title": "Valve function",
       "scene": {
         "camera": {
           "position": [
             0,
             0.15,
-            0.8
+            0.6
           ],
           "target": [
             0,
@@ -474,27 +663,27 @@
           {
             "id": "left_coronary_artery",
             "opacity": 1,
-            "highlight": true
+            "highlight": false
           },
           {
             "id": "right_coronary_artery",
             "opacity": 1,
-            "highlight": true
+            "highlight": false
           },
           {
             "id": "transcatheter_valve",
             "opacity": 1,
-            "highlight": true
+            "highlight": false
           },
           {
             "id": "transcatheter_valve.frame",
             "opacity": 1,
-            "highlight": false
+            "highlight": true
           },
           {
             "id": "transcatheter_valve.leaflets",
             "opacity": 1,
-            "highlight": false
+            "highlight": true
           }
         ],
         "instruments": [],
@@ -504,12 +693,12 @@
         }
       },
       "side_panel": {
-        "title": "Final position",
-        "body_markdown": "Once the catheter and guidewire are withdrawn, the new valve takes over, so blood flows in only one direction. Doctors also check that blood flow to the coronary arteries is maintained. (Dummy educational content)",
+        "title": "How your new valve works",
+        "body_markdown": "The metal frame holds your new valve in place. Inside the frame, soft tissue flaps, called leaflets, open when your heart pumps blood out to your body. They close between beats to help prevent blood from flowing backward.",
         "related_structure_ids": [
-          "transcatheter_valve",
-          "left_coronary_artery",
-          "right_coronary_artery"
+          "transcatheter_valve.frame",
+          "transcatheter_valve.leaflets",
+          "left_ventricle"
         ]
       }
     }
