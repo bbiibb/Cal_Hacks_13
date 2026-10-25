@@ -98,11 +98,17 @@ export async function completeChat(params: CompletionParams): Promise<string> {
   let jsonMode = true;
   // A short rate limit (for example "try again in 2 seconds") is waited out once.
   let waitedForRateLimit = false;
-  // gpt-oss and Gemini models think before they answer; a low effort keeps answers fast and cheap.
+  // gpt-oss and Gemini models think before they answer. Thinking costs output tokens, so keep it low, and turn it
+  // off on Gemini 2.5 models (the cheap Flash-Lite ones), which allow that.
   const isGemini = config.model.startsWith("gemini");
-  const reasoning = config.model.startsWith("openai/gpt-oss") || isGemini ? { reasoning_effort: "low" } : {};
-  // Gemini counts its thinking tokens against the output limit, so a small limit could cut the JSON answer short.
-  const outputLimit = isGemini ? Math.max(maxTokens, GEMINI_MIN_OUTPUT_TOKENS) : maxTokens;
+  const geminiThinkingOff = config.model.startsWith("gemini-2.5");
+  const reasoning = geminiThinkingOff
+    ? { reasoning_effort: "none" }
+    : config.model.startsWith("openai/gpt-oss") || isGemini
+      ? { reasoning_effort: "low" }
+      : {};
+  // Gemini counts thinking tokens against the output limit, so a small limit could cut the JSON answer short.
+  const outputLimit = isGemini && !geminiThinkingOff ? Math.max(maxTokens, GEMINI_MIN_OUTPUT_TOKENS) : maxTokens;
 
   for (let attempt = 0; attempt < 4; attempt++) {
     const controller = new AbortController();
