@@ -49,7 +49,7 @@ const ROUTE_TO_OLD_VALVE: [number, number, number][] = [
 ]
 
 /** The catheter goes on a little way into the heart, past the old valve. */
-const TAVR_DEVICE_PATH: [number, number, number][] = [...ROUTE_TO_OLD_VALVE, [-0.34, -1.5, 0.1], [-0.38, -1.75, 0.11]]
+const TAVR_DEVICE_PATH: [number, number, number][] = [...ROUTE_TO_OLD_VALVE, [-0.38, -1.45, 0.1], [-0.43, -1.68, 0.11]]
 
 /** Where the middle of the new valve sits once it is placed: across the old valve, with most of it above the opening. */
 const TAVR_VALVE_POSITION: [number, number, number] = [-0.31, -1.32, 0.085]
@@ -74,8 +74,8 @@ function createScene(initialStep: number): { objects: SceneObject[]; curves: Ste
   const greenCatheter = new CurveFollower({
     points: [
       ...ROUTE_TO_OLD_VALVE,
-      [-0.34, -1.5, 0.1],
-      [-0.38, -1.75, 0.11],
+      [-0.38, -1.45, 0.1],
+      [-0.43, -1.68, 0.11],
       [-0.55, -2.05, 0.14],
       [-0.8, -2.15, 0.15],
       [-0.9, -2.15, 0.15],
