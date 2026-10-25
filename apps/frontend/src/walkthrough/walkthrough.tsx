@@ -26,23 +26,74 @@ const CAMERA: CameraOptions = {
 /** Every model has this one color, so the heart reads as a whole; parts change color only when pointed at. */
 const MODEL_COLOR = '#FFD3DE'
 
-const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
+const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5]
 
-/** How far the catheter is inserted at each step, 0 to 1 (step 0 first: only the heart). Steps past the end: fully withdrawn. */
-const CATHETER_FILL_BY_STEP = [0, 0.4, 1, 1, 0.4, 0] as const
-
-/** The guidewire is out of sight in step 0, which shows only the heart, and in place from step 1 on. */
-function guidewireFillAt(stepIndex: number): number {
-  return stepIndex === 0 ? 0 : 1
-}
+/**
+ * How far the purple catheter is inserted at each step, 0 to 1 (step 0 first: the introduction shows only the heart).
+ * Steps past the end: fully withdrawn.
+ */
+const CATHETER_FILL_BY_STEP = [0, 0, 1, 1, 0.4, 0] as const
 
 function catheterFillAt(stepIndex: number): number {
   return CATHETER_FILL_BY_STEP[stepIndex] ?? 0
 }
 
-/** Builds a fresh set of scene objects, opened at the given step. Called once per mount. */
-function createSceneObjects(initialStep: number): SceneObject[] {
-  return [
+/** The green catheter is out of sight in step 0 (only the heart), fully in from step 1, and gone on the last step. */
+function greenCatheterFillAt(stepIndex: number): number {
+  return stepIndex === 0 || stepIndex >= TAVI_PROCEDURE.steps.length - 1 ? 0 : 1
+}
+
+/** A curve whose fill follows the current step. */
+type StepCurve = {
+  follower: CurveFollower
+  fillAt: (stepIndex: number) => number
+}
+
+/** Builds a fresh scene, opened at the given step. Called once per mount. */
+function createScene(initialStep: number): { objects: SceneObject[]; curves: StepCurve[] } {
+  // The purple catheter: its insertion depth follows the current step
+  const catheter = new CurveFollower({
+    points: [
+      [-1, 0, -0.15],
+      [-0.6, 0.7, -0.07],
+      [-0.05, 0.6, -0.07],
+      [-0.1, 0, -0.07],
+      [-0.2, -0.4, -0.07],
+      [-0.15, -0.7, 0.03],
+      [-0.1, -1, 0.05],
+      [-0.2, -1.15, 0.05],
+      [-0.4, -1.35, 0.05],
+      [-0.6, -1.65, 0.15],
+    ],
+    radius: 0.02,
+    fill: catheterFillAt(initialStep), // opens at the right insertion depth
+    color: '#D7C4F0', // pastel lavender
+  })
+
+  // The green catheter: in for the whole procedure, withdrawn on the last step
+  const greenCatheter = new CurveFollower({
+    points: [
+      [-1, 0, -0.15],
+      [-0.6, 0.7, -0.07],
+      [-0.05, 0.6, -0.07],
+      [-0.1, 0, -0.07],
+      [-0.2, -0.4, -0.07],
+      [-0.15, -0.7, 0.03],
+      [-0.1, -1, 0.05],
+      [-0.2, -1.15, 0.05],
+      [-0.4, -1.35, 0.05],
+      [-0.6, -1.65, 0.15],
+      [-0.8, -2.15, 0.15],
+      [-0.9, -2.15, 0.15],
+      [-0.9, -1.9, 0.15],
+      [-0.88, -1.9, 0.15],
+    ],
+    radius: 0.01,
+    fill: greenCatheterFillAt(initialStep),
+    color: '#ccf0c4', // pastel green
+  })
+
+  const objects: SceneObject[] = [
     // The aortic root sits on the heart's aortic valve, at the base of the heart's own ascending aorta
     new SlicedModelObject({
       path: '/models/bicuspidic_aortic_root_with_calcifications.glb',
@@ -75,46 +126,17 @@ function createSceneObjects(initialStep: number): SceneObject[] {
       scale: [1.6, 1.6, 1.6],
       slice: { space: 'world', point: [0, 0, 0.08], normal: [0, 0, 1] },
     }),
-    // The catheter: its insertion depth follows the current step
-    new CurveFollower({
-      points: [
-        [-1, 0, -0.15],
-        [-0.6, 0.7, -0.07],
-        [-0.05, 0.6, -0.07],
-        [-0.1, 0, -0.07],
-        [-0.2, -0.4, -0.07],
-        [-0.15, -0.7, 0.03],
-        [-0.1, -1, 0.05],
-        [-0.2, -1.15, 0.05],
-        [-0.4, -1.35, 0.05],
-        [-0.6, -1.65, 0.15],
-      ],
-      radius: 0.02,
-      fill: catheterFillAt(initialStep), // opens at the right insertion depth
-      color: '#D7C4F0', // pastel lavender
-    }),
-    new CurveFollower({
-      points: [
-        [-1, 0, -0.15],
-        [-0.6, 0.7, -0.07],
-        [-0.05, 0.6, -0.07],
-        [-0.1, 0, -0.07],
-        [-0.2, -0.4, -0.07],
-        [-0.15, -0.7, 0.03],
-        [-0.1, -1, 0.05],
-        [-0.2, -1.15, 0.05],
-        [-0.4, -1.35, 0.05],
-        [-0.6, -1.65, 0.15],
-        [-0.8, -2.15, 0.15],
-        [-0.9, -2.15, 0.15],
-        [-0.9, -1.9, 0.15],
-        [-0.88, -1.9, 0.15],
-      ],
-      radius: 0.01,
-      fill: guidewireFillAt(initialStep), // hidden in step 0, which shows only the heart
-      color: '#ccf0c4', // pastel green
-    }),
+    catheter,
+    greenCatheter,
   ]
+
+  return {
+    objects,
+    curves: [
+      { follower: catheter, fillAt: catheterFillAt },
+      { follower: greenCatheter, fillAt: greenCatheterFillAt },
+    ],
+  }
 }
 
 const lookupStep: StepLookup = (procedureSlug, stepIndex) =>
@@ -152,9 +174,8 @@ function Walkthroughs() {
     stepRef.current = stepIndex
   }, [stepIndex])
 
-  // The live catheter and guidewire, so step changes can move them
-  const catheterRef = useRef<CurveFollower | null>(null)
-  const guidewireRef = useRef<CurveFollower | null>(null)
+  // The live catheters, so step changes can move them
+  const curvesRef = useRef<StepCurve[]>([])
 
   const pin = useCallback(
     (structureId: string | null) => {
@@ -194,10 +215,8 @@ function Walkthroughs() {
 
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
-    const created = createSceneObjects(stepRef.current)
-    const followers = created.filter((o): o is CurveFollower => o instanceof CurveFollower)
-    catheterRef.current = followers[0] ?? null // the catheter comes first, then the guidewire
-    guidewireRef.current = followers[1] ?? null
+    const { objects: created, curves } = createScene(stepRef.current)
+    curvesRef.current = curves
     // Open the page with ?regions to color each named part of a model, for checking where the regions lie
     if (new URLSearchParams(window.location.search).has('regions')) {
       for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
@@ -207,17 +226,15 @@ function Walkthroughs() {
     const step = TAVI_PROCEDURE.steps[stepRef.current]
     if (step) director.showStep(step.scene)
     return () => {
-      catheterRef.current = null
-      guidewireRef.current = null
+      curvesRef.current = []
       director.setObjects([])
       created.forEach((o) => o.dispose())
     }
   }, [director])
 
-  // The catheter advances or withdraws to the current step's insertion depth
+  // Each catheter advances or withdraws to its depth for the current step
   useEffect(() => {
-    catheterRef.current?.animateFillTo(catheterFillAt(stepIndex))
-    guidewireRef.current?.animateFillTo(guidewireFillAt(stepIndex))
+    for (const { follower, fillAt } of curvesRef.current) follower.animateFillTo(fillAt(stepIndex))
   }, [stepIndex])
 
   const changeStep = useCallback(
