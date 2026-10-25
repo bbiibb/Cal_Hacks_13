@@ -1,0 +1,89 @@
+.page {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 17rem;
+  font-family: 'Sora', system-ui, sans-serif;
+  color: var(--ss-ink);
+  text-align: left;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+}
+
+.view {
+  position: relative;
+  min-height: 0;
+  background: #f4f1ee;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.2rem;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.72);
+  border-left: 1px solid rgba(90, 88, 166, 0.2);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mode,
+.modeOn,
+.stepBtn,
+.stepOn {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(90, 88, 166, 0.25);
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--ss-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.modeOn,
+.stepOn {
+  background: var(--ss-accent);
+  border-color: var(--ss-accent);
+  color: #fff;
+}
+
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.check {
+  font-size: 0.8rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.note {
+  grid-column: 1 / -1;
+  margin: 0.4rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}

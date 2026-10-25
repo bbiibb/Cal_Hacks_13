@@ -8,6 +8,7 @@ import type { SceneObject } from './visualization/objects/SceneObject'
 import { ModelObject } from './visualization/objects/ModelObject'
 import { SlicedModelObject } from './visualization/objects/SlicedModelObject'
 import { CurveFollower } from './visualization/objects/CurveFollower'
+import { TavrDeliverySystem } from './visualization/objects/TavrDeliverySystem'
 import { OrbitCameraController } from './visualization/camera/OrbitCameraController'
 import type { CameraControllerFactory } from './visualization/camera/CameraController'
 import { SceneDirector, type StepLookup } from './visualization/scene_director'
@@ -29,14 +30,25 @@ const MODEL_COLOR = '#FFD3DE'
 const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5]
 
 /**
- * How far the purple catheter is inserted at each step, 0 to 1 (step 0 first: the introduction shows only the heart).
- * Steps past the end: fully withdrawn.
+ * The way the delivery catheter takes: along the aortic arch and down the ascending aorta to the aortic valve, and a
+ * little further into the heart. The valve ends up where `TAVR_VALVE_POSITION` is.
  */
-const CATHETER_FILL_BY_STEP = [0, 0, 1, 1, 0.4, 0] as const
+const TAVR_DEVICE_PATH: [number, number, number][] = [
+  [-1, 0, -0.15],
+  [-0.6, 0.7, -0.07],
+  [-0.05, 0.6, -0.07],
+  [-0.1, 0, -0.07],
+  [-0.2, -0.4, -0.07],
+  [-0.15, -0.7, 0.03],
+  [-0.1, -1, 0.05],
+  [-0.13, -1.12, 0.04],
+  [-0.152, -1.28, 0.03],
+  [-0.17, -1.5, 0.03],
+  [-0.2, -1.8, 0.03],
+]
 
-function catheterFillAt(stepIndex: number): number {
-  return CATHETER_FILL_BY_STEP[stepIndex] ?? 0
-}
+/** Where the middle of the new valve sits once it is placed: the aortic annulus of the aortic root model. */
+const TAVR_VALVE_POSITION: [number, number, number] = [-0.152, -1.28, 0.03]
 
 /** The green catheter is out of sight in step 0 (only the heart), fully in from step 1, and gone on the last step. */
 function greenCatheterFillAt(stepIndex: number): number {
@@ -50,25 +62,9 @@ type StepCurve = {
 }
 
 /** Builds a fresh scene, opened at the given step. Called once per mount. */
-function createScene(initialStep: number): { objects: SceneObject[]; curves: StepCurve[] } {
-  // The purple catheter: its insertion depth follows the current step
-  const catheter = new CurveFollower({
-    points: [
-      [-1, 0, -0.15],
-      [-0.6, 0.7, -0.07],
-      [-0.05, 0.6, -0.07],
-      [-0.1, 0, -0.07],
-      [-0.2, -0.4, -0.07],
-      [-0.15, -0.7, 0.03],
-      [-0.1, -1, 0.05],
-      [-0.2, -1.15, 0.05],
-      [-0.4, -1.35, 0.05],
-      [-0.6, -1.65, 0.15],
-    ],
-    radius: 0.02,
-    fill: catheterFillAt(initialStep), // opens at the right insertion depth
-    color: '#D7C4F0', // pastel lavender
-  })
+function createScene(initialStep: number): { objects: SceneObject[]; curves: StepCurve[]; devices: TavrDeliverySystem } {
+  // The delivery catheter with the balloon and the valve: they follow the current step
+  const devices = new TavrDeliverySystem({ points: TAVR_DEVICE_PATH, stopAt: TAVR_VALVE_POSITION, step: initialStep })
 
   // The green catheter: in for the whole procedure, withdrawn on the last step
   const greenCatheter = new CurveFollower({
@@ -80,9 +76,11 @@ function createScene(initialStep: number): { objects: SceneObject[]; curves: Ste
       [-0.2, -0.4, -0.07],
       [-0.15, -0.7, 0.03],
       [-0.1, -1, 0.05],
-      [-0.2, -1.15, 0.05],
-      [-0.4, -1.35, 0.05],
-      [-0.6, -1.65, 0.15],
+      [-0.13, -1.12, 0.04],
+      [-0.152, -1.28, 0.03],
+      [-0.2, -1.5, 0.05],
+      [-0.4, -1.75, 0.1],
+      [-0.6, -1.95, 0.15],
       [-0.8, -2.15, 0.15],
       [-0.9, -2.15, 0.15],
       [-0.9, -1.9, 0.15],
@@ -126,16 +124,14 @@ function createScene(initialStep: number): { objects: SceneObject[]; curves: Ste
       scale: [1.6, 1.6, 1.6],
       slice: { space: 'world', point: [0, 0, 0.08], normal: [0, 0, 1] },
     }),
-    catheter,
+    devices,
     greenCatheter,
   ]
 
   return {
     objects,
-    curves: [
-      { follower: catheter, fillAt: catheterFillAt },
-      { follower: greenCatheter, fillAt: greenCatheterFillAt },
-    ],
+    curves: [{ follower: greenCatheter, fillAt: greenCatheterFillAt }],
+    devices,
   }
 }
 
@@ -176,6 +172,8 @@ function Walkthroughs() {
 
   // The live catheters, so step changes can move them
   const curvesRef = useRef<StepCurve[]>([])
+  // The delivery catheter, balloon and valve, which follow the step too
+  const devicesRef = useRef<TavrDeliverySystem | null>(null)
 
   const pin = useCallback(
     (structureId: string | null) => {
@@ -215,8 +213,9 @@ function Walkthroughs() {
 
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
-    const { objects: created, curves } = createScene(stepRef.current)
+    const { objects: created, curves, devices } = createScene(stepRef.current)
     curvesRef.current = curves
+    devicesRef.current = devices
     // Open the page with ?regions to color each named part of a model, for checking where the regions lie
     if (new URLSearchParams(window.location.search).has('regions')) {
       for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
@@ -227,6 +226,7 @@ function Walkthroughs() {
     if (step) director.showStep(step.scene)
     return () => {
       curvesRef.current = []
+      devicesRef.current = null
       director.setObjects([])
       created.forEach((o) => o.dispose())
     }
@@ -235,6 +235,7 @@ function Walkthroughs() {
   // Each catheter advances or withdraws to its depth for the current step
   useEffect(() => {
     for (const { follower, fillAt } of curvesRef.current) follower.animateFillTo(fillAt(stepIndex))
+    devicesRef.current?.setStep(stepIndex)
   }, [stepIndex])
 
   const changeStep = useCallback(

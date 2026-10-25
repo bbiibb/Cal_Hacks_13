@@ -27,9 +27,9 @@ A `structure_id` should match a GLB mesh name one to one. The models in use are 
 | Original aortic valve (three leaflets, calcification) | `aortic_valve`, `aortic_valve.leaflet_*`, `aortic_valve.calcification` | In the scene: the aortic root model stands for all of them |
 | Aorta, aortic root, annulus, left ventricle, coronary arteries | `aorta*`, `aortic_annulus`, `left_ventricle`, `*_coronary_artery` | Aorta (arch model and the heart's own ascending part) and left ventricle are in the scene. The annulus and coronary arteries point at the aortic root model |
 | Right atrium, right ventricle, superior vena cava, pulmonary artery | same names | In the scene, as outlines on the heart model |
-| Delivery equipment | `guidewire`, `delivery_catheter` (instruments) | Being built by a teammate |
-| Frame of the new valve | `transcatheter_valve.frame` | Not modeled yet (points at the aortic root model) |
-| **Leaflets of the new valve** | `transcatheter_valve.leaflets` | **No model yet (TODO)** |
+| Delivery equipment | `guidewire`, `delivery_catheter`, `balloon` (instruments) | Built in code (see "The device models" below); the guidewire is a curve |
+| Frame of the new valve | `transcatheter_valve.frame` | Built in code (`TavrValve`) |
+| Leaflets of the new valve | `transcatheter_valve.leaflets` | Built in code (`TavrValve`) |
 
 While there is no model for the leaflets of the new valve, a temporary treatment is needed: hide `transcatheter_valve.leaflets` (opacity 0) or show only the frame.
 When the model is ready, adjust the opacity in the fixtures.
@@ -45,3 +45,29 @@ When the model is ready, adjust the opacity in the fixtures.
 
 - Access route: how far to show it, for example through the femoral artery (the first version shows only the valve area)
 - The source and license of the reference video, and the reference material to put in `sources`
+
+## The device models (balloon-expandable valve)
+
+The delivery equipment and the new valve are built in code, not loaded from model files, each as its own object in
+`apps/frontend/src/walkthrough/visualization/objects/`. They follow the balloon-expandable procedure shown in the
+reference video (a SAPIEN-type valve):
+
+| Object | What it is |
+|---|---|
+| `DeliveryCatheter` | A dark blue outer tube that follows a path from outside the body to the valve, a thinner blue shaft that runs through the balloon, and a soft rounded tip. `fill` (0 to 1) is how far it is inserted. |
+| `Balloon` | A see-through bulb with a taper at each end. `inflation` (0 to 1) takes it from wrapped under the valve to full size. |
+| `TavrValve` | A metal frame of diamond cells, a white cloth skirt at the inflow end, and three leaflets. `expansion` (0 crimped, 1 open) widens and shortens the frame; `leafletOpen` opens and closes the leaflets, or `startBeating()` does it like a heartbeat. |
+| `TavrDeliverySystem` | Puts the three together: the balloon and the crimped valve sit on the head of the catheter, the balloon opens the valve, and the catheter leaves the valve behind. `setStep(step)` moves everything to what a step needs. |
+
+The shapes come from plain functions in `device_geometry.ts` (tested without a graphics context), and what each device
+does at each step is `deviceStateForStep`:
+
+| Step | Devices |
+|---|---|
+| 0, 1 | None here (step 1 has only the guidewire) |
+| 2 | The catheter carries the crimped valve to the annulus, balloon wrapped |
+| 3 | The balloon inflates and the valve opens |
+| 4 | The balloon deflates, the catheter is withdrawn, the open valve stays |
+| 5 | Only the valve, its leaflets opening and closing |
+
+`walkthrough.tsx` holds the catheter path (`TAVR_DEVICE_PATH`) and where the valve ends up (`TAVR_VALVE_POSITION`); move them together with the aortic root model. Open **`/devices-lab`** to see each device on its own (with sliders) and all of them together by step, without the heart.
