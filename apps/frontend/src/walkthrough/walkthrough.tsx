@@ -83,14 +83,31 @@ function createSceneObjects(initialStep: number): SceneObject[] {
         [-0.2, -1.15, 0.05],
         [-0.4, -1.35, 0.05],
         [-0.6, -1.65, 0.15],
+      ],
+      radius: 0.02,
+      fill: catheterFillAt(initialStep), // opens at the right insertion depth
+      color: '#D7C4F0', // pastel lavender
+    }),
+    new CurveFollower({
+      points: [
+        [-1, 0, -0.15],
+        [-0.6, 0.7, -0.07],
+        [-0.05, 0.6, -0.07],
+        [-0.1, 0, -0.07],
+        [-0.2, -0.4, -0.07],
+        [-0.15, -0.7, 0.03],
+        [-0.1, -1, 0.05],
+        [-0.2, -1.15, 0.05],
+        [-0.4, -1.35, 0.05],
+        [-0.6, -1.65, 0.15],
         [-0.8, -2.15, 0.15],
         [-0.9, -2.15, 0.15],
         [-0.9, -1.9, 0.15],
         [-0.88, -1.9, 0.15],
       ],
       radius: 0.01,
-      fill: catheterFillAt(initialStep), // opens at the right insertion depth
-      color: '#D7C4F0', // pastel lavender
+      fill: 1, // opens at the right insertion depth
+      color: '#ccf0c4', // pastel lavender
     }),
   ]
 }
