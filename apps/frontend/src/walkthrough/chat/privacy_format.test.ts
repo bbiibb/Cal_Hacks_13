@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { PiiSpan } from '../privacy'
-import { maskDob, maskSsn, spansToSegments, summarizeTypes, typeLabel } from './privacy_format'
+import type { AuditEntry, PiiSpan } from '../privacy'
+import { maskDob, maskSsn, spansToSegments, summarizeSent, summarizeTypes, typeLabel } from './privacy_format'
 
 const span = (type: PiiSpan['type'], start: number, end: number): PiiSpan => ({ type, start, end, confidence: 1, source: 'rules' })
 
@@ -56,5 +56,42 @@ describe('helpers', () => {
     expect(maskDob('03-03-1985')).toBe('**-**-1985')
     expect(maskDob('1985-03-03')).toBe('**-**-1985')
     expect(maskDob('soon')).toBe('**-**-****')
+  })
+})
+
+describe('summarizeSent', () => {
+  const entry = (over: Partial<AuditEntry>): AuditEntry => ({
+    id: 1,
+    timestamp: '2026-10-25T00:00:00.000Z',
+    status: 'sent',
+    sentText: 'plain question',
+    redactions: [],
+    blockedTypes: [],
+    layer2: 'off',
+    ...over,
+  })
+
+  it('counts replaced details and finds none in the text that was sent', () => {
+    const entries = [
+      entry({
+        sentText: "I'm [PERSON_1], born [DOB_1], SSN [SSN_1]",
+        redactions: [
+          { type: 'PERSON', placeholder: '[PERSON_1]' },
+          { type: 'DOB', placeholder: '[DOB_1]' },
+          { type: 'SSN', placeholder: '[SSN_1]' },
+        ],
+      }),
+      entry({ id: 2, sentText: 'What is a valve?' }),
+    ]
+    expect(summarizeSent(entries)).toEqual({ replaced: 3, sent: 0 })
+  })
+
+  it('counts a personal detail that did reach the sent text', () => {
+    expect(summarizeSent([entry({ sentText: 'my ssn is 123-45-6789' })]).sent).toBe(1)
+  })
+
+  it('ignores blocked sends and empty lists', () => {
+    expect(summarizeSent([])).toEqual({ replaced: 0, sent: 0 })
+    expect(summarizeSent([entry({ status: 'blocked', sentText: null })]).sent).toBe(0)
   })
 })

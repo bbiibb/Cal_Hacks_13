@@ -466,3 +466,16 @@
   outline: 2px solid var(--panel-accent);
   outline-offset: 2px;
 }
+
+.sentSummary {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.sentZero {
+  color: #7ad9ae;
+}
+
+.sentSome {
+  color: #ff9db3;
+}
