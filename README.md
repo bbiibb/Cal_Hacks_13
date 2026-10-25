@@ -62,6 +62,17 @@ The first complete demo is **TAVR** (transcatheter aortic valve replacement). A 
 
 A procedure is not a video: each step is **3D scene state data** (camera, opacity, highlights, instruments), and the chatbot sends validated `scene_actions` that change that state. The architecture diagram is in [docs/diagrams/architecture.png](docs/diagrams/architecture.png).
 
+## Try it (for judges)
+
+**Live site:** https://blue-mushroom-0aa596510.4.azurestaticapps.net (the website on Azure Static Web Apps; sign-up and login run on a shared Convex dev deployment). The first load downloads about 200 MB of 3D models, so give it a minute.
+
+1. **Sign up** with fake details (any username and password; no real data).
+2. Open the **TAVR walkthrough** and drag the step slider. Hover over and click parts of the heart.
+3. In the chat panel, ask "Will I need a pacemaker?"
+4. Test the privacy layer: send `Hi, I'm Jane Doe, born 03/03/1985, my SSN is 123-45-6789`, then open **What left your device** at the bottom of the chat panel. It shows the text that was sent, with `[PERSON_1]`, `[DOB_1]` and `[SSN_1]` in place of the real details, and "0 personal details sent".
+
+The hosted site shows the built-in demo answers in the chat; the live language model needs the backend's API keys (see below). To run everything on your own computer you need **Node 22 or newer**; if `pnpm` fails to start (a broken corepack on some machines), run `npm install -g pnpm@12.15.0` first.
+
 ## Run it
 
 ```bash
@@ -76,7 +87,7 @@ pnpm dev:backend      # optional: the Convex backend for the live chatbot (needs
 
 ## Status
 
-Built and tested: the TAVR walkthrough, the chat with both models, voice, the safety layer, the privacy guard, accounts, progress, FAQs, and the eye prototype. Not done yet: a public deployment (Slow mode cannot run on a hosted backend), rate limits and a budget for Fast mode, voice that is redacted on the device, a real Microsoft sign-in, clinical review of the content, and more procedures. The full list is in [docs/product-roadmap.md](docs/product-roadmap.md).
+Built and tested: the TAVR walkthrough, the chat with both models, voice, the safety layer, the privacy guard, accounts, progress, FAQs, and the eye prototype. Not done yet: a fully hosted backend (the website is on Azure Static Web Apps and sign-up uses a Convex dev deployment; Slow mode cannot run on a hosted backend), rate limits and a budget for Fast mode, voice that is redacted on the device, a real Microsoft sign-in, clinical review of the content, and more procedures. The full list is in [docs/product-roadmap.md](docs/product-roadmap.md).
 
 ## Documents
 
