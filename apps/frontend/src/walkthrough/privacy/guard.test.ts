@@ -25,7 +25,7 @@ function recorder(answer: (message: string) => string = (m) => `You said: ${m}`)
       received.push(request)
       return Promise.resolve(reply(answer(request.message)))
     },
-    askByVoice: () => Promise.reject(new Error('voice must not be reachable')),
+    askByVoice: () => Promise.reject(new Error('voice goes straight to the inner client')),
     close: () => undefined,
   }
   return { inner, received }
@@ -80,12 +80,14 @@ describe('guardedChatClient', () => {
     expect(received[1]!.message).toBe('still [SSN_1]')
   })
 
-  it('does not forward voice, but forwards close', () => {
+  it('forwards voice and close when the inner client has them', () => {
     const { inner } = recorder()
     const client = guardedChatClient(inner, createPiiGuard())
-    expect(client.askByVoice).toBeUndefined()
+    expect(client.askByVoice).toBeTypeOf('function')
     expect(client.close).toBeTypeOf('function')
-    expect(guardedChatClient({ mode: 'demo', ask: inner.ask }, createPiiGuard()).close).toBeUndefined()
+    const plain = guardedChatClient({ mode: 'demo', ask: inner.ask }, createPiiGuard())
+    expect(plain.askByVoice).toBeUndefined()
+    expect(plain.close).toBeUndefined()
   })
 
   it('leaves unknown placeholders alone', async () => {

@@ -36,8 +36,8 @@ export function disposePageGuard(): void {
 
 /**
  * The chat backend wrapped by the privacy layer, plus the guard the panel's privacy UI talks to.
- * Both the live and the demo client are wrapped, so redaction behaves the same either way. The wrapper
- * hides `askByVoice`, so the microphone is off while the privacy layer is on.
+ * Both the live and the demo client are wrapped, so redaction behaves the same either way. Voice
+ * questions pass straight through (the microphone stays on), but the privacy layer cannot redact audio.
  */
 export function createGuardedChat(
   procedure: Procedure,
