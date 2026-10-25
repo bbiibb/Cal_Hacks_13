@@ -14,6 +14,8 @@ const GLOW_MIN = 0.2
 const GLOW_MAX = 0.8
 /** Pulses per second, in radians. */
 const GLOW_SPEED = 3.2
+/** A part that is pointed at is at least this solid, even when its step fades the model. */
+const POINTED_OPACITY = 0.9
 
 /** Camera distance multipliers for "zoom in". "Zoom out" uses the inverse. */
 const ZOOM_FACTORS = { small: 0.85, medium: 0.7, large: 0.5 } as const
@@ -52,7 +54,10 @@ export class SceneDirector {
   private home: OrbitPose | null = null
   private models: ModelObject[] = []
   private byStructure = new Map<string, ModelObject[]>()
+  /** Parts the current step highlights. */
   private highlighted = new Set<string>()
+  /** Parts the last answer pointed at. The next answer or step replaces them. */
+  private mentioned = new Set<string>()
   /** The part the patient pinned. It glows like a highlight and survives step changes. */
   private selected: string | null = null
   private opacity = new Map<string, number>()
@@ -136,6 +141,7 @@ export class SceneDirector {
   /** Show a step: its highlights and opacities replace the current ones. */
   showStep(scene: Scene, { camera = true }: ShowStepOptions = {}): void {
     this.highlighted = new Set(scene.structures.filter((s) => s.highlight).map((s) => s.id))
+    this.mentioned.clear()
     this.opacity = new Map(scene.structures.map((s) => [s.id, s.opacity]))
     this.refreshMaterials()
 
@@ -153,6 +159,8 @@ export class SceneDirector {
     const result: ApplyResult = { stepIndex: null, ignored: [] }
     // When the answer moves the camera itself, a step change keeps the camera where the answer puts it
     const answerMovesCamera = actions.some((a) => CAMERA_ACTIONS.has(a.type))
+    // An answer that points at parts takes over from the parts the previous answer pointed at
+    if (actions.some((a) => a.type === 'highlight' && a.enabled)) this.mentioned.clear()
 
     for (const action of actions) {
       const problem = await this.applyOne(action, answerMovesCamera, result)
@@ -202,8 +210,12 @@ export class SceneDirector {
       case 'highlight': {
         const known = action.structure_ids.filter((id) => this.hasStructure(id))
         for (const id of known) {
-          if (action.enabled) this.highlighted.add(id)
-          else this.highlighted.delete(id)
+          if (action.enabled) {
+            this.mentioned.add(id)
+          } else {
+            this.mentioned.delete(id)
+            this.highlighted.delete(id)
+          }
         }
         this.refreshMaterials()
         const missing = action.structure_ids.filter((id) => !this.hasStructure(id))
@@ -296,6 +308,11 @@ export class SceneDirector {
     controller.animateTo(pose, durationMs)
   }
 
+  /** True when a part glows: its step highlights it, the last answer mentioned it, or the patient pinned it. */
+  private isLit(structureId: string): boolean {
+    return this.highlighted.has(structureId) || this.mentioned.has(structureId) || structureId === this.selected
+  }
+
   /** Push the highlight and opacity state into each model's material. */
   private refreshMaterials(): void {
     this.glowing = []
@@ -310,11 +327,11 @@ export class SceneDirector {
       // A model with named regions glows only where a region is highlighted or pinned
       let glow = false
       if (model.hasRegions) {
-        const lit = new Set(model.regionNames.filter((id) => this.highlighted.has(id) || id === this.selected))
+        const lit = new Set(model.regionNames.filter((id) => this.isLit(id)))
         model.setRegionGlow(lit, GLOW_MAX)
         if (lit.size > 0) this.regionGlows.push({ model, ids: lit })
       } else {
-        glow = ids.some((id) => this.highlighted.has(id) || id === this.selected)
+        glow = ids.some((id) => this.isLit(id))
       }
       // Several structures share one model, so the model is as visible as its most visible structure.
       // A model with named regions is one see-through body: only its main part sets how visible it is.
@@ -324,7 +341,10 @@ export class SceneDirector {
         const level = this.opacity.get(id)
         return level === undefined ? [] : [level]
       })
-      const opacity = levels.length > 0 ? Math.max(...levels) : 1
+      const stepOpacity = levels.length > 0 ? Math.max(...levels) : 1
+      // A part the patient or the chat points at shows through a faded model; a region does the same in its shader
+      const pointedAt = !model.hasRegions && ids.some((id) => this.mentioned.has(id) || id === this.selected)
+      const opacity = pointedAt ? Math.max(stepOpacity, POINTED_OPACITY) : stepOpacity
       const transparent = opacity < 0.999
 
       if (material.transparent !== transparent) {

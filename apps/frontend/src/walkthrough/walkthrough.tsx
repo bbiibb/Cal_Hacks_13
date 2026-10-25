@@ -22,6 +22,9 @@ const CAMERA: CameraOptions = {
   position: [0, 1.5, 4],
 }
 
+/** Every model has this one color, so the heart reads as a whole; parts change color only when pointed at. */
+const MODEL_COLOR = '#FFD3DE'
+
 const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
 
 /** Builds a fresh set of scene objects. Called once per mount. */
@@ -30,7 +33,7 @@ function createSceneObjects(): SceneObject[] {
     // The aortic root sits on the heart's aortic valve, at the base of the heart's own ascending aorta
     new SlicedModelObject({
       path: '/models/bicuspidic_aortic_root_with_calcifications.glb',
-      color: '#FFE3CC', // pastel peach
+      color: MODEL_COLOR,
       position: [-0.278, -1.297, 0.089],
       rotation: [0, 3.14159, 0], // the heart is shown from behind, so every model is turned half a turn like it
       scale: [0.75, 0.75, 0.75],
@@ -38,7 +41,7 @@ function createSceneObjects(): SceneObject[] {
     }),
     new ModelObject({
       path: '/models/heart_part_2.glb',
-      color: '#FFD3DE', // pastel pink
+      color: MODEL_COLOR,
       position: [0 + heartTranslate[0], -1 + heartTranslate[1], 0 + heartTranslate[2]],
       rotation: [0, 3.14159, 0],
       scale: [3, 3, 3],
@@ -53,7 +56,7 @@ function createSceneObjects(): SceneObject[] {
     // The aortic arch continues the heart's ascending aorta from its cut top; its branch vessels point up
     new SlicedModelObject({
       path: '/models/aortic_arch_fixed.glb',
-      color: '#C8EED8', // pastel mint
+      color: MODEL_COLOR,
       position: [-0.165, 0.798, 0.019],
       rotation: [-0.1745, 3.14159, 0.3595],
       scale: [1.6, 1.6, 1.6],
