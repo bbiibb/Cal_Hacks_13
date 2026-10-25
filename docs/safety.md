@@ -16,7 +16,7 @@ The main idea: **the language model only writes friendly wording. Rules in our o
 | The model highlights or "explains" parts it was not asked about | `highlight` can only contain ids from our list; with the local model the JSON schema also limits it to the parts found for this question. Camera-only requests get a fixed confirmation instead of the model's words | pipeline, `localPrompt` | Built, tested |
 | An emergency is missed | Rule-based check for symptoms happening now (chest pain, trouble breathing, fainting, stroke signs, heavy bleeding) works even if the model fails. The emergency notice goes first. Questions about the future are not treated as emergencies | `detectUrgent` | Built, tested |
 | Risk topics without a reminder | The standing note "This is general education, not personal medical advice..." is added to answers about side effects, pain, risks, and recovery | `needsSafetyNote` | Built |
-| The medical text itself is wrong | Answers can only repeat our own content, so correctness depends on that content | `packages/shared/fixtures` | **Open:** the content is dummy text and must be reviewed by a clinician |
+| The medical text itself is wrong | Answers can only repeat our own content, so correctness depends on that content. The TAVR facts come from the team's document "Information about TAVR: data for chatbot", which the project takes as correct; the step texts, part descriptions and four heart-anatomy facts were written by the project | `packages/shared/fixtures` | Decided: no separate clinical review for the demo |
 
 Every check runs for both the cloud model and the local model, because they share the same pipeline (`lib/chatPipeline.ts`).
 

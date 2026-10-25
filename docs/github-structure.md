@@ -121,10 +121,9 @@ The frontend line used a different root layout than the monorepo, so it was move
 
 ## 8. Open items
 
-- The frontend is on `main` once the pull request from `feat/frontend-integration` is merged (see section 6).
 - The 3D models are large (about 130 MB). Move them to Git LFS before any file reaches GitHub's 100 MB limit.
 - The website is called **ask-ray** (logo "asX-ray"), while the planning notes and some docs say **Simple Surgeries**. Align the names.
-- The chatbot is partly built: speech-to-text with Cartesia is implemented in the backend (it needs the `CARTESIA_API_KEY` environment variable and a microphone button in the frontend). Answers from OpenAI are planned but not implemented.
+- The chatbot is built end to end: the backend, the chat panel with a microphone button, and a choice between the local Llama (slow) and a cloud model (fast, paid). Answers from OpenAI are not planned; any OpenAI-compatible endpoint works through environment variables.
 
 ## 9. Related documents
 

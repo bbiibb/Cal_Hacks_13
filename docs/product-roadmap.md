@@ -2,7 +2,9 @@
 
 This document summarizes the team planning note (`New note.pdf`, not included in the repository) and what the team members described.
 It records which features are planned, what the backend (`packages/backend`) has to do for them, and how far each one is implemented.
-When the plan changes, update this document first. All content is educational dummy content and is not medical advice.
+When the plan changes, update this document first. All content is educational and is not medical advice. The 80 TAVR facts come from the team's document "Information about TAVR: data for chatbot", which the project takes as correct. The step texts, the part descriptions and the four heart-anatomy facts (right atrium, right ventricle, superior vena cava, pulmonary artery) were written by the project, not taken from that document.
+
+The demo is **English only**: the chatbot's rules (camera commands, emergency symptoms, the scope gate, personal-detail removal) read English.
 
 Status markers: ✅ implemented · 🟡 partly (only the schema or data exists) · ⬜ not implemented
 
@@ -26,19 +28,20 @@ Screen layout (main page mockup): on the left the 3D image with a **timeline (sl
 | # | Feature | What the backend has to do | Status |
 |---|---|---|---|
 | F1 | 3D scene per step with a side-panel explanation | Store and read structures, instruments, procedures, and steps; dummy seed | ✅ `procedures.*`, `structures.*`, `instruments.list`, `seed:run` |
-| F2 | **Select a part to see its explanation** | Give each part a variable (`structure_id`) and return the explanation of the selected part. Step-specific explanations use `annotations` | 🟡 Reading a part's explanation ✅ (`structures.getById`). Reading step-specific explanations ⬜ (only the `annotations` table exists) |
+| F2 | **Select a part to see its explanation** | Give each part a variable (`structure_id`) and return the explanation of the selected part. Step-specific explanations use `annotations` | 🟡 Part names and explanations ✅: hovering a part shows its name and clicking pins it with its explanation (`structures.getById` content), also for single chambers inside the one-mesh heart model (`heart_regions.ts`). Step-specific explanations ⬜ (only the `annotations` table exists) |
 | F3 | **Highlight parts to match the AI answer** | Validate the `scene_actions` (focus, highlight, set_opacity, goto_step) the AI produces and pass them to the frontend | ✅ Validator and the chatbot that produces `focus`, `highlight`, `goto_step`, `zoom`, `rotate`, and `reset_view`. Frontend handling ✅ (`SceneDirector`): the parts an answer points at change color and the camera moves to them, including single chambers inside the heart model; the next answer replaces them |
-| F4 | Chatbot | See 3.1 below | 🟡 Backend built, unit tested, and tried with a real free model (`chat.createSession`, `chat.ask`, `chat.askByVoice`, 3D commands, safety nets). Frontend chat UI ⬜ |
+| F4 | Chatbot | See 3.1 below | ✅ Backend (`chat.createSession`, `chat.ask`, `chat.askByVoice`, 3D commands, safety nets) and the frontend chat panel (answers, follow-up buttons, parts shown in 3D, sources, voice, privacy layer, Slow / Fast switch). A command that only moves the view is answered by rules without a model |
 | F5 | Choose the procedure name and approach (as guided by the hospital) | The same procedure is explained differently per approach, so store approach variants on the procedure and let the user choose | ⬜ Schema extension needed |
-| F6 | Move between steps with the timeline | Provide the step order and a short label (`short_title`). The slider UI is frontend (`docs/frontend-backend-split.md`) | ✅ Decided: step-based. Continuous time (seconds) would add `duration_ms` if needed |
+| F6 | Move between steps with the timeline | Provide the step order and a short label (`short_title`). The slider UI is frontend (`docs/frontend-backend-split.md`) | ✅ Step-based slider built. Continuous time (seconds) would add `duration_ms` if needed |
 | F7 | Comprehension check and a list of "questions to ask the doctor in charge" | Build a short comprehension check and a question list from the conversation | ⬜ |
 | F8 | Expand to other organs and tumors | A data model that can hold many structures and procedures | ✅ The model is general. Add content with the `seed-content` skill |
-| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | ✅ 80 TAVR facts from the team's document (`docs/knowledge-base.md`), keyword plus vector search, both models read them, and `sources` is filled in each answer. Clinical review ⬜. Showing `sources` in the UI ⬜ |
-| F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | 🟡 Length limit and a short wait between questions exist. Real rate limits ⬜ |
-| F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`). Clinical review, UI disclaimer, citations, scheduled purge, authentication ⬜ |
+| F9 | Source material (RAG) and showing sources | Store documents and embeddings, vector search, attach `sources` to answers | ✅ 84 TAVR and anatomy facts (`docs/knowledge-base.md`), keyword plus vector search, both models read them, `sources` is filled in each answer and shown under it in the chat panel. The facts from the team's document are taken as correct |
+| F10 | Cost and stability (API concern) | Request length limits, rate limits, response cache, a fallback answer on failure | 🟡 Length limit and a 1.5 s wait between questions of one session exist, but a question without a session id, new sessions and upload URLs have no limit. Fast mode (paid cloud model) asks the patient first. Real rate limit, usage log and a daily budget ⬜ |
+| F14 | **Safety and privacy** (no medical advice, no invented facts, personal data) | Scope gate, advice filter, grounding check, personal-detail removal, local-only mode, conversation deletion | 🟡 Built and tested (see `docs/safety.md`): scope gate, advice filter, grounding, personal-detail removal on the server and an on-device PII guard in the frontend, local-only mode, deletion of conversations including a scheduled purge, UI disclaimer, citations. Authentication ⬜ (a teammate is building the user database) |
 | F11 | **Add heart conditions** (more procedures per condition later) | Link conditions (`conditions`) and procedures (`procedures.condition_slug`) so the app grows by content, without code changes | ✅ Structure ready (only `aortic_stenosis` for now). Candidates to add: coronary artery disease (PCI, CABG) and others |
-| F12 | **Voice questions** (a microphone button in the chatbot) | Turn a recording into text with Cartesia speech-to-text and delete the recording right away | ✅ Frontend microphone button (PR #11) and backend match: `speech.generateUploadUrl` -> upload -> `chat.askByVoice`; needs `CARTESIA_API_KEY`, and `ALLOW_CLOUD_STT=true` when the model runs locally. Rate limiting ⬜ |
-| F13 | **3D control by the chatbot** (zoom, rotate, highlight, go to a step) | Produce validated camera and step commands from the model's answer and from simple spoken commands | ✅ Backend (`zoom`, `rotate`, `reset_view`, `focus`, `highlight`, `goto_step`). Frontend handling ✅ |
+| F12 | **Voice questions** (a microphone button in the chatbot) | Turn a recording into text with Cartesia speech-to-text and delete the recording right away | ✅ Microphone button (PR #11) and backend: `speech.generateUploadUrl` -> upload -> `chat.askByVoice`; needs `CARTESIA_API_KEY`, and `ALLOW_CLOUD_STT=true` when the model runs locally. The panel hides the microphone while the on-device privacy layer is on, because audio cannot be redacted. Rate limiting ⬜ |
+| F13 | **3D control by the chatbot** (zoom, rotate, highlight, go to a step) | Produce validated camera and step commands from the model's answer and from simple spoken commands | ✅ Backend (`zoom`, `rotate`, `reset_view`, `focus`, `highlight`, `goto_step`) and frontend. "Zoom in", "can you zoom in?" and "show me the right atrium" are read by rules, so they answer in under a second |
+| F15 | **Choose how the chatbot answers** (slow or fast) | Answer with the local Llama (slow, free) or the cloud model (fast, paid) as the patient chooses per question | ✅ `speed` argument of `chat.ask` and `chat.askByVoice`, and a Slow / Fast switch under the chat that warns before fast mode |
 
 ### 3.1 What the chatbot (F4) needs
 
@@ -66,18 +69,18 @@ Interpretation from the backend point of view:
 - "A variable for each part" = **`structure_id`**. It is already the shared key of the contract and matches a GLB mesh name one to one (`docs/contracts.md`).
 - "An explanation when selected" = F2. The frontend passes the selected mesh name as `structure_id` to `structures.getById`.
 - "Highlight based on the AI response" = F3. Put `highlight` or `focus` in the `scene_actions` of the chatbot response, and deliver only what passes validation.
-- The 3D model does not exist yet, so the frontend work is on hold. The backend therefore **builds with dummy `structure_id` values first, and only the names are matched when the model arrives.**
+- The 3D models now exist (`apps/frontend/public/models`). The heart is one mesh, so its parts are named by position instead of by mesh name (section 5).
 
 ### Open questions
 - (Decided) The timeline (F6) moves by step. If continuous time is needed, add `duration_ms` to `steps`.
-- Is selection a click or a mouse-over (drag)? (The backend handles both the same way with `getById`.)
+- (Decided) Hovering a part shows its name; clicking pins it and shows its explanation. The backend handles both the same way with `getById`.
 - Whether to include approach variants (F5) in the first version, or start with TAVR's single approach.
-- Budget limit and key management for the chatbot LLM (F10).
+- Budget limit and key management for the chatbot LLM (F10): fast mode is paid; a daily cap is not built yet.
 
 ## 5. Heart part variables (`structure_id`) status
 
 For the 19 structures currently in `packages/shared/fixtures/structures.json`, see `docs/tavr-demo.md`.
-Candidates to add when extending "a variable for each part of the heart" are listed below. Add them **after the mesh names of the real 3D model are fixed**, matching those names.
+The heart model is a single mesh, so a heart part is named by an outline on the model (`heart_regions.ts`, checked in `regions.test.ts`) instead of by a mesh name. If the 3D owner exports one mesh per part, bind the mesh names instead and delete the outlines. Parts still missing are listed below.
 
 | Candidate id (proposed) | Meaning | Note |
 |---|---|---|
@@ -103,8 +106,12 @@ Candidates to add when extending "a variable for each part of the heart" are lis
 
 ## 7. Suggested next work (in priority order)
 
-1. Try the chatbot with a real free key (Groq) and tune the prompt on real replies
-2. Frontend: chat panel, microphone button, and handling of the new 3D actions
-3. Reading step-specific part explanations (`annotations` seed and query)
-4. Real rate limits (this also protects the free quota and the speech-to-text quota)
-6. The comprehension check and organizing questions for the doctor (the source material and sources are done)
+1. Real rate limits, including questions without a session id, new sessions and upload URLs, and a daily budget for fast mode (F10)
+2. Keep the vector index in step with the content: today `seed:run` and `rag:indexContent` must be run by hand after every content change
+3. A usage log (provider, speed, latency, camera-only or model, safety events; never the patient's words) so cost and speed can be seen
+4. Tie sessions to the user database a teammate is building (login)
+5. Reading step-specific part explanations (`annotations` seed and query) (F2)
+6. The comprehension check and organizing questions for the doctor (F7)
+7. Approach variants of a procedure (F5)
+8. Models and step scenes for the guidewire, catheter and balloon (a teammate)
+9. More named heart parts (left atrium, valves, pulmonary veins): they need exported meshes or clear outlines

@@ -560,7 +560,7 @@
     "structure_ids": [
       "right_atrium"
     ],
-    "source": "TAVR patient information guide"
+    "source": "Project heart anatomy notes"
   },
   {
     "id": "anatomy.right_ventricle",
@@ -579,7 +579,7 @@
     "structure_ids": [
       "right_ventricle"
     ],
-    "source": "TAVR patient information guide"
+    "source": "Project heart anatomy notes"
   },
   {
     "id": "anatomy.superior_vena_cava",
@@ -598,7 +598,7 @@
     "structure_ids": [
       "superior_vena_cava"
     ],
-    "source": "TAVR patient information guide"
+    "source": "Project heart anatomy notes"
   },
   {
     "id": "anatomy.pulmonary_artery",
@@ -618,7 +618,7 @@
     "structure_ids": [
       "pulmonary_artery"
     ],
-    "source": "TAVR patient information guide"
+    "source": "Project heart anatomy notes"
   },
   {
     "id": "procedure.how_valve_delivered",

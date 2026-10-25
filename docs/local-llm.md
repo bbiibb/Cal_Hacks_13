@@ -70,17 +70,19 @@ cd packages/backend && CONVEX_AGENT_MODE=anonymous npx convex dev
 
 (`npx convex dev --local` also works; it asks you to choose a project.) Add `CONVEX_AGENT_MODE=anonymous` in front of the `npx convex ...` commands below as well, so they reach the local deployment.
 
-3. **Fill it with content and build the index** (the local deployment starts empty).
+3. **Fill it with content** (the local deployment starts empty). The index is built for you.
 
 ```bash
 npx convex run seed:run
 ```
 
+`seed:run` starts the index build in the background: it embeds the parts, the steps, and the knowledge facts (about 110 snippets). The line `[index] rebuilt: …` appears in the backend log when it is done. Ollama must be running; if it is not, a line says so and the next question tries again.
+
+**The index keeps itself up to date.** After a build, the backend remembers a fingerprint of the content it was built from (table `indexState`). When a question finds a different fingerprint (the content changed, for example after a new fact was added and the code was pushed), a rebuild starts in the background and the question is still answered from the keyword results and the knowledge text. A build also deletes snippets that the content no longer has. To build by hand (it prints how many snippets were stored and removed):
+
 ```bash
 npx convex run rag:indexContent '{"procedureSlug":"tavr"}'
 ```
-
-This embeds the parts, the steps, and the knowledge facts (99 documents). Run it again after changing the content.
 
 4. **Switch to the local model.** No API key is needed.
 
@@ -142,7 +144,7 @@ Tested on 2026-10-24 in this way (browser panel, local Convex, Llama 3.2 3B): th
 | File | Purpose |
 |---|---|
 | `convex/schema.ts` | `medicalDocs` table with a vector index (768 dimensions) |
-| `convex/rag.ts` | `rag:indexContent` (build the index), plus the internal save and read functions |
+| `convex/rag.ts` | `rag:indexContent` (build the index and delete stale snippets), `rag:refreshIndex` (the same in the background, used by `seed:run` and by the content check), `indexState` helpers, plus the internal save and read functions |
 | `convex/lib/rag.ts` | Pure helpers: snippets from content and knowledge, pinned context, merging, rank fusion, allowed ids, sources |
 | `convex/lib/knowledge.ts` | Loads the knowledge facts and searches them by keyword (BM25) |
 | `convex/lib/ragRun.ts` | Embeds the question, runs the vector search, and fuses it with the keyword search |

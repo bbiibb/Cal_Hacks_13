@@ -83,6 +83,16 @@ export default defineSchema({
     sources: v.optional(v.array(vSource)),
   }).index("by_session_id", ["sessionId"]),
 
+  // What the vector index was last built from, so a change in the content is noticed (see rag.ts)
+  indexState: defineTable({
+    procedureSlug: v.string(),
+    // Fingerprint of the content the index was built from (lib/rag.ts contentHash)
+    hash: v.string(),
+    indexedAt: v.number(),
+    // Set while a rebuild has been started and not finished, so one change starts one rebuild
+    startedAt: v.optional(v.number()),
+  }).index("by_procedure_slug", ["procedureSlug"]),
+
   // Text snippets for retrieval (RAG), each with an embedding for vector search.
   // Used by the local pipeline (LLM_PROVIDER=local). Filled by `npx convex run rag:indexContent`.
   medicalDocs: defineTable({
