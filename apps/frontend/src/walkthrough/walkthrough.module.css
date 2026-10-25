@@ -3,7 +3,7 @@
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 460px);
   grid-template-rows: minmax(0, 1fr);
   background: #000;
   overflow: hidden;
