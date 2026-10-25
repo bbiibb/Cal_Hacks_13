@@ -24,6 +24,20 @@ export interface ModelRoute {
 }
 
 /**
+ * For a pure camera command: no model is asked, so nothing is embedded or searched either.
+ * The pipeline answers such a command from the patient's words and never calls `callModel`.
+ */
+export function cameraOnlyRoute(): ModelRoute {
+  return {
+    provider: selectProvider(env),
+    callModel: async () => {
+      throw new Error("A camera command does not ask the model.");
+    },
+    contextDocs: [],
+  };
+}
+
+/**
  * Chooses how this question is answered, from the LLM_PROVIDER environment variable:
  * - "groq" (default): any OpenAI-compatible API, with the full prompt plus the best-matching reference facts
  * - "local": Llama through Ollama, with retrieved context (vector plus keyword search) and a JSON schema
