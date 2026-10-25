@@ -42,18 +42,17 @@ const ROUTE_TO_OLD_VALVE: [number, number, number][] = [
   [-0.2, -0.4, -0.07],
   [-0.15, -0.7, 0.03],
   [-0.14, -1, 0.03],
-  [-0.15, -1.11, 0.045],
-  [-0.19, -1.19, 0.07],
-  [-0.215, -1.27, 0.08],
-  [-0.235, -1.36, 0.085],
-  [-0.25, -1.44, 0.09], // the narrowed opening of the old valve
+  [-0.17, -1.1, 0.05],
+  [-0.22, -1.2, 0.07],
+  [-0.27, -1.27, 0.08],
+  [-0.31, -1.32, 0.085], // the narrowed opening of the old valve (the gap between its calcified leaflets)
 ]
 
 /** The catheter goes on a little way into the heart, past the old valve. */
-const TAVR_DEVICE_PATH: [number, number, number][] = [...ROUTE_TO_OLD_VALVE, [-0.3, -1.6, 0.1], [-0.36, -1.85, 0.11]]
+const TAVR_DEVICE_PATH: [number, number, number][] = [...ROUTE_TO_OLD_VALVE, [-0.38, -1.45, 0.1], [-0.43, -1.68, 0.11]]
 
 /** Where the middle of the new valve sits once it is placed: across the old valve, with most of it above the opening. */
-const TAVR_VALVE_POSITION: [number, number, number] = [-0.242, -1.395, 0.085]
+const TAVR_VALVE_POSITION: [number, number, number] = [-0.31, -1.32, 0.085]
 
 /** The green catheter is out of sight in step 0 (only the heart), fully in from step 1, and gone on the last step. */
 function greenCatheterFillAt(stepIndex: number): number {
@@ -75,8 +74,8 @@ function createScene(initialStep: number): { objects: SceneObject[]; curves: Ste
   const greenCatheter = new CurveFollower({
     points: [
       ...ROUTE_TO_OLD_VALVE,
-      [-0.3, -1.6, 0.1],
-      [-0.36, -1.85, 0.11],
+      [-0.38, -1.45, 0.1],
+      [-0.43, -1.68, 0.11],
       [-0.55, -2.05, 0.14],
       [-0.8, -2.15, 0.15],
       [-0.9, -2.15, 0.15],
