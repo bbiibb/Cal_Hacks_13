@@ -17,3 +17,11 @@ const NAMES = new Map(TAVI_STRUCTURES.map((s) => [s.id, s.name_en]))
 export function structureName(structureId: string): string {
   return NAMES.get(structureId) ?? structureId
 }
+
+const BY_ID = new Map(TAVI_STRUCTURES.map((s) => [s.id, s]))
+
+/** Name and description of a part, or null when the part is unknown. */
+export function structureInfo(structureId: string): { name: string; description: string } | null {
+  const structure = BY_ID.get(structureId)
+  return structure ? { name: structure.name_en, description: structure.description } : null
+}

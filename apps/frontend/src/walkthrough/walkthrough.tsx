@@ -6,10 +6,12 @@ import { ModelObject } from './visualization/objects/ModelObject'
 import { OrbitCameraController } from './visualization/camera/OrbitCameraController'
 import type { CameraControllerFactory } from './visualization/camera/CameraController'
 import { SceneDirector, type StepLookup } from './visualization/scene_director'
+import { PartPicker } from './visualization/part_picker'
 import ChatPanel from './chat/chat_panel'
 import type { SceneAction } from './chat/chat_types'
 import { createChatClient } from './chat/create_chat_client'
-import { structureName, TAVI_PROCEDURE, TAVI_STRUCTURES } from './tavi_content'
+import StepSlider from './step_slider/step_slider'
+import { structureInfo, structureName, TAVI_PROCEDURE, TAVI_STRUCTURES } from './tavi_content'
 
 const CAMERA: CameraOptions = {
   position: [0, 1.5, 4],
@@ -48,19 +50,31 @@ function createSceneObjects(): SceneObject[] {
 const lookupStep: StepLookup = (procedureSlug, stepIndex) =>
   procedureSlug === TAVI_PROCEDURE.slug ? (TAVI_PROCEDURE.steps[stepIndex]?.scene ?? null) : null
 
+type Hover = { id: string; x: number; y: number }
+
 function Walkthroughs() {
   const [objects, setObjects] = useState<SceneObject[]>([])
   const [director] = useState(() => new SceneDirector(lookupStep))
   const [chatClient] = useState(() => createChatClient(TAVI_PROCEDURE, TAVI_STRUCTURES))
   const [stepIndex, setStepIndex] = useState(0)
   const [selectedStructureId, setSelectedStructureId] = useState<string | null>(null)
+  const [hover, setHover] = useState<Hover | null>(null)
+
   // The latest step, so a remount of the 3D objects shows the step the patient is on
   const stepRef = useRef(stepIndex)
   useEffect(() => {
     stepRef.current = stepIndex
   }, [stepIndex])
 
-  // The orbit camera, shared with the director so chat commands can move it
+  const pin = useCallback(
+    (structureId: string | null) => {
+      setSelectedStructureId(structureId)
+      director.setSelection(structureId)
+    },
+    [director]
+  )
+
+  // The orbit camera, shared with the director so chat commands can move it, plus pointing at parts
   const orbitCamera = useMemo<CameraControllerFactory>(
     () => (camera, domElement) => {
       const orbit = new OrbitCameraController(camera, domElement, {
@@ -69,18 +83,23 @@ function Walkthroughs() {
         maxDistance: 12,
       })
       director.attachCamera(orbit)
+      const picker = new PartPicker(camera, domElement, (raycaster) => director.pickStructure(raycaster), {
+        onHover: (id, x, y) => setHover(id ? { id, x, y } : null),
+        onPick: (id) => pin(id),
+      })
       return {
         update: (delta) => {
           orbit.update(delta)
           director.tick(delta)
         },
         dispose: () => {
+          picker.dispose()
           director.detachCamera(orbit)
           orbit.dispose()
         },
       }
     },
-    [director]
+    [director, pin]
   )
 
   // Creation and disposal share one lifecycle, so every mount gets live objects
@@ -99,7 +118,8 @@ function Walkthroughs() {
   const changeStep = useCallback(
     (index: number) => {
       const step = TAVI_PROCEDURE.steps[index]
-      if (!step) return
+      if (!step || index === stepRef.current) return
+      stepRef.current = index
       director.showStep(step.scene)
       setStepIndex(index)
     },
@@ -108,13 +128,14 @@ function Walkthroughs() {
 
   const applySceneActions = useCallback(
     (actions: SceneAction[]) => {
-      // Move the step panel right away; the director moves the 3D view
+      // Move the slider and the step panel right away; the director moves the 3D view
       const lastStep = actions.findLast((a) => a.type === 'goto_step')
       if (
         lastStep?.type === 'goto_step' &&
         lastStep.procedure_slug === TAVI_PROCEDURE.slug &&
         TAVI_PROCEDURE.steps[lastStep.step_index]
       ) {
+        stepRef.current = lastStep.step_index
         setStepIndex(lastStep.step_index)
       }
       void director.apply(actions)
@@ -124,20 +145,30 @@ function Walkthroughs() {
 
   const selectStructure = useCallback(
     (structureId: string) => {
-      setSelectedStructureId(structureId)
-      void director.apply([
-        { type: 'focus', structure_id: structureId },
-        { type: 'highlight', structure_ids: [structureId], enabled: true },
-      ])
+      pin(structureId)
+      void director.apply([{ type: 'focus', structure_id: structureId }])
     },
-    [director]
+    [director, pin]
   )
+
+  const unpin = useCallback(() => pin(null), [pin])
 
   return (
     <main className={styles.page}>
       <div className={styles.viewer}>
         <Visualization objects={objects} camera={CAMERA} controller={orbitCamera} />
-        <p className={styles.hint}>Drag to turn · Scroll to zoom</p>
+        <p className={styles.hint}>Drag to turn · Scroll to zoom · Click a part</p>
+        <button type="button" className={styles.reset} onClick={() => director.resetView()}>
+          Reset view
+        </button>
+        {hover && (
+          <div className={styles.hoverLabel} style={{ left: hover.x, top: hover.y }} aria-hidden="true">
+            {structureName(hover.id)}
+          </div>
+        )}
+        <div className={styles.timeline}>
+          <StepSlider steps={TAVI_PROCEDURE.steps} value={stepIndex} onChange={changeStep} />
+        </div>
       </div>
       <div className={styles.panel}>
         <ChatPanel
@@ -145,10 +176,12 @@ function Walkthroughs() {
           procedure={TAVI_PROCEDURE}
           stepIndex={stepIndex}
           selectedStructureId={selectedStructureId}
-          onStepChange={changeStep}
+          hoveredStructureId={hover?.id ?? null}
+          onUnpin={unpin}
           onSceneActions={applySceneActions}
           onSelectStructure={selectStructure}
           structureName={structureName}
+          structureInfo={structureInfo}
         />
       </div>
     </main>

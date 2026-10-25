@@ -5,7 +5,7 @@ import { MAX_ROTATE_DEGREES, MIN_ROTATE_DEGREES } from '../chat/chat_types'
 import type { OrbitCameraController, OrbitPose } from './camera/OrbitCameraController'
 import { ModelObject } from './objects/ModelObject'
 import type { SceneObject } from './objects/SceneObject'
-import { MODEL_STRUCTURES } from './scene_bindings'
+import { MODEL_BINDINGS, structuresOf } from './scene_bindings'
 
 const HIGHLIGHT_COLOR = new THREE.Color('#ffb347')
 const NO_GLOW = new THREE.Color(0x000000)
@@ -22,6 +22,8 @@ const ZOOM_FACTORS = { small: 0.85, medium: 0.7, large: 0.5 } as const
 const DEFAULT_MOVE_MS = 800
 /** Extra room around a focused part, so it does not touch the edges of the view. */
 const FOCUS_MARGIN = 1.15
+/** When pointing at the model, a see-through model in front only wins if nothing solid is behind it. */
+const SOLID_ENOUGH = 0.5
 
 /** Finds the scene of a step, or null if the step does not exist. */
 export type StepLookup = (procedureSlug: string, stepIndex: number) => Scene | null
@@ -51,6 +53,8 @@ export class SceneDirector {
   private models: ModelObject[] = []
   private byStructure = new Map<string, ModelObject[]>()
   private highlighted = new Set<string>()
+  /** The part the patient pinned. It glows like a highlight and survives step changes. */
+  private selected: string | null = null
   private opacity = new Map<string, number>()
   /** Bumped whenever the models change, so a late async focus on old models is dropped. */
   private generation = 0
@@ -81,7 +85,7 @@ export class SceneDirector {
     this.models = objects.filter((o): o is ModelObject => o instanceof ModelObject)
     this.byStructure = new Map()
     for (const model of this.models) {
-      for (const id of MODEL_STRUCTURES[model.path] ?? []) {
+      for (const id of structuresOf(model.path)) {
         const list = this.byStructure.get(id) ?? []
         list.push(model)
         this.byStructure.set(id, list)
@@ -93,6 +97,32 @@ export class SceneDirector {
   /** True if some model in the scene stands for this structure. */
   hasStructure(structureId: string): boolean {
     return this.byStructure.has(structureId)
+  }
+
+  /** Pin a part (or clear the pin with null). The pinned part glows on top of the step's highlights. */
+  setSelection(structureId: string | null): void {
+    this.selected = structureId
+    this.refreshMaterials()
+  }
+
+  /**
+   * The part under a ray from the camera, or null.
+   * Returns the model's main part, because the model files do not have per-part meshes yet.
+   */
+  pickStructure(raycaster: THREE.Raycaster): string | null {
+    const candidates = this.models.filter((m) => m.status === 'ready' && MODEL_BINDINGS[m.path])
+    const hits = raycaster.intersectObjects(
+      candidates.map((m) => m.root),
+      true
+    )
+    const owners = hits.flatMap((hit) => {
+      const model = this.ownerOf(hit.object, candidates)
+      return model ? [model] : []
+    })
+    // Prefer a solid model; a faded one in front only counts when nothing solid is behind it
+    const solid = owners.find((m) => (m.material?.opacity ?? 1) >= SOLID_ENOUGH)
+    const chosen = solid ?? owners.find((m) => (m.material?.opacity ?? 1) > 0.05)
+    return chosen ? (MODEL_BINDINGS[chosen.path]?.primary ?? null) : null
   }
 
   /** Show a step: its highlights and opacities replace the current ones. */
@@ -211,6 +241,14 @@ export class SceneDirector {
     }
   }
 
+  private ownerOf(node: THREE.Object3D, models: readonly ModelObject[]): ModelObject | null {
+    for (let current: THREE.Object3D | null = node; current; current = current.parent) {
+      const model = models.find((m) => m.root === current)
+      if (model) return model
+    }
+    return null
+  }
+
   /** Point the camera at the models standing for these structures, close enough to fill the view. */
   private async focusStructures(structureIds: readonly string[], durationMs: number): Promise<void> {
     const models = [...new Set(structureIds.flatMap((id) => this.byStructure.get(id) ?? []))]
@@ -248,10 +286,10 @@ export class SceneDirector {
       const material = model.material
       if (!(material instanceof THREE.MeshStandardMaterial)) continue
 
-      const ids = MODEL_STRUCTURES[model.path] ?? []
+      const ids = structuresOf(model.path)
       if (ids.length === 0) continue
 
-      const glow = ids.some((id) => this.highlighted.has(id))
+      const glow = ids.some((id) => this.highlighted.has(id) || id === this.selected)
       // Several structures share one model, so the model is as visible as its most visible structure
       const levels = ids.flatMap((id) => {
         const level = this.opacity.get(id)
