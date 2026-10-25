@@ -1,18 +1,21 @@
 # TAVR Demo Plan (First Version)
 
 The first topic of the patient-education demo is **TAVR (Transcatheter Aortic Valve Replacement)**.
-We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into four scenes.
-`packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`) is the dummy data for this plan.
-Everything is **educational dummy content** and is neither real patient data nor medical advice.
+We simplify the procedure of placing a new valve inside a narrowed aortic valve with a catheter into five steps.
+`packages/shared/fixtures/procedure.tavr.json` (slug: `tavr`) holds this plan. The step explanations are the team's patient explanation (the "Explanation" document), used word for word.
+Everything is **educational content** and is neither real patient data nor medical advice. The explanations still need review by someone with medical knowledge.
 
 ## Scenes (Steps)
 
-| index | Title | What it shows | animation_clip |
-|---|---|---|---|
-| 0 | The narrowed original valve | The original valve narrowed by calcification | `native_valve_stenosis` (loop) |
-| 1 | Delivering the new valve | The folded new valve carried to the valve position with a guidewire and a delivery catheter | `deliver_valve` |
-| 2 | Expanding the new valve | The new valve opens and anchors in the annulus, and the original leaflets are pushed against the wall | `expand_valve` |
-| 3 | Final position after the equipment is removed | The new valve and blood flow to the coronary arteries after the catheter is withdrawn | `valve_function` (loop) |
+| index | Title | short_title | What it shows | Instruments | animation_clip |
+|---|---|---|---|---|---|
+| 0 | Guiding a wire to your heart | Guidewire | A wire from the groin follows the aortic arch and passes through the narrowed valve | `guidewire` | `advance_guidewire` |
+| 1 | Bringing your new valve into position | Valve delivery | A catheter carries the compressed new valve along the wire into the old valve | `guidewire`, `delivery_catheter` | `deliver_valve` |
+| 2 | Expanding your new valve | Expansion | A balloon expands the metal frame, which pushes the old leaflets aside and anchors the new valve | `delivery_catheter`, `balloon` | `expand_valve` |
+| 3 | Removing the delivery equipment | Removal | The balloon is deflated, and the catheter and wire are withdrawn | `guidewire`, `delivery_catheter` | `withdraw_equipment` |
+| 4 | How your new valve works | Valve function | The frame holds the valve; its leaflets open with each heartbeat and close between beats | none | `valve_function` (loop) |
+
+The valve type is decided by the explanation: a **balloon-expandable** valve.
 
 ## 3D asset status
 
@@ -38,6 +41,5 @@ When the model is ready, adjust the opacity in the fixtures.
 
 ## Open questions
 
-- Which kind of valve to show: balloon-expandable or self-expanding (the expansion scene and the instrument set differ)
 - Access route: how far to show it, for example through the femoral artery (the first version shows only the valve area)
 - The source and license of the reference video, and the reference material to put in `sources`

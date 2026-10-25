@@ -34,8 +34,8 @@ pnpm --filter @cal-hacks/backend exec convex run seed:run    # seed the fixtures
 ```
 
 ## Layout
-- `convex/*.ts`: function files (`structures`, `instruments`, `conditions`, `procedures`, `seed`, `sceneActions`, `speech`). The API meant for the frontend is documented in `docs/backend-api.md`.
-- `convex/lib/`: pure logic that does not touch the database or the network by itself (`mappers`, `sceneActions`, `cartesia`, `multipart`). Unit tests live in `test/`.
+- `convex/*.ts`: function files (`structures`, `instruments`, `conditions`, `procedures`, `seed`, `sceneActions`, `speech`, `chat`, `chatContext`, `chatStore`). The API meant for the frontend is documented in `docs/backend-api.md`.
+- `convex/lib/`: pure logic that does not touch the database or the network by itself (`mappers`, `sceneActions`, `cartesia`, `multipart`, `llm`, `chatPrompt`, `chatParse`, `chatActions`, `chatPipeline`). Unit tests live in `test/`.
 - `convex/_generated/`: committed, as Convex recommends. `convex dev` updates it, so do not edit it by hand.
 
 <!-- convex-ai-start -->

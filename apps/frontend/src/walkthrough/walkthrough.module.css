@@ -1,23 +1,103 @@
-.window {
+/* The 3D view on the left and the chat panel on the right; stacked on narrow screens */
+.page {
   position: absolute;
   inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  grid-template-rows: minmax(0, 1fr);
   background: #000;
-
-  width: 100%;
-  height: calc(100%);
   overflow: hidden;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
 }
 
-.window canvas {
+.viewer {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.viewer canvas {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.hint {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #4a475e;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.reset {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(29, 34, 51, 0.15);
+  border-radius: 999px;
+  background: #fff;
+  color: #1d2233;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.reset:focus-visible {
+  outline: 2px solid #5a58a6;
+  outline-offset: 2px;
+}
+
+/* Name of the part under the pointer */
+.hoverLabel {
+  position: absolute;
+  transform: translate(14px, -50%);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #1d2233;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+/* Step slider along the bottom, on a soft fade so it stays readable over the models */
+.timeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.5rem 1rem 0.85rem;
+  background: linear-gradient(to top, rgba(244, 241, 238, 0.96) 55%, rgba(244, 241, 238, 0));
+}
+
+.panel {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* On narrow screens the page scrolls, so the chat keeps a usable height under the 3D view */
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(300px, 50svh) minmax(560px, auto);
+    overflow-y: auto;
+  }
+
+  .panel {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }

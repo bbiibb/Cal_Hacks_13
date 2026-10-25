@@ -1,15 +1,10 @@
-import { ConvexError, v } from "convex/values";
-import { action, env, mutation } from "./_generated/server";
-import {
-  SttError,
-  transcribeWithCartesia,
-  validateAudio,
-  validateLanguage,
-} from "./lib/cartesia";
+import { v } from "convex/values";
+import { action, internalMutation, mutation } from "./_generated/server";
+import { transcribeStoredAudio } from "./lib/speechRun";
 
 /**
  * Step 1 of voice input: the browser asks for a one-time upload URL, then POSTs the recording to it.
- * The upload response contains the `storageId` that is passed to `transcribe`.
+ * The upload response contains the `storageId` that is passed to `transcribe` (or `chat.askByVoice`).
  */
 export const generateUploadUrl = mutation({
   args: {},
@@ -36,37 +31,30 @@ export const transcribe = action({
     duration_seconds: v.union(v.number(), v.null()),
   }),
   handler: async (ctx, args) => {
-    try {
-      const language = validateLanguage(args.language);
+    const result = await transcribeStoredAudio(ctx, args);
+    return {
+      text: result.text,
+      language: result.language,
+      duration_seconds: result.durationSeconds,
+    };
+  },
+});
 
-      const apiKey = env.CARTESIA_API_KEY;
-      if (!apiKey) {
-        throw new SttError("stt_not_configured", "Speech-to-text is not configured on the server.");
-      }
-
-      const blob = await ctx.storage.get(args.storageId);
-      if (!blob) throw new SttError("audio_not_found", "The recording could not be found.");
-
-      const { mime, extension } = validateAudio(blob.size, blob.type);
-      const audio = new Uint8Array(await blob.arrayBuffer());
-
-      const result = await transcribeWithCartesia({ apiKey, audio, mime, extension, language });
-      return {
-        text: result.text,
-        language: result.language,
-        duration_seconds: result.durationSeconds,
-      };
-    } catch (error) {
-      if (error instanceof SttError) {
-        throw new ConvexError({ code: error.code, message: error.message });
-      }
-      throw error;
-    } finally {
-      try {
-        await ctx.storage.delete(args.storageId);
-      } catch {
-        // Already deleted or never existed: nothing left to clean up.
-      }
-    }
+/**
+ * Deletes recordings that were uploaded but never transcribed, for example when the browser lost its connection
+ * between the upload and `chat.askByVoice`. A recording is a patient's voice, so it must not stay in storage.
+ * It runs every hour (see crons.ts). Only voice recordings are kept in file storage, so every old file is removed.
+ */
+export const purgeOldRecordings = internalMutation({
+  args: { olderThanMinutes: v.number() },
+  returns: v.number(),
+  handler: async (ctx, args) => {
+    const cutoff = Date.now() - Math.max(args.olderThanMinutes, 0) * 60_000;
+    const old = await ctx.db.system
+      .query("_storage")
+      .filter((q) => q.lt(q.field("_creationTime"), cutoff))
+      .take(100);
+    for (const file of old) await ctx.storage.delete(file._id);
+    return old.length;
   },
 });

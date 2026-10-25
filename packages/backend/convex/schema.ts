@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { EMBEDDING_DIMENSIONS } from "./lib/ragConfig";
 import { vScene, vSceneAction, vSidePanel, vSource, vVec3 } from "./validators";
 
 export default defineSchema({
@@ -64,7 +65,13 @@ export default defineSchema({
     clientSessionId: v.string(),
     procedureSlug: v.optional(v.string()),
     currentStepIndex: v.optional(v.number()),
-  }).index("by_client_session_id", ["clientSessionId"]),
+    // When the patient last asked something. Conversations idle for too long are deleted (see crons.ts)
+    lastActiveAt: v.optional(v.number()),
+    // Older messages, shortened by rules (lib/chatSummary.ts), after the originals were deleted
+    summary: v.optional(v.object({ questions: v.array(v.string()), topics: v.array(v.string()) })),
+  })
+    .index("by_client_session_id", ["clientSessionId"])
+    .index("by_last_active_at", ["lastActiveAt"]),
 
   chatMessages: defineTable({
     sessionId: v.id("chatSessions"),
@@ -76,6 +83,22 @@ export default defineSchema({
     sources: v.optional(v.array(vSource)),
   }).index("by_session_id", ["sessionId"]),
 
-  // TODO(RAG): the source document table (documents) and embeddings (embeddings, vectorIndex)
-  //   will be added when RAG is implemented. They are not defined yet.
+  // Text snippets for retrieval (RAG), each with an embedding for vector search.
+  // Used by the local pipeline (LLM_PROVIDER=local). Filled by `npx convex run rag:indexContent`.
+  medicalDocs: defineTable({
+    docId: v.string(), // stable key, for example "structure:aortic_valve", "step:tavr:2" or "knowledge:risk.stroke"
+    kind: v.union(v.literal("structure"), v.literal("step"), v.literal("knowledge")),
+    structureId: v.optional(v.string()),
+    procedureSlug: v.optional(v.string()),
+    stepIndex: v.optional(v.number()),
+    title: v.string(),
+    text: v.string(),
+    embedding: v.array(v.float64()),
+  })
+    .index("by_doc_id", ["docId"])
+    .vectorIndex("by_embedding", {
+      vectorField: "embedding",
+      dimensions: EMBEDDING_DIMENSIONS,
+      filterFields: ["kind"],
+    }),
 });

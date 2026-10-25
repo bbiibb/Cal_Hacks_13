@@ -16,13 +16,11 @@ const DARK_LOOK: HeaderLook = {
   accentColor: '#b9b6ff',
   pastel: false,
 }
-const PLAIN_LOOK: HeaderLook = { backgroundColor: 'transparent', pastel: false }
 const PASTEL_LOOK: HeaderLook = { backgroundColor: 'transparent', pastel: true }
 
 /** How the header (and the page behind it) looks on each page. */
 function lookFor(pathname: string): HeaderLook {
   if (pathname === '/walkthrough') return DARK_LOOK
-  if (pathname === '/') return PLAIN_LOOK
   return PASTEL_LOOK
 }
 
@@ -35,14 +33,7 @@ function SiteLayout() {
   const look = lookFor(pathname)
 
   return (
-    <div
-      className={[
-        styles.layout,
-        look.pastel ? styles.pastel : '',
-        // TEMPORARY: red landing page, to check that everyone runs the same code
-        pathname === '/' ? styles.testRed : '',
-      ].join(' ')}
-    >
+    <div className={look.pastel ? `${styles.layout} ${styles.pastel}` : styles.layout}>
       <SiteHeader
         backgroundColor={look.backgroundColor}
         textColor={look.textColor}

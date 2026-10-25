@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
+  ChatRequestSchema,
   ChatResponseSchema,
   ConditionSchema,
   InstrumentSchema,
+  KnowledgeChunkSchema,
   ProcedureSchema,
   SceneActionSchema,
   StructureIdSchema,
@@ -42,14 +44,21 @@ describe("fixtures follow the contract schemas", () => {
     }
   });
 
-  it("the first TAVR version has four scenes", () => {
+  it("TAVR has the five steps of the team's patient explanation", () => {
     expect(procedure.slug).toBe("tavr");
     expect(procedure.steps.map((s) => s.title)).toEqual([
-      "The narrowed original valve",
-      "Delivering the new valve",
-      "Expanding the new valve",
-      "Final position after the equipment is removed",
+      "Guiding a wire to your heart",
+      "Bringing your new valve into position",
+      "Expanding your new valve",
+      "Removing the delivery equipment",
+      "How your new valve works",
     ]);
+  });
+
+  it("every instrument used in a step exists, including the balloon", () => {
+    const used = new Set(procedure.steps.flatMap((s) => s.scene.instruments.map((i) => i.id)));
+    expect(used.has("balloon")).toBe(true);
+    for (const id of used) expect(instrumentIds.has(id)).toBe(true);
   });
 
   it("every structure and instrument id referenced by a step exists", () => {
@@ -68,10 +77,36 @@ describe("fixtures follow the contract schemas", () => {
         expect(action.step_index).toBeLessThan(procedure.steps.length);
       } else if (action.type === "highlight") {
         for (const id of action.structure_ids) expect(structureIds.has(id)).toBe(true);
-      } else {
+      } else if (action.type === "focus" || action.type === "set_opacity") {
         expect(structureIds.has(action.structure_id)).toBe(true);
       }
     }
+  });
+});
+
+describe("chat contract", () => {
+  const request = ChatRequestSchema.parse(load("chat-request.example.json"));
+
+  it("accepts camera actions and rejects out-of-range values", () => {
+    expect(SceneActionSchema.safeParse({ type: "zoom", direction: "in", amount: "large" }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "up", degrees: 90 }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "reset_view" }).success).toBe(true);
+    expect(SceneActionSchema.safeParse({ type: "zoom", direction: "sideways", amount: "small" }).success).toBe(false);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "left", degrees: 400 }).success).toBe(false);
+    expect(SceneActionSchema.safeParse({ type: "rotate", direction: "left", degrees: 1 }).success).toBe(false);
+  });
+
+  it("fills in the safety fields when a response omits them", () => {
+    const parsed = ChatResponseSchema.parse({ message: "Hi", scene_actions: [], side_panel: null, sources: [] });
+    expect(parsed.safety).toBe("");
+    expect(parsed.doctor_question).toBe("");
+    expect(parsed.urgent).toBe(false);
+  });
+
+  it("validates chat requests", () => {
+    expect(ChatRequestSchema.safeParse({ message: "  ", context: request.context }).success).toBe(false);
+    expect(ChatRequestSchema.safeParse({ message: "x".repeat(501), context: request.context }).success).toBe(false);
+    expect(ChatRequestSchema.safeParse({ message: "Is it safe?", context: { ...request.context, step_index: -1 } }).success).toBe(false);
   });
 });
 
@@ -90,5 +125,44 @@ describe("schema rejection cases", () => {
     expect(
       SceneActionSchema.safeParse({ type: "set_opacity", structure_id: "aorta", opacity: 1.5 }).success,
     ).toBe(false);
+  });
+});
+
+describe("TAVR knowledge base", () => {
+  const knowledge = z.array(KnowledgeChunkSchema).parse(load("knowledge.tavr.json"));
+  const structureIds = new Set(z.array(StructureSchema).parse(load("structures.json")).map((s) => s.id));
+  const byId = (id: string) => knowledge.find((k) => k.id === id);
+
+  it("has unique ids and covers every topic", () => {
+    expect(new Set(knowledge.map((k) => k.id)).size).toBe(knowledge.length);
+    const topics = new Set(knowledge.map((k) => k.topic));
+    for (const t of ["overview", "condition", "candidacy", "anatomy", "procedure", "comparison", "instruments", "risks", "preparation", "recovery", "safety"]) {
+      expect(topics.has(t as never)).toBe(true);
+    }
+  });
+
+  it("only points at parts that exist in the 3D model", () => {
+    for (const k of knowledge) for (const id of k.structure_ids) expect(structureIds.has(id)).toBe(true);
+  });
+
+  it("keeps the published risk percentages exactly and always says they are group statistics", () => {
+    expect(byId("risk.bleeding")?.text).toContain("3% to 8%");
+    expect(byId("risk.vessel_injury")?.text).toContain("2% to 5%");
+    expect(byId("risk.stroke")?.text).toContain("1% to 3%");
+    expect(byId("risk.pacemaker")?.text).toContain("8% to 20%");
+    expect(byId("risk.kidney")?.text).toContain("2% to 5%");
+    expect(byId("risk.infection")?.text).toContain("1% to 2%");
+    expect(byId("risk.death")?.text).toContain("1% to 3%");
+    for (const k of knowledge.filter((x) => x.id.startsWith("risk."))) {
+      expect(k.text).toMatch(/not your personal risk/);
+    }
+  });
+
+  it("tells the patient not to change medicines on their own", () => {
+    expect(byId("prep.medications")?.text).toMatch(/Do not stop or change any medicine/);
+  });
+
+  it("keeps chunks short enough for a small model", () => {
+    for (const k of knowledge) expect(k.text.length).toBeLessThanOrEqual(600);
   });
 });

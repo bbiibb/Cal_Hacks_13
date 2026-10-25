@@ -1,0 +1,1703 @@
+[
+  {
+    "id": "overview.what_is_tavr",
+    "procedure_slug": "tavr",
+    "topic": "overview",
+    "title": "What TAVR is",
+    "text": "TAVR (transcatheter aortic valve replacement, also called TAVI for implantation) is a treatment that replaces a narrowed aortic valve that does not open fully. It is minimally invasive: it uses smaller cuts than open-heart valve surgery. A team of heart doctors and surgeons decides together with you whether it is the best treatment.",
+    "questions": [
+      "What is TAVR?",
+      "What does TAVI mean?",
+      "Is TAVR open-heart surgery?",
+      "Who decides if I have TAVR?"
+    ],
+    "keywords": [
+      "TAVI",
+      "transcatheter",
+      "minimally invasive",
+      "valve replacement",
+      "heart team"
+    ],
+    "structure_ids": [
+      "aortic_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "overview.principle",
+    "procedure_slug": "tavr",
+    "topic": "overview",
+    "title": "How TAVR works in principle",
+    "text": "In TAVR the doctor places a new heart valve inside your old, damaged aortic valve without removing the old one. The new valve takes over controlling blood flow. It is a treatment option for some people with severe aortic stenosis.",
+    "questions": [
+      "Is the old valve removed?",
+      "What happens to my old valve?",
+      "How does the new valve work?"
+    ],
+    "keywords": [
+      "old valve",
+      "stays in place",
+      "without removing"
+    ],
+    "structure_ids": [
+      "aortic_valve",
+      "transcatheter_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "overview.benefits",
+    "procedure_slug": "tavr",
+    "topic": "overview",
+    "title": "What TAVR can do for you",
+    "text": "TAVR can ease chest pain, shortness of breath and other symptoms of aortic valve stenosis. It can improve how well your heart works, give a better quality of life, and may increase life expectancy. It is usually done with a local anaesthetic, so you are awake but feel no pain.",
+    "questions": [
+      "What are the benefits of TAVR?",
+      "Will TAVR help my symptoms?",
+      "Am I awake during TAVR?",
+      "Does TAVR help me live longer?"
+    ],
+    "keywords": [
+      "benefit",
+      "relief",
+      "quality of life",
+      "local anaesthetic",
+      "awake",
+      "anesthesia"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "overview.effectiveness",
+    "procedure_slug": "tavr",
+    "topic": "overview",
+    "title": "How well TAVR works",
+    "text": "TAVR is highly effective for severe aortic valve stenosis, especially in people at high risk for traditional surgery. Many patients have significant symptom relief and better heart function afterward. TAVR can improve long-term health, and regular follow-up care and a healthy lifestyle help keep these benefits.",
+    "questions": [
+      "Is TAVR effective?",
+      "Does TAVR really work?",
+      "How does TAVR affect long-term health?"
+    ],
+    "keywords": [
+      "effective",
+      "success",
+      "long-term",
+      "outcome"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "condition.aortic_stenosis",
+    "procedure_slug": "tavr",
+    "topic": "condition",
+    "title": "Aortic stenosis",
+    "text": "Aortic stenosis means the aortic valve, one of the 4 valves of the heart, has narrowed and cannot open fully. Valves let blood flow in one direction through the heart. A narrowed valve blocks or slows blood flow from the heart to the body, so the heart must pump harder. This strain can lead to fluid on the lungs, swollen ankles, and eventually a weaker heart muscle. If untreated, aortic stenosis usually gets worse with time.",
+    "questions": [
+      "What is aortic stenosis?",
+      "Why is a narrow valve a problem?",
+      "What happens if aortic stenosis is not treated?",
+      "What does the aortic valve do?"
+    ],
+    "keywords": [
+      "stenosis",
+      "narrowed valve",
+      "calcified",
+      "stiff valve",
+      "untreated"
+    ],
+    "structure_ids": [
+      "aortic_valve",
+      "aortic_valve.calcification"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "condition.symptoms",
+    "procedure_slug": "tavr",
+    "topic": "condition",
+    "title": "Symptoms of aortic stenosis",
+    "text": "Symptoms include shortness of breath, especially during physical activity; chest pain or pressure; dizziness or fainting; fatigue or weakness; and palpitations. They happen because the heart works harder to push blood through the narrowed valve. As the disease progresses the symptoms get more severe and can greatly affect daily life.",
+    "questions": [
+      "What are the symptoms of aortic stenosis?",
+      "Why do I feel short of breath?",
+      "Why do I feel dizzy when I exercise?"
+    ],
+    "keywords": [
+      "shortness of breath",
+      "chest pain",
+      "dizzy",
+      "fainting",
+      "fatigue",
+      "palpitations",
+      "tired"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "condition.why_performed",
+    "procedure_slug": "tavr",
+    "topic": "condition",
+    "title": "Why TAVR is done",
+    "text": "TAVR is generally recommended for people with symptomatic severe aortic valve stenosis, especially those at high risk for traditional open-heart surgery because of age, frailty, or other medical conditions. The decision is made after a thorough evaluation by a team that includes cardiologists and cardiac surgeons.",
+    "questions": [
+      "Why is TAVR performed?",
+      "When is TAVR recommended?",
+      "Who should have TAVR?"
+    ],
+    "keywords": [
+      "recommended",
+      "indication",
+      "reason"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.indications",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Who may be a candidate for TAVR",
+    "text": "Your team looks at: a confirmed diagnosis of severe aortic stenosis (measured with an echocardiogram: valve area and pressure across the valve); symptoms that affect your quality of life; a high risk from open-heart surgery (for example older age, COPD, diabetes, kidney disease, or earlier heart surgery); the shape and size of your valve and blood vessels; and your heart function.",
+    "questions": [
+      "Who can have TAVR?",
+      "Am I a candidate for TAVR?",
+      "How do doctors decide who can have TAVR?",
+      "What makes someone suitable for TAVR?"
+    ],
+    "keywords": [
+      "candidate",
+      "eligible",
+      "suitable",
+      "echocardiogram",
+      "criteria",
+      "high risk"
+    ],
+    "structure_ids": [
+      "aortic_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.evaluation_and_preference",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Evaluation and your preferences",
+    "text": "The TAVR evaluation includes your medical history, a physical exam, imaging tests, and sometimes cardiac catheterization. Your own preference also matters: people who wish to avoid the risks of open-heart surgery may choose TAVR if they meet the criteria. TAVR may be an option for selected patients with severe aortic stenosis across all surgical risk categories.",
+    "questions": [
+      "What tests are done to decide on TAVR?",
+      "Does my preference matter?",
+      "Is TAVR only for high-risk patients?"
+    ],
+    "keywords": [
+      "evaluation",
+      "assessment",
+      "preference",
+      "low risk",
+      "intermediate risk",
+      "all risk"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.when_recommended",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "When your team may recommend TAVR",
+    "text": "A healthcare professional may recommend TAVR if you have severe aortic stenosis that causes symptoms such as chest pain and shortness of breath; a replacement valve made from animal or human tissue that is not working as well as it should; or another health condition, such as lung or kidney disease, that makes open-heart surgery too risky.",
+    "questions": [
+      "When would my doctor recommend TAVR?",
+      "Can TAVR replace an old replacement valve?"
+    ],
+    "keywords": [
+      "valve-in-valve",
+      "failing valve",
+      "lung disease",
+      "kidney disease"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_overview",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Factors that can make TAVR unsuitable",
+    "text": "Not every patient is a suitable candidate for TAVR. Factors that can make it unsuitable or riskier include an active infection, severe lung disease, uncontrolled heart failure, certain anatomy, severe kidney or liver disease, extreme frailty, a very short life expectancy, previous valve surgery, severe peripheral vascular disease, and personal preference. A multidisciplinary team makes the final evaluation.",
+    "questions": [
+      "Who cannot have TAVR?",
+      "What are the contraindications for TAVR?",
+      "Why might I not be suitable for TAVR?"
+    ],
+    "keywords": [
+      "contraindication",
+      "unsuitable",
+      "not suitable",
+      "not a candidate",
+      "cannot have"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_infection",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Active infection and TAVR",
+    "text": "An active infection, especially endocarditis (an infection of the heart valves), usually means waiting until the infection has completely cleared before TAVR.",
+    "questions": [
+      "Can I have TAVR with an infection?",
+      "What if I have endocarditis?"
+    ],
+    "keywords": [
+      "infection",
+      "endocarditis",
+      "active infection",
+      "wait"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_lung",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Severe lung disease and TAVR",
+    "text": "Severe lung disease, such as advanced chronic obstructive pulmonary disease (COPD), can mean higher risks during and after TAVR. Lung disease can also make open-heart surgery too risky, which is one reason TAVR may be chosen instead.",
+    "questions": [
+      "Can I have TAVR if I have COPD?",
+      "Does lung disease affect TAVR?"
+    ],
+    "keywords": [
+      "COPD",
+      "lung",
+      "emphysema",
+      "breathing disease"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_heart_failure",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Heart failure and TAVR",
+    "text": "Heart failure that is not well controlled may make TAVR hard to tolerate, because the heart may be too weak to cope with the stress of the procedure. Reduced heart function or heart failure symptoms can still lead to TAVR when the aortic stenosis is severe and causes symptoms.",
+    "questions": [
+      "Can I have TAVR with heart failure?",
+      "What if my heart is weak?"
+    ],
+    "keywords": [
+      "heart failure",
+      "weak heart",
+      "ejection fraction",
+      "left ventricular function"
+    ],
+    "structure_ids": [
+      "left_ventricle"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_kidney_liver",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Kidney or liver disease and TAVR",
+    "text": "Severe kidney dysfunction, severe liver disease, or other major underlying health problems can raise the risk of complications a great deal, so TAVR may not be suitable for some people with these conditions. Your team weighs this in your evaluation.",
+    "questions": [
+      "Can I have TAVR if I have kidney disease?",
+      "Can I have TAVR with liver disease?",
+      "Do other illnesses affect TAVR?"
+    ],
+    "keywords": [
+      "kidney disease",
+      "liver disease",
+      "comorbidity",
+      "renal failure",
+      "other illness"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_vascular",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Narrowed leg arteries and TAVR",
+    "text": "Severely blocked or narrowed arteries in the legs (severe peripheral vascular disease) can make it hard to pass the valve through the blood vessels. This is a relative, not an absolute, concern: it depends on which other ways of reaching the heart are available.",
+    "questions": [
+      "Can I have TAVR with blocked leg arteries?",
+      "What is peripheral vascular disease?"
+    ],
+    "keywords": [
+      "peripheral vascular disease",
+      "PVD",
+      "leg arteries",
+      "blocked arteries",
+      "narrowed arteries"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_prior_surgery",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Earlier valve surgery and TAVR",
+    "text": "Having had heart valve surgery before can add extra challenges for TAVR, depending on your specific surgical history.",
+    "questions": [
+      "Can I have TAVR if I had valve surgery before?"
+    ],
+    "keywords": [
+      "previous surgery",
+      "prior valve surgery",
+      "redo"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_anatomy",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Anatomy that makes TAVR difficult",
+    "text": "Some anatomy makes TAVR hard: a very small aortic annulus (the base where the valve sits) or a heavily calcified aorta can make it difficult to implant the new valve. Bicuspid valves, once a challenge, are now increasingly treated with TAVR.",
+    "questions": [
+      "Can TAVR be done with a small annulus?",
+      "Can TAVR treat a bicuspid valve?",
+      "What if my aorta is calcified?"
+    ],
+    "keywords": [
+      "annulus",
+      "calcified aorta",
+      "bicuspid",
+      "small valve",
+      "anatomy"
+    ],
+    "structure_ids": [
+      "aortic_annulus",
+      "aorta"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.unsuitable_frailty_preference",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "Frailty, life expectancy and preference",
+    "text": "TAVR may not give a meaningful benefit to people who are extremely frail or whose life expectancy is very short, because other serious illness limits the improvement in quality of life. Some people also choose not to have TAVR because of personal beliefs, anxiety about the procedure, or a wish for other treatments.",
+    "questions": [
+      "What if I am very frail?",
+      "What if I do not want TAVR?",
+      "Does life expectancy matter for TAVR?"
+    ],
+    "keywords": [
+      "frail",
+      "frailty",
+      "life expectancy",
+      "preference",
+      "decline"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "candidacy.team_evaluation",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "The heart team evaluation",
+    "text": "To decide if TAVR suits you, a multidisciplinary team (interventional cardiologists and cardiac surgeons) reviews imaging tests, blood work, and your medical history in detail.",
+    "questions": [
+      "Who evaluates me for TAVR?",
+      "What is the heart team?"
+    ],
+    "keywords": [
+      "heart team",
+      "multidisciplinary",
+      "cardiologist",
+      "cardiac surgeon"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.femoral_artery",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Femoral artery",
+    "text": "The femoral artery is a large blood vessel in the groin (upper leg). In TAVR it acts as the front door: instead of opening the chest, the doctor makes a tiny puncture in this artery and inserts the catheter, a thin flexible tube that carries the new valve.",
+    "questions": [
+      "What is the femoral artery?",
+      "Where does the catheter go in?",
+      "Why is the groin used?"
+    ],
+    "keywords": [
+      "groin",
+      "leg",
+      "puncture",
+      "entry point",
+      "access"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.aorta",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Aorta",
+    "text": "The aorta is the main and largest blood vessel in the body; it carries oxygen-rich blood from the heart to the organs. During TAVR the catheter uses the aorta as a wide, safe pathway to travel from the leg up to the heart.",
+    "questions": [
+      "What is the aorta?",
+      "How does the catheter reach the heart?"
+    ],
+    "keywords": [
+      "main artery",
+      "blood highway"
+    ],
+    "structure_ids": [
+      "aorta",
+      "aorta.ascending"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.aortic_arch",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Aortic arch",
+    "text": "The aortic arch is the curved, cane-like section at the top of the aorta, directly above the heart. After travelling up the body, the catheter must bend gently around this arch to head downward to the diseased valve.",
+    "questions": [
+      "What is the aortic arch?",
+      "Does the catheter have to bend?"
+    ],
+    "keywords": [
+      "arch",
+      "curve",
+      "bend"
+    ],
+    "structure_ids": [
+      "aorta"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.aortic_valve",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Aortic valve",
+    "text": "The aortic valve is the door between the heart and the aorta. It opens to let blood pump out and snaps shut to stop blood flowing backward. It is the main target of TAVR: because the old valve is stiff and narrowed, the catheter delivers a new artificial valve to sit inside it and hold it open, restoring healthy blood flow.",
+    "questions": [
+      "What is the aortic valve?",
+      "What does the aortic valve do?",
+      "What is the target of TAVR?"
+    ],
+    "keywords": [
+      "valve",
+      "leaflets",
+      "door"
+    ],
+    "structure_ids": [
+      "aortic_valve",
+      "transcatheter_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.left_ventricle",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Left ventricle",
+    "text": "The left ventricle is the powerful main pumping chamber at the bottom left of the heart, right below the aortic valve. When the valve is blocked by calcium it must work very hard to squeeze blood through the narrow opening, causing tiredness and chest pain. The TAVR valve is placed at the exit of this chamber, which relieves the pressure.",
+    "questions": [
+      "What is the left ventricle?",
+      "Why does my heart work so hard?"
+    ],
+    "keywords": [
+      "ventricle",
+      "pumping chamber",
+      "heart muscle"
+    ],
+    "structure_ids": [
+      "left_ventricle"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "anatomy.left_atrium",
+    "procedure_slug": "tavr",
+    "topic": "anatomy",
+    "title": "Left atrium",
+    "text": "The left atrium is the upper chamber on the left side of the heart. It receives oxygen-rich blood from the lungs and passes it down to the left ventricle. Surgical tools do not touch it during TAVR, but replacing the aortic valve lowers the overall pressure inside the heart, which eventually helps the left atrium work more easily too.",
+    "questions": [
+      "What is the left atrium?",
+      "Is the left atrium touched during TAVR?"
+    ],
+    "keywords": [
+      "atrium",
+      "upper chamber"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "procedure.how_valve_delivered",
+    "procedure_slug": "tavr",
+    "topic": "procedure",
+    "title": "How the new valve is delivered",
+    "text": "Like a stent, the replacement valve is guided through an artery inside a thin, flexible tube called a catheter. The valve is compressed during delivery and expanded once it reaches the diseased valve. When it expands it pushes the old valve leaflets aside, and the new valve's tissue starts regulating blood flow.",
+    "questions": [
+      "How is the new valve put in?",
+      "What happens when the new valve expands?",
+      "What happens to the old leaflets?"
+    ],
+    "keywords": [
+      "catheter",
+      "crimped",
+      "expands",
+      "deployed",
+      "leaflets pushed aside"
+    ],
+    "structure_ids": [
+      "aortic_valve",
+      "transcatheter_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "procedure.vs_open_surgery_incision",
+    "procedure_slug": "tavr",
+    "topic": "procedure",
+    "title": "No chest incision needed",
+    "text": "Traditional valve replacement often needs open-heart surgery with a sternotomy, which opens the chest. TAVR can be done through small openings that leave the chest bones in place. It is less traumatic to the body, usually means a shorter hospital stay, and gives a treatment option to people who are not healthy enough for traditional surgery.",
+    "questions": [
+      "Will my chest be opened?",
+      "What is a sternotomy?",
+      "Is TAVR less invasive than surgery?"
+    ],
+    "keywords": [
+      "sternotomy",
+      "open chest",
+      "incision",
+      "less invasive",
+      "heart-lung machine"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "procedure.approaches_common",
+    "procedure_slug": "tavr",
+    "topic": "procedure",
+    "title": "Transfemoral and transapical approaches",
+    "text": "Your cardiologist or surgeon picks the safest and most effective route to your valve. The two most common: transfemoral, where the valve is delivered through the femoral artery in the groin with no chest incision; and transapical, where it goes through a small incision in the chest to the tip (apex) of the left ventricle.",
+    "questions": [
+      "What approaches are there for TAVR?",
+      "What is transfemoral TAVR?",
+      "What is transapical TAVR?"
+    ],
+    "keywords": [
+      "transfemoral",
+      "transapical",
+      "approach",
+      "route",
+      "access"
+    ],
+    "structure_ids": [
+      "left_ventricle"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "procedure.approaches_types",
+    "procedure_slug": "tavr",
+    "topic": "procedure",
+    "title": "Types of TAVR approaches",
+    "text": "Transfemoral (groin artery) is the most common, preferred for its minimally invasive nature and straightforward recovery. Transapical (small chest cut, through the heart tip) is used when transfemoral is unsuitable, for specific anatomical challenges. Transaortic goes directly into the aorta through a small chest incision and is less common. Subclavian uses the artery under the collarbone for patients with challenging blood vessels. The approach is customised to your anatomy and health.",
+    "questions": [
+      "Which TAVR approach is best?",
+      "What is transaortic TAVR?",
+      "What is subclavian TAVR?",
+      "Why would transfemoral not be used?"
+    ],
+    "keywords": [
+      "transaortic",
+      "subclavian",
+      "collarbone",
+      "types of TAVR"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.tavr_vs_savr",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "TAVR compared with open-heart surgery (SAVR)",
+    "text": "TAVR uses smaller incisions and often means a shorter hospital stay than open-heart valve surgery (SAVR, surgical aortic valve replacement). Both treatments carry risks, and the types and likelihood of complications differ. The choice depends on your age, overall health, heart and blood vessel anatomy, expected lifespan, and preferences. Your heart team also considers valve durability and the chance of future procedures.",
+    "questions": [
+      "How does TAVR compare to traditional surgery?",
+      "TAVR or SAVR?",
+      "Which is better, TAVR or open-heart surgery?"
+    ],
+    "keywords": [
+      "SAVR",
+      "surgical valve",
+      "open-heart",
+      "versus",
+      "compare",
+      "alternative"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.age_younger",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "Younger patients: TAVR or surgery",
+    "text": "For younger patients (typically under 65 to 70), SAVR is often preferred. Surgically implanted valves have decades of proven long-term durability, and a younger person is more likely to outlive a TAVR valve. If a TAVR valve wears out, another complex valve-in-valve procedure is needed later in life.",
+    "questions": [
+      "Am I too young for TAVR?",
+      "Is TAVR right for younger people?",
+      "Does age matter for TAVR?"
+    ],
+    "keywords": [
+      "young",
+      "younger",
+      "under 65",
+      "under 70",
+      "age",
+      "valve-in-valve"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.age_older",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "Older patients: TAVR or surgery",
+    "text": "For older patients (typically over 75), TAVR is highly recommended. Older bodies handle the trauma of open-heart surgery poorly, and TAVR avoids the heart-lung bypass machine and large incisions, so older adults can recover in days rather than months.",
+    "questions": [
+      "Am I too old for open-heart surgery?",
+      "Is TAVR good for older people?",
+      "Does age matter for TAVR?"
+    ],
+    "keywords": [
+      "older",
+      "elderly",
+      "over 75",
+      "age",
+      "bypass machine",
+      "recover in days"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.valve_durability",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "How long the new valve lasts",
+    "text": "The guide gives no fixed number of years for how long a TAVR valve lasts. It says surgically implanted valves have decades of proven long-term durability, and that younger patients are more likely to outlive a TAVR valve, which may later need a valve-in-valve procedure. Your heart team considers valve durability when choosing a treatment, so ask them what to expect for you.",
+    "questions": [
+      "How long will the new valve last?",
+      "How many years does a TAVR valve last?",
+      "Will I need another valve later?"
+    ],
+    "keywords": [
+      "durability",
+      "lifespan",
+      "wear out",
+      "last",
+      "years",
+      "replace again",
+      "valve-in-valve"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.life_expectancy_health",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "Life expectancy and overall health",
+    "text": "With a longer life expectancy (10+ years), SAVR is frequently favored so the valve lasts a lifetime. With a shorter life expectancy from other illness, TAVR is the standard choice because it gives quick relief of symptoms without a hard surgical recovery. Frail or high-risk patients (severe lung disease, poor kidney function, previous radiation or heart surgery) are safest with minimally invasive TAVR; healthy, low-risk patients may still do well with SAVR.",
+    "questions": [
+      "Is TAVR better if I am frail?",
+      "What if I am healthy?",
+      "Does my health affect the choice?"
+    ],
+    "keywords": [
+      "frail",
+      "healthy",
+      "low risk",
+      "high risk",
+      "COPD",
+      "kidney function"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.anatomy_and_other_heart_issues",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "Anatomy and other heart problems",
+    "text": "TAVR needs a catheter to pass through blood vessels from the leg to the heart; if they are too narrow, twisted, or heavily calcified, surgery may be needed. A bicuspid valve (two flaps instead of three) has an uneven opening that can make it hard for a round TAVR valve to anchor and seal, so SAVR may fit better. If severe blocked coronary arteries also need a bypass (CABG), surgeons may replace the valve and do the bypass in one operation.",
+    "questions": [
+      "What is a bicuspid valve?",
+      "What if my blood vessels are narrow?",
+      "What if I also have blocked coronary arteries?"
+    ],
+    "keywords": [
+      "bicuspid",
+      "CABG",
+      "bypass",
+      "coronary",
+      "vessels too narrow",
+      "calcium"
+    ],
+    "structure_ids": [
+      "aortic_valve",
+      "left_coronary_artery",
+      "right_coronary_artery"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "comparison.blood_thinners",
+    "procedure_slug": "tavr",
+    "topic": "comparison",
+    "title": "Blood thinners and valve type",
+    "text": "Needing blood-thinning medicine is one consideration when choosing a valve, especially mechanical versus tissue valves: mechanical valves generally need lifelong anticoagulant treatment. Medicine needs after TAVR depend on your individual treatment plan, which your care team will explain. TAVR also may not give meaningful benefit when other serious illness greatly limits life expectancy.",
+    "questions": [
+      "Will I need blood thinners after TAVR?",
+      "Do mechanical valves need blood thinners?",
+      "Do blood thinners decide TAVR or surgery?"
+    ],
+    "keywords": [
+      "blood thinner",
+      "anticoagulant",
+      "mechanical valve",
+      "tissue valve",
+      "medication"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.introducer_sheath",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "Introducer sheath",
+    "text": "The introducer sheath is a short hollow tube placed at the very start of the procedure into the artery in the groin. It acts as a protective gateway: it keeps the entry point open and protects the blood vessel walls from scraping while other tools go in and out.",
+    "questions": [
+      "What is the introducer sheath?",
+      "What is the gateway tube for?"
+    ],
+    "keywords": [
+      "sheath",
+      "gateway",
+      "port",
+      "entry"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.guidewire",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "Guidewire",
+    "text": "The guidewire is a long, very thin, flexible metal wire, the first tool to travel from the leg to the heart. It works like a train track: once it is across the narrowed valve, thicker tools such as the delivery catheter slide over it. Imaging is used to watch the equipment's position throughout the procedure.",
+    "questions": [
+      "What is the guidewire?",
+      "Why is a wire used first?"
+    ],
+    "keywords": [
+      "wire",
+      "rail",
+      "track",
+      "imaging",
+      "fluoroscopy"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.delivery_catheter",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "Delivery catheter",
+    "text": "The delivery catheter is a long, flexible, steerable tube that holds the new valve tightly compressed (crimped) so it fits through the blood vessels. The doctor steers it over the guidewire to carry the new valve into the centre of the old, diseased valve.",
+    "questions": [
+      "What is the delivery catheter?",
+      "How does the valve travel to the heart?"
+    ],
+    "keywords": [
+      "catheter",
+      "transport",
+      "crimped",
+      "steerable"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.balloon",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "Balloon catheter",
+    "text": "In the balloon-expandable TAVR shown in this app, the replacement valve is compressed onto a balloon on the delivery catheter. Inflating the balloon expands the valve's metal frame inside the existing aortic valve; the balloon is then deflated and removed, leaving the valve in place. A balloon may also be used to widen the original valve first, or to expand the new valve further afterward.",
+    "questions": [
+      "How does the balloon work?",
+      "What is balloon-expandable TAVR?",
+      "Does the balloon stay in my body?"
+    ],
+    "keywords": [
+      "balloon",
+      "inflate",
+      "deflate",
+      "expandable",
+      "self-expanding"
+    ],
+    "structure_ids": [
+      "transcatheter_valve",
+      "transcatheter_valve.frame"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.prosthetic_valve",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "The new (prosthetic) valve",
+    "text": "The new valve is made of strong, flexible biological tissue, usually from a cow or pig, sewn inside a collapsible metal frame (a stent). At the heart the frame expands, either by itself or with a balloon, pushes the old calcified flaps out of the way, and anchors in place. The tissue flaps then immediately start opening and closing to restore healthy blood flow. The valve stays in your heart.",
+    "questions": [
+      "What is the new valve made of?",
+      "Does the new valve stay in my body?",
+      "Is the new valve from an animal?"
+    ],
+    "keywords": [
+      "prosthetic",
+      "artificial valve",
+      "bioprosthetic",
+      "cow",
+      "pig",
+      "stent",
+      "frame",
+      "stays"
+    ],
+    "structure_ids": [
+      "transcatheter_valve",
+      "transcatheter_valve.frame",
+      "transcatheter_valve.leaflets"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "instrument.temporary_pacemaker",
+    "procedure_slug": "tavr",
+    "topic": "instruments",
+    "title": "Temporary pacemaker",
+    "text": "A temporary pacemaker is a small electrical device with a wire placed briefly inside the right side of the heart during the procedure. While the new valve is being placed, it makes the heart beat very fast for a few seconds (rapid pacing). This lowers blood pressure and keeps the heart still so rushing blood cannot wash the valve out of position.",
+    "questions": [
+      "Why does my heart beat fast during TAVR?",
+      "What is rapid pacing?",
+      "Is the pacemaker permanent?"
+    ],
+    "keywords": [
+      "pacing",
+      "rapid pacing",
+      "temporary",
+      "pacemaker wire"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.overview",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "About the risk percentages",
+    "text": "Each TAVR complication varies with your health, heart and blood vessel anatomy, the valve used, and the procedure. Published percentages describe specific groups of patients over a defined period and are not your personal risk; your heart team can explain which risks matter for you. The risks covered here: bleeding, blood vessel injury, valve leak or slipping, stroke, heart rhythm problems needing a pacemaker, kidney injury, heart attack, infection, and death.",
+    "questions": [
+      "What are the risks of TAVR?",
+      "Is TAVR safe?",
+      "What complications can happen?",
+      "What are the side effects?"
+    ],
+    "keywords": [
+      "risk",
+      "complication",
+      "side effect",
+      "danger",
+      "safe",
+      "percentage",
+      "chance",
+      "probability"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.bleeding",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: bleeding",
+    "text": "Major bleeding that may need a blood transfusion occurs in about 3% to 8% of cases. It happens because the doctor punctures a large artery in the groin to insert the catheter, and blood thinners used during the procedure can delay healing of that site. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can I bleed during TAVR?",
+      "How likely is bleeding?",
+      "Why would I bleed?"
+    ],
+    "keywords": [
+      "bleed",
+      "transfusion",
+      "groin",
+      "blood thinner"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.vessel_injury",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: blood vessel injury",
+    "text": "Major blood vessel complications occur in about 2% to 5% of patients. Many TAVR patients are older, so their vessels can be stiff, twisted, or narrowed by calcium; the large catheter can sometimes stretch, tear, or poke a hole in a vessel wall. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can the catheter damage my blood vessels?",
+      "How likely is a vessel injury?"
+    ],
+    "keywords": [
+      "vessel",
+      "tear",
+      "artery damage",
+      "vascular complication"
+    ],
+    "structure_ids": [
+      "aorta"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.valve_leak_slip",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: valve leak or slipping",
+    "text": "Mild leaks around the new valve are common and usually harmless. Severe leaks that need another intervention occur in less than 5%, and complete valve slipping is very rare, in less than 1% of cases. The old valve stays in place and is bumpy with calcium, so the new valve may not seal perfectly (a paravalvular leak), and rarely it may slip from its ideal position. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can the new valve leak?",
+      "Can the valve slip out of place?",
+      "What is a paravalvular leak?"
+    ],
+    "keywords": [
+      "leak",
+      "paravalvular",
+      "slip",
+      "move",
+      "position",
+      "regurgitation"
+    ],
+    "structure_ids": [
+      "transcatheter_valve",
+      "aortic_valve.calcification"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.stroke",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: stroke",
+    "text": "The risk of a disabling stroke is about 1% to 3%, and studies show it is similar with TAVR and traditional open-heart surgery. A stroke can happen when tiny pieces of calcium, tissue, or blood clots break loose as the catheter moves or a balloon is inflated, travel to the brain, and block a blood vessel. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can TAVR cause a stroke?",
+      "How likely is a stroke?",
+      "Why can a stroke happen?"
+    ],
+    "keywords": [
+      "stroke",
+      "clot",
+      "brain",
+      "debris",
+      "embolism"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.pacemaker",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: heart rhythm problems and pacemaker",
+    "text": "A permanent pacemaker is needed in about 8% to 20% of patients, depending on the type and brand of valve; it is one of the more common side effects. The heart's electrical pathways run right next to the aortic valve, and the large new valve can press on them, slowing or blocking the signals. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Will I need a pacemaker after TAVR?",
+      "How likely is a pacemaker?",
+      "Why does TAVR affect heart rhythm?"
+    ],
+    "keywords": [
+      "pacemaker",
+      "rhythm",
+      "arrhythmia",
+      "heart block",
+      "electrical",
+      "slow heartbeat"
+    ],
+    "structure_ids": [
+      "aortic_valve"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.kidney",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: kidney injury",
+    "text": "Temporary kidney injury happens in about 2% to 5% of cases, and the need for long-term dialysis is extremely rare (less than 1%). The contrast dye used for X-ray images can be hard on the kidneys, and the brief fast pacing lowers blood pressure and kidney blood flow. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can TAVR hurt my kidneys?",
+      "Will I need dialysis?",
+      "Why is contrast dye a risk?"
+    ],
+    "keywords": [
+      "kidney",
+      "dialysis",
+      "contrast dye",
+      "renal"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.heart_attack",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: heart attack",
+    "text": "Heart attack is a very rare complication, in less than 1% of procedures. The openings of the coronary arteries, which feed the heart muscle, sit just above the aortic valve; in very rare cases the new valve's frame could block them, or debris could enter them and cut off blood supply. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can TAVR cause a heart attack?",
+      "How likely is a heart attack?",
+      "Why are the coronary arteries a concern?"
+    ],
+    "keywords": [
+      "heart attack",
+      "coronary",
+      "blocked opening",
+      "myocardial infarction"
+    ],
+    "structure_ids": [
+      "left_coronary_artery",
+      "right_coronary_artery"
+    ],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.infection",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: infection",
+    "text": "Infection of the new valve (endocarditis) occurs in about 1% to 2%. Any time instruments or foreign objects such as an artificial valve enter the body, bacteria can get in. This is why patients must take preventive antibiotics before certain future dental procedures. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can the new valve get infected?",
+      "What is endocarditis?",
+      "Why do I need antibiotics before the dentist?"
+    ],
+    "keywords": [
+      "infection",
+      "endocarditis",
+      "bacteria",
+      "antibiotics",
+      "dental"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "risk.death",
+    "procedure_slug": "tavr",
+    "topic": "risks",
+    "title": "Risk: death",
+    "text": "The 30-day mortality rate is roughly 1% to 3%, and studies found that the risk of death is similar between TAVR and traditional surgical aortic valve replacement. Death can result when severe complications combine (a major stroke, severe internal bleeding, or heart damage), or when the stress of the procedure rapidly worsens a frail patient's existing illness. These percentages describe groups of patients, not your personal risk.",
+    "questions": [
+      "Can I die from TAVR?",
+      "What is the chance of dying from TAVR?",
+      "What is the mortality rate of TAVR?",
+      "How dangerous is TAVR?"
+    ],
+    "keywords": [
+      "death",
+      "die",
+      "dying",
+      "mortality",
+      "fatal",
+      "survival"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.tests_imaging",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Tests and imaging before TAVR",
+    "text": "Weeks before TAVR your doctor takes detailed pictures of your heart and blood vessels with 3D CT scans and echocardiograms. This lets the team map the exact route of the catheter, measure your anatomy to the millimetre, and choose the right size of valve.",
+    "questions": [
+      "What tests do I need before TAVR?",
+      "Why do I need a CT scan?",
+      "How is the valve size chosen?"
+    ],
+    "keywords": [
+      "CT scan",
+      "echocardiogram",
+      "imaging",
+      "measure",
+      "valve size",
+      "weeks before"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.dental",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Dental check before TAVR",
+    "text": "You will likely be asked to see your dentist for a check-up and cleaning before TAVR. Tell your dentist you have a replacement heart valve. Preventive antibiotics are recommended before certain dental procedures that involve the gums or nearby tissues, but not for every dental visit; your dentist and heart team will advise you. Good daily oral care and regular dental checkups are important.",
+    "questions": [
+      "Why do I need to see a dentist?",
+      "Do I need antibiotics at the dentist?",
+      "Do I have to tell my dentist about my valve?"
+    ],
+    "keywords": [
+      "dentist",
+      "dental",
+      "teeth",
+      "gums",
+      "antibiotic",
+      "oral care"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.medications",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Medicines before and after TAVR",
+    "text": "Tell your care team about all medicines and supplements you take. They will explain which to continue, pause, or restart before and after TAVR. Do not stop or change any medicine, including blood thinners, unless your care team tells you to.",
+    "questions": [
+      "Which medicines should I take before TAVR?",
+      "What do I tell my care team about my medicines?",
+      "Do I stop my medicines?"
+    ],
+    "keywords": [
+      "medicine",
+      "medication",
+      "supplements",
+      "blood thinner",
+      "pause",
+      "continue"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.recovery_planning",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Planning for your recovery at home",
+    "text": "Arrange for someone to take you home after TAVR; do not drive yourself, and ask your care team when you can drive again. Set up a comfortable resting area on the first floor if you have stairs, and prepare a few easy meals. Arrange for a family member or friend to stay with you for the first 24 to 48 hours after you return home.",
+    "questions": [
+      "How should I prepare my home?",
+      "Can I drive home after TAVR?",
+      "Do I need someone to stay with me?"
+    ],
+    "keywords": [
+      "driving",
+      "transportation",
+      "ride home",
+      "caregiver",
+      "stairs",
+      "meals"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.fasting",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Eating and drinking before TAVR",
+    "text": "Your care team will tell you when to stop eating and drinking before TAVR. Instructions may differ for solid food and clear liquids, depending on your procedure and anesthesia plan, so follow the specific instructions from your hospital.",
+    "questions": [
+      "Can I eat before TAVR?",
+      "When should I stop eating and drinking?",
+      "Do I have to fast?"
+    ],
+    "keywords": [
+      "fasting",
+      "nothing by mouth",
+      "NPO",
+      "food",
+      "drink",
+      "night before"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.diet_before",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Diet before TAVR",
+    "text": "A heart-healthy diet is encouraged before TAVR: fruits, vegetables, whole grains, and lean proteins, and avoiding foods high in sodium and fat. If you have specific dietary restrictions, ask your doctor.",
+    "questions": [
+      "What should I eat before TAVR?",
+      "Do I need to change my diet before TAVR?"
+    ],
+    "keywords": [
+      "diet",
+      "food",
+      "sodium",
+      "salt",
+      "healthy eating"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.what_to_bring",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "What to bring to the hospital",
+    "text": "Bring a complete written list of your medicines and supplements, loose comfortable clothing for the trip home (no tight belts or stiff jeans that press on the groin), your ID and insurance information, and your CPAP machine if you use one for sleep apnea. Leave valuables and jewelry at home. Also bring glasses, hearing aids or dentures, toiletries, and something to relax with such as books or music.",
+    "questions": [
+      "What should I pack for the hospital?",
+      "What should I bring for TAVR?",
+      "What clothes should I wear home?"
+    ],
+    "keywords": [
+      "pack",
+      "bring",
+      "clothes",
+      "CPAP",
+      "ID",
+      "insurance",
+      "toiletries"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.why_pack",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Why these items are packed",
+    "text": "Glasses, hearing aids, or dentures help you talk with staff and understand your aftercare instructions. Toiletries help you feel fresh during the usual stay of 1 to 2 days. Loose clothing matters because the groin will be tender and bandaged, and tight waistbands can rub the puncture site and cause pain or bleeding; sweatpants or loose pajama bottoms work best. Books, tablets, or music help lower anxiety while you wait.",
+    "questions": [
+      "Why do I need loose clothing?",
+      "How long is the hospital stay?",
+      "Why bring glasses and hearing aids?"
+    ],
+    "keywords": [
+      "loose clothing",
+      "sweatpants",
+      "hospital stay",
+      "1 to 2 days",
+      "anxiety",
+      "relax"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.remove_before",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "What to remove before the procedure",
+    "text": "Before you go into the cath lab or operating room, your care team asks you to remove contact lenses (they can stick to dry eyes and scratch the cornea while you are sedated), dentures (the airway must be clear in case a breathing tube is needed), and eyeglasses (they can interfere with oxygen masks or monitors and get lost or broken).",
+    "questions": [
+      "Can I wear contact lenses during TAVR?",
+      "Do I keep my dentures in?",
+      "Can I wear glasses in the operating room?"
+    ],
+    "keywords": [
+      "contact lenses",
+      "dentures",
+      "glasses",
+      "remove",
+      "operating room",
+      "cath lab"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "prep.jewelry_nails",
+    "procedure_slug": "tavr",
+    "topic": "preparation",
+    "title": "Jewelry and nail polish",
+    "text": "Jewelry, including watches, necklaces, rings, and piercings, is removed because it can block the X-ray (fluoroscopy) view, react with electrical tools that stop bleeding and cause skin burns, and rings can become tight if your fingers swell from IV fluids. Remove nail polish and artificial nails too: a finger clip (pulse oximeter) uses light to measure blood oxygen, and dark polish or thick fake nails give wrong readings. Doctors also check the natural colour of your nail beds to judge circulation.",
+    "questions": [
+      "Can I wear jewelry during TAVR?",
+      "Can I wear nail polish?",
+      "Why remove my rings?"
+    ],
+    "keywords": [
+      "jewelry",
+      "rings",
+      "nail polish",
+      "pulse oximeter",
+      "fake nails",
+      "piercings",
+      "watch"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.hospital_stay",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Hospital stay and recovery time",
+    "text": "The hospital stay for TAVR is usually 1 to 2 days. Recovery typically takes a few weeks, and most patients return to normal daily activities within a month, though individual recovery times vary. Older adults often recover in days rather than the months that open-heart surgery can take. Follow your doctor's recommendations.",
+    "questions": [
+      "How long does recovery take?",
+      "How long will I be in the hospital?",
+      "When can I go back to normal activities?"
+    ],
+    "keywords": [
+      "recovery",
+      "hospital stay",
+      "how long",
+      "discharge",
+      "back to normal"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.diet_after",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Eating after TAVR",
+    "text": "You can generally return to a normal diet after TAVR. A heart-healthy diet is still recommended for recovery and overall heart health. Ask your doctor for personal dietary recommendations.",
+    "questions": [
+      "Can I eat normally after TAVR?",
+      "What should I eat after TAVR?"
+    ],
+    "keywords": [
+      "diet",
+      "eating",
+      "food after"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.exercise",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Exercise after TAVR",
+    "text": "You can gradually resume exercise after TAVR. Start with light activities such as walking, and follow your healthcare professional's guidelines for slowly increasing the intensity and length of workouts.",
+    "questions": [
+      "Can I exercise after TAVR?",
+      "When can I start walking?",
+      "Can I go back to the gym?"
+    ],
+    "keywords": [
+      "exercise",
+      "walking",
+      "workout",
+      "activity",
+      "gym"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.follow_up",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Follow-up appointments",
+    "text": "Follow-up appointments after TAVR check your heart function, manage your medicines, and review how your recovery is going. Your healthcare team schedules them based on your individual needs.",
+    "questions": [
+      "What happens at follow-up appointments?",
+      "How often will I see my doctor after TAVR?"
+    ],
+    "keywords": [
+      "follow-up",
+      "checkup",
+      "appointment",
+      "monitoring"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.lifestyle",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Lifestyle after TAVR",
+    "text": "After TAVR, healthy habits help: a balanced diet, regular exercise, stress management, and quitting smoking. These changes improve overall heart health. Regular follow-up care and a healthy lifestyle help keep the benefits of TAVR.",
+    "questions": [
+      "What lifestyle changes should I make after TAVR?",
+      "Should I quit smoking?"
+    ],
+    "keywords": [
+      "lifestyle",
+      "smoking",
+      "stress",
+      "healthy habits"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.travel",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Travelling after TAVR",
+    "text": "Most patients can travel after TAVR, but talk to a healthcare professional first. They can tell you when it is safe to travel and what precautions to take.",
+    "questions": [
+      "Can I travel after TAVR?",
+      "When can I fly after TAVR?"
+    ],
+    "keywords": [
+      "travel",
+      "flying",
+      "trip",
+      "vacation",
+      "plane"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.anxiety",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Feeling anxious about TAVR",
+    "text": "Feeling anxious about TAVR is completely normal. Talk with your healthcare professional: they can offer support and resources to help you manage your anxiety before and after the procedure.",
+    "questions": [
+      "I am scared of TAVR",
+      "What if I feel anxious about the procedure?",
+      "Is it normal to be nervous?"
+    ],
+    "keywords": [
+      "anxious",
+      "anxiety",
+      "scared",
+      "nervous",
+      "worried",
+      "fear"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "recovery.dental_future",
+    "procedure_slug": "tavr",
+    "topic": "recovery",
+    "title": "Dental care after TAVR",
+    "text": "After TAVR, good daily oral care and regular dental checkups are important. Preventive antibiotics are recommended before certain dental procedures that involve the gums or nearby tissues, but not for every dental visit; your dentist and heart team will advise you.",
+    "questions": [
+      "Do I need antibiotics before dental work after TAVR?",
+      "How do I protect my new valve from infection?"
+    ],
+    "keywords": [
+      "dental",
+      "dentist",
+      "antibiotics",
+      "endocarditis",
+      "teeth"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.elderly",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR for older adults",
+    "text": "For older adults TAVR is less invasive and has a shorter recovery time than traditional surgery. To get the best results, talk with a healthcare professional about any existing conditions.",
+    "questions": [
+      "What should elderly patients know about TAVR?",
+      "Is TAVR good for older people?"
+    ],
+    "keywords": [
+      "elderly",
+      "older adults",
+      "seniors",
+      "age"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.pregnancy",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR and pregnancy",
+    "text": "TAVR is generally not performed during pregnancy because of possible risks to both the mother and the baby. If you have aortic valve stenosis while pregnant, talk with a healthcare professional about alternative treatment options.",
+    "questions": [
+      "Can I have TAVR if I am pregnant?",
+      "Is TAVR safe during pregnancy?"
+    ],
+    "keywords": [
+      "pregnant",
+      "pregnancy",
+      "baby",
+      "fetus"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.children",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR in children",
+    "text": "TAVR is designed mainly for adults with aortic valve stenosis and is rare in children. Children with heart valve disease may need different treatment, so ask a pediatric cardiologist for specific recommendations.",
+    "questions": [
+      "Can children have TAVR?",
+      "Is TAVR used for kids?"
+    ],
+    "keywords": [
+      "child",
+      "children",
+      "kids",
+      "pediatric",
+      "paediatric"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.obesity",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR and obesity",
+    "text": "Obesity can make TAVR more complicated because it raises the risk during the procedure and the chance of complications. Many people with obesity can still have TAVR. Discuss your weight and overall health with your doctor beforehand.",
+    "questions": [
+      "Can I have TAVR if I am overweight?",
+      "How does obesity affect TAVR?"
+    ],
+    "keywords": [
+      "obesity",
+      "obese",
+      "overweight",
+      "weight",
+      "BMI"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.diabetes",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR and diabetes",
+    "text": "If you have diabetes, managing your blood sugar before and after TAVR is crucial, and good diabetes management can improve outcomes and recovery. Discuss your diabetes management plan with your healthcare team.",
+    "questions": [
+      "Can I have TAVR with diabetes?",
+      "How does diabetes affect TAVR?"
+    ],
+    "keywords": [
+      "diabetes",
+      "blood sugar",
+      "glucose"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.blood_pressure",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR and high blood pressure",
+    "text": "High blood pressure can raise the risk of complications during and after TAVR, so controlling it before the procedure is essential for the best outcomes. Work with a healthcare professional to manage your blood pressure.",
+    "questions": [
+      "How does high blood pressure affect TAVR?",
+      "Can I have TAVR with hypertension?"
+    ],
+    "keywords": [
+      "blood pressure",
+      "hypertension"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "faq.previous_surgery",
+    "procedure_slug": "tavr",
+    "topic": "candidacy",
+    "title": "TAVR after earlier heart surgery",
+    "text": "People who have had heart surgery before may face extra risks with TAVR, but many can still benefit. A thorough evaluation by a cardiologist helps decide the most appropriate approach for the individual situation.",
+    "questions": [
+      "Can I have TAVR if I had heart surgery before?",
+      "What are the risks of TAVR after bypass surgery?"
+    ],
+    "keywords": [
+      "previous surgery",
+      "prior surgery",
+      "bypass",
+      "redo"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "safety.emergency",
+    "procedure_slug": "tavr",
+    "topic": "safety",
+    "title": "When to get emergency help",
+    "text": "Get emergency medical help immediately for chest pain or pressure, severe or sudden shortness of breath, or fainting. Call your local emergency number right away (for example 911 in the United States).",
+    "questions": [
+      "When should I call 911?",
+      "What symptoms are an emergency?",
+      "I have chest pain"
+    ],
+    "keywords": [
+      "emergency",
+      "911",
+      "chest pain",
+      "fainting",
+      "can't breathe",
+      "urgent"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  },
+  {
+    "id": "safety.after_procedure_warning_signs",
+    "procedure_slug": "tavr",
+    "topic": "safety",
+    "title": "Warning signs after TAVR",
+    "text": "Signs of a complication after TAVR include severe chest pain, shortness of breath, fever, and swelling at the catheter insertion site; contact a healthcare professional immediately if you have any of these. Also contact your care team promptly for fever, increasing redness, swelling, pain, or drainage at the entry site, or other new or worsening symptoms, and follow the warning signs in your discharge instructions.",
+    "questions": [
+      "What are the signs of complications after TAVR?",
+      "When should I call my care team after TAVR?",
+      "The groin site is red and swollen"
+    ],
+    "keywords": [
+      "fever",
+      "swelling",
+      "redness",
+      "drainage",
+      "warning signs",
+      "complication",
+      "groin site"
+    ],
+    "structure_ids": [],
+    "source": "TAVR patient information guide"
+  }
+]

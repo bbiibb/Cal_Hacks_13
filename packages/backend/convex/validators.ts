@@ -66,6 +66,22 @@ export const vSceneAction = v.union(
     structure_id: v.string(),
     opacity: v.number(),
   }),
+  v.object({
+    type: v.literal("zoom"),
+    direction: v.union(v.literal("in"), v.literal("out")),
+    amount: v.union(v.literal("small"), v.literal("medium"), v.literal("large")),
+  }),
+  v.object({
+    type: v.literal("rotate"),
+    direction: v.union(
+      v.literal("left"),
+      v.literal("right"),
+      v.literal("up"),
+      v.literal("down"),
+    ),
+    degrees: v.number(),
+  }),
+  v.object({ type: v.literal("reset_view") }),
 );
 
 export const vSource = v.object({
@@ -117,4 +133,22 @@ export const vProcedure = v.object({
   condition_slug: v.union(v.string(), v.null()),
   order: v.number(),
   steps: v.array(vStep),
+});
+
+// --- Chat ---
+
+export const vChatContext = v.object({
+  procedure_slug: v.string(),
+  step_index: v.number(),
+  selected_structure_id: v.union(v.string(), v.null()),
+});
+
+export const vChatResponse = v.object({
+  message: v.string(),
+  scene_actions: v.array(vSceneAction),
+  side_panel: v.union(vSidePanel, v.null()),
+  sources: v.array(vSource),
+  safety: v.string(),
+  doctor_question: v.string(),
+  urgent: v.boolean(),
 });

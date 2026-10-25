@@ -1,0 +1,154 @@
+/* Timeline slider along the bottom of the 3D view */
+.slider {
+  --thumb: 18px;
+  --fill: #5a58a6;
+  --rest: #2b2b36;
+  --ink: #1d2233;
+  --muted: #7a778e;
+  /* The handle travels between the centers of the first and last label */
+  --inset: calc(100% / (2 * var(--steps)) - var(--thumb) / 2);
+
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-family: 'Sora', system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+.track {
+  flex: 1;
+  min-width: 0;
+}
+
+.range {
+  display: block;
+  width: calc(100% - 2 * var(--inset));
+  height: var(--thumb);
+  margin: 0.45rem var(--inset) 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* The bar: filled up to the handle's center */
+.range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0 calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)),
+    var(--rest) calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)) 100%
+  );
+}
+
+.range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0 calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)),
+    var(--rest) calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)) 100%
+  );
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((6px - var(--thumb)) / 2);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--fill);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.range::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--fill);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.range:focus-visible {
+  outline: 2px solid var(--fill);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.labels {
+  display: grid;
+  grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.label {
+  width: 100%;
+  padding: 0.2rem 0.15rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.72rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.label:hover,
+.passed {
+  color: #4a475e;
+}
+
+.current {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.label:focus-visible,
+.arrow:focus-visible {
+  outline: 2px solid var(--fill);
+  outline-offset: 2px;
+}
+
+.number {
+  display: none;
+}
+
+.arrow {
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 1px solid rgba(29, 34, 51, 0.15);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font-size: 1.15rem;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Narrow screens show step numbers; the panel shows the step's title */
+@media (max-width: 560px) {
+  .full {
+    display: none;
+  }
+
+  .number {
+    display: inline;
+  }
+}
