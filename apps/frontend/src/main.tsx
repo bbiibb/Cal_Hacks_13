@@ -3,7 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
-import App from './App.tsx'
+import Landing from './landing/landing.tsx'
 import Walkthrough from './walkthrough/walkthrough.tsx'
 import WalkthroughsList from './walkthroughs_list/walkthroughs_list.tsx'
 import SiteLayout from './layout/site_layout.tsx'
@@ -21,7 +21,7 @@ createRoot(container).render(
       <Routes>
         {/* The header lives in SiteLayout, so it stays put while pages change */}
         <Route element={<SiteLayout />}>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/walkthrough" element={<Walkthrough />} />
           <Route path="/walkthroughs-list" element={<WalkthroughsList />} />
           <Route path="*" element={<ComingSoon />} />
