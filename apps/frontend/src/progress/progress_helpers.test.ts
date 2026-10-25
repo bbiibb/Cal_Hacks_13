@@ -30,9 +30,9 @@ describe('formatRelativeTime', () => {
 describe('summarizeProgress', () => {
   const record: ProgressRecord = { procedureSlug: 'tavr', currentStep: 2, viewedSteps: [0, 1, 2], updatedAtMs: NOW }
 
-  it('counts viewed steps and numbers the current step from one', () => {
+  it('counts viewed steps and numbers the current step like the slider (step 0 is the introduction)', () => {
     const s = summarizeProgress(record, 5)
-    expect(s.stepNumber).toBe(3)
+    expect(s.stepNumber).toBe(2)
     expect(s.totalSteps).toBe(5)
     expect(s.viewedCount).toBe(3)
     expect(s.viewed).toEqual([true, true, true, false, false])
@@ -41,7 +41,7 @@ describe('summarizeProgress', () => {
   })
   it('ignores steps outside the procedure and clamps the current step', () => {
     const s = summarizeProgress({ ...record, currentStep: 9, viewedSteps: [0, 7] }, 3)
-    expect(s.stepNumber).toBe(3)
+    expect(s.stepNumber).toBe(2)
     expect(s.viewedCount).toBe(1)
   })
   it('knows when every step was viewed', () => {
@@ -50,17 +50,17 @@ describe('summarizeProgress', () => {
 })
 
 describe('parseStepParam', () => {
-  it('turns a one-based value into a zero-based index', () => {
-    expect(parseStepParam('1', 5)).toBe(0)
-    expect(parseStepParam('5', 5)).toBe(4)
+  it('reads the step number people see, step 0 being the introduction', () => {
+    expect(parseStepParam('0', 6)).toBe(0)
+    expect(parseStepParam('5', 6)).toBe(5)
   })
   it('rejects anything else', () => {
-    for (const bad of [null, undefined, '', '0', '6', '-1', '2.5', 'abc', '1e1', '99999999999999999999']) {
-      expect(parseStepParam(bad, 5)).toBeNull()
+    for (const bad of [null, undefined, '', '6', '-1', '2.5', 'abc', '1e1', '99999999999999999999']) {
+      expect(parseStepParam(bad, 6)).toBeNull()
     }
   })
   it('round-trips with walkthroughPath', () => {
-    expect(walkthroughPath(2)).toBe('/walkthrough?step=3')
-    expect(parseStepParam('3', 5)).toBe(2)
+    expect(walkthroughPath(3)).toBe('/walkthrough?step=3')
+    expect(parseStepParam('3', 6)).toBe(3)
   })
 })

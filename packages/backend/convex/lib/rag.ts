@@ -62,7 +62,7 @@ export function buildDocs(data: PromptData): RagDocInput[] {
     procedureSlug: data.procedureSlug,
     stepIndex: s.index,
     title: s.title,
-    text: `Step ${s.index + 1}: ${s.title}. ${s.summary}`,
+    text: `Step ${s.index}: ${s.title}. ${s.summary}`,
   }));
   const knowledge = (data.knowledge ?? []).map(docFromChunk);
   return [...structures, ...steps, ...knowledge];
@@ -77,7 +77,7 @@ export function pinnedDocs(data: PromptData): RetrievedDoc[] {
       docId: `step:${data.procedureSlug}:${step.index}`,
       kind: "step",
       title: step.title,
-      text: `Step ${step.index + 1}: ${step.title}. ${step.summary}`,
+      text: `Step ${step.index}: ${step.title}. ${step.summary}`,
     });
   }
   const selected = data.selectedStructureId

@@ -14,7 +14,7 @@ describe("buildSystemPrompt", () => {
 
   it("lists every part id and every step", () => {
     for (const s of data.structures) expect(prompt).toContain(`${s.id}:`);
-    for (const s of data.steps) expect(prompt).toContain(`${s.index + 1}. ${s.title}`);
+    for (const s of data.steps) expect(prompt).toContain(`${s.index}. ${s.title}`);
   });
 
   it("ends with the JSON format instruction", () => {
@@ -26,7 +26,7 @@ describe("buildSystemPrompt", () => {
   });
 
   it("tells the model the number of steps", () => {
-    expect(prompt).toContain(`from 1 to ${data.steps.length}`);
+    expect(prompt).toContain(`from 0 to ${data.steps.length - 1}`);
   });
 
   it("stays short enough for free-tier token limits", () => {
@@ -40,7 +40,7 @@ describe("describeScreen", () => {
     const data = promptData({ currentStepIndex: 1, selectedStructureId: "aorta" });
     const text = describeScreen(data);
     // Read from the content, so adding or renaming steps does not break the test
-    expect(text).toContain(`Step 2 of ${data.steps.length}`);
+    expect(text).toContain(`Step 1 of ${data.steps.length - 1}`);
     expect(text).toContain(data.steps[1]!.title);
     expect(text).toContain("Aorta (aorta)");
   });

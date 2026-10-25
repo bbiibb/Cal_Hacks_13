@@ -34,7 +34,7 @@ function ProgressCard({ displayName }: Props) {
   const record = records[slug]
   const procedure = PROCEDURES[slug]
   const summary = summarizeProgress(record, procedure.totalSteps)
-  const stepTitle = TAVI_PROCEDURE.slug === slug ? TAVI_PROCEDURE.steps[summary.stepNumber - 1]?.short_title : undefined
+  const stepTitle = TAVI_PROCEDURE.slug === slug ? TAVI_PROCEDURE.steps[summary.stepNumber]?.short_title : undefined
 
   return (
     <section className={styles.card} aria-labelledby="progress-title">
@@ -44,7 +44,7 @@ function ProgressCard({ displayName }: Props) {
         {procedure.name}
       </h2>
       <p className={styles.step}>
-        Step {summary.stepNumber} of {summary.totalSteps}
+        Step {summary.stepNumber} of {summary.totalSteps - 1}
         {stepTitle ? <span> · {stepTitle}</span> : null}
       </p>
       <div
@@ -64,7 +64,7 @@ function ProgressCard({ displayName }: Props) {
         {formatRelativeTime(record.updatedAtMs, now)}
       </p>
       <div className={styles.actions}>
-        <Link to={walkthroughPath(summary.stepNumber - 1)} className={styles.primary}>
+        <Link to={walkthroughPath(summary.stepNumber)} className={styles.primary}>
           Continue
           <span aria-hidden="true">→</span>
         </Link>

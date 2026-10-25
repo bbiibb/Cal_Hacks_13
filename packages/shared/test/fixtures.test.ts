@@ -44,15 +44,24 @@ describe("fixtures follow the contract schemas", () => {
     }
   });
 
-  it("TAVR has the five steps of the team's patient explanation", () => {
+  it("TAVR starts with an introduction (step 0), then the five steps of the team's patient explanation", () => {
     expect(procedure.slug).toBe("tavr");
     expect(procedure.steps.map((s) => s.title)).toEqual([
+      "When your aortic valve narrows",
       "Guiding a wire to your heart",
       "Bringing your new valve into position",
       "Expanding your new valve",
       "Removing the delivery equipment",
       "How your new valve works",
     ]);
+  });
+
+  it("step 0 shows only the heart: no instruments, no animation, and the new valve hidden", () => {
+    const intro = procedure.steps[0]!;
+    expect(intro.scene.instruments).toEqual([]);
+    expect(intro.scene.animation_clip).toBeNull();
+    for (const s of intro.scene.structures.filter((x) => x.id.startsWith("transcatheter_valve"))) expect(s.opacity).toBe(0);
+    expect(intro.side_panel.body_markdown.toLowerCase()).toContain("shortness of breath");
   });
 
   it("every instrument used in a step exists, including the balloon", () => {

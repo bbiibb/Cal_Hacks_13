@@ -101,7 +101,7 @@ describe("buildSceneActions", () => {
       context,
     );
     expect(actions).toEqual([
-      { type: "goto_step", procedure_slug: "tavr", step_index: 2 },
+      { type: "goto_step", procedure_slug: "tavr", step_index: 3 },
       { type: "zoom", direction: "out", amount: "medium" },
       { type: "rotate", direction: "right", degrees: 60 },
       { type: "reset_view" },
@@ -109,14 +109,23 @@ describe("buildSceneActions", () => {
   });
 
   it("does not go to the step the patient is already on", () => {
-    expect(buildSceneActions({ ...empty, step: 1 }, context)).toEqual([]);
-    expect(buildSceneActions({ ...empty, step: 3 }, { ...context, currentStepIndex: 2 })).toEqual([]);
-    expect(buildSceneActions({ ...empty, step: 4 }, { ...context, currentStepIndex: 2 })).toHaveLength(1);
+    expect(buildSceneActions({ ...empty, step: 0 }, context)).toEqual([]);
+    expect(buildSceneActions({ ...empty, step: 2 }, { ...context, currentStepIndex: 2 })).toEqual([]);
+    expect(buildSceneActions({ ...empty, step: 3 }, { ...context, currentStepIndex: 2 })).toHaveLength(1);
+  });
+
+  it("goes to step 0, the introduction, from another step", () => {
+    expect(buildSceneActions({ ...empty, step: 0 }, { ...context, currentStepIndex: 2 })).toEqual([
+      { type: "goto_step", procedure_slug: "tavr", step_index: 0 },
+    ]);
+    expect(detectViewCommands("Go to step 0").step).toBe(0);
+    expect(describeCameraCommands(detectViewCommands("go to step 0"), 4)).toBe("Done: moved to step 0.");
   });
 
   it("ignores a step number outside the procedure", () => {
     expect(buildSceneActions({ ...empty, step: 9 }, context)).toEqual([]);
-    expect(buildSceneActions({ ...empty, step: 0 }, context)).toEqual([]);
+    expect(buildSceneActions({ ...empty, step: 4 }, context)).toEqual([]); // the procedure has steps 0 to 3
+    expect(buildSceneActions({ ...empty, step: -1 }, context)).toEqual([]);
   });
 
   it("falls back to the patient's own words when the model leaves the commands out", () => {

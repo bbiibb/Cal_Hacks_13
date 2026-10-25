@@ -54,18 +54,27 @@ describe('demo answers', () => {
 
 describe("answers from the team's step explanations", () => {
   it.each([
-    ['What does the guidewire do?', 0],
-    ['How is the valve compressed to fit?', 1],
-    ['How does the balloon work?', 2],
-    ['How is the catheter withdrawn?', 3],
-    ['How does my new valve work?', 4],
-    ['What happens in step 2?', 1],
+    ['What does the guidewire do?', 1],
+    ['How is the valve compressed to fit?', 2],
+    ['How does the balloon work?', 3],
+    ['How is the catheter withdrawn?', 4],
+    ['How does my new valve work?', 5],
+    ['What happens in step 2?', 2],
   ])('answers "%s" with step %i word for word', (question, index) => {
     const reply = ask(question)
     const step = TAVI_PROCEDURE.steps[index]!
     expect(reply.response.message).toContain(step.side_panel.body_markdown)
-    expect(reply.response.message).toContain(`Step ${index + 1} of 5: ${step.title}`)
+    expect(reply.response.message).toContain(`Step ${index} of 5: ${step.title}`)
     expect(ofType(reply, 'goto_step')[0]?.step_index).toBe(index)
+  })
+
+  it('explains why the procedure is needed in step 0, the introduction', () => {
+    const intro = TAVI_PROCEDURE.steps[0]!
+    expect(ofType(ask('Why is my valve narrowed?', 3), 'goto_step')[0]?.step_index).toBe(0)
+    const reply = ask('What is happening in this step?', 0)
+    expect(reply.response.message).toContain(`Step 0 of 5: ${intro.title}`)
+    expect(reply.response.message).toContain('shortness of breath')
+    expect(reply.followUps.length).toBeGreaterThan(0)
   })
 
   it('has follow-up questions for every step', () => {
@@ -109,15 +118,16 @@ describe('view commands', () => {
   })
 
   it('moves between steps and stays inside the walkthrough', () => {
-    expect(ofType(ask('go to step 3'), 'goto_step')[0]?.step_index).toBe(2)
+    expect(ofType(ask('go to step 3'), 'goto_step')[0]?.step_index).toBe(3)
+    expect(ofType(ask('go to step 0'), 'goto_step')[0]?.step_index).toBe(0)
     expect(ofType(ask('next step', 1), 'goto_step')[0]?.step_index).toBe(2)
-    expect(ofType(ask('next step', 3), 'goto_step')[0]?.step_index).toBe(4)
-    expect(ofType(ask('next step', 4), 'goto_step')).toEqual([])
+    expect(ofType(ask('next step', 4), 'goto_step')[0]?.step_index).toBe(5)
+    expect(ofType(ask('next step', 5), 'goto_step')).toEqual([])
     expect(ofType(ask('go to step 9'), 'goto_step')).toEqual([])
   })
 
   it('does not mistake everyday phrases for commands', () => {
-    expect(ofType(ask('How long until I can go back to work?', 2), 'goto_step')[0]?.step_index).toBe(4)
+    expect(ofType(ask('How long until I can go back to work?', 2), 'goto_step')[0]?.step_index).toBe(5)
     expect(ofType(ask('turn off the highlights'), 'rotate')).toEqual([])
     expect(ofType(ask('What is this walkthrough?'), 'goto_step')).toEqual([])
   })
@@ -145,7 +155,7 @@ describe('view commands', () => {
 
   it('explains the current step and the selected part', () => {
     const reply = ask('What is happening in this step?', 2, 'aortic_annulus')
-    expect(reply.response.message).toContain('Step 3 of 5')
+    expect(reply.response.message).toContain('Step 2 of 5')
     expect(reply.response.message).toContain('aortic annulus')
   })
 })

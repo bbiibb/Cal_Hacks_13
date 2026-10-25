@@ -28,8 +28,13 @@ const MODEL_COLOR = '#FFD3DE'
 
 const heartTranslate: [number, number, number] = [-0.5, -0.5, -0.5];
 
-/** How far the catheter is inserted at each step, 0 to 1 (step 1 first). Steps past the end: fully withdrawn. */
-const CATHETER_FILL_BY_STEP = [0.4, 1, 1, 0.4, 0] as const
+/** How far the catheter is inserted at each step, 0 to 1 (step 0 first: only the heart). Steps past the end: fully withdrawn. */
+const CATHETER_FILL_BY_STEP = [0, 0.4, 1, 1, 0.4, 0] as const
+
+/** The guidewire is out of sight in step 0, which shows only the heart, and in place from step 1 on. */
+function guidewireFillAt(stepIndex: number): number {
+  return stepIndex === 0 ? 0 : 1
+}
 
 function catheterFillAt(stepIndex: number): number {
   return CATHETER_FILL_BY_STEP[stepIndex] ?? 0
@@ -106,8 +111,8 @@ function createSceneObjects(initialStep: number): SceneObject[] {
         [-0.88, -1.9, 0.15],
       ],
       radius: 0.01,
-      fill: 1, // opens at the right insertion depth
-      color: '#ccf0c4', // pastel lavender
+      fill: guidewireFillAt(initialStep), // hidden in step 0, which shows only the heart
+      color: '#ccf0c4', // pastel green
     }),
   ]
 }
@@ -121,7 +126,7 @@ function Walkthroughs() {
   const [objects, setObjects] = useState<SceneObject[]>([])
   const [director] = useState(() => new SceneDirector(lookupStep))
   const [{ client: chatClient, guard: piiGuard }] = useState(() => createGuardedChat(TAVI_PROCEDURE, TAVI_STRUCTURES))
-  // ?step=N (from "Continue" on the landing page) opens the walkthrough at that step; otherwise it starts at step 1
+  // ?step=N (from "Continue" on the landing page) opens the walkthrough at that step; otherwise it starts at step 0, the introduction
   const [searchParams] = useSearchParams()
   const [stepIndex, setStepIndex] = useState(
     () => parseStepParam(searchParams.get(STEP_PARAM), TAVI_PROCEDURE.steps.length) ?? 0
@@ -147,8 +152,9 @@ function Walkthroughs() {
     stepRef.current = stepIndex
   }, [stepIndex])
 
-  // The live catheter, so step changes can move it
+  // The live catheter and guidewire, so step changes can move them
   const catheterRef = useRef<CurveFollower | null>(null)
+  const guidewireRef = useRef<CurveFollower | null>(null)
 
   const pin = useCallback(
     (structureId: string | null) => {
@@ -189,7 +195,9 @@ function Walkthroughs() {
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
     const created = createSceneObjects(stepRef.current)
-    catheterRef.current = created.find((o): o is CurveFollower => o instanceof CurveFollower) ?? null
+    const followers = created.filter((o): o is CurveFollower => o instanceof CurveFollower)
+    catheterRef.current = followers[0] ?? null // the catheter comes first, then the guidewire
+    guidewireRef.current = followers[1] ?? null
     // Open the page with ?regions to color each named part of a model, for checking where the regions lie
     if (new URLSearchParams(window.location.search).has('regions')) {
       for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
@@ -200,6 +208,7 @@ function Walkthroughs() {
     if (step) director.showStep(step.scene)
     return () => {
       catheterRef.current = null
+      guidewireRef.current = null
       director.setObjects([])
       created.forEach((o) => o.dispose())
     }
@@ -208,6 +217,7 @@ function Walkthroughs() {
   // The catheter advances or withdraws to the current step's insertion depth
   useEffect(() => {
     catheterRef.current?.animateFillTo(catheterFillAt(stepIndex))
+    guidewireRef.current?.animateFillTo(guidewireFillAt(stepIndex))
   }, [stepIndex])
 
   const changeStep = useCallback(

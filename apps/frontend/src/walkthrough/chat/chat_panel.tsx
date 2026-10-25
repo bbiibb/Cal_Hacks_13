@@ -291,7 +291,7 @@ function ChatPanel({
       {step && (
         <section className={styles.step} aria-label="Current step">
           <p className={styles.stepLabel}>
-            Step {stepIndex + 1} of {procedure.steps.length}
+            Step {stepIndex} of {procedure.steps.length - 1}
           </p>
           <h3 className={styles.stepTitle}>{step.title}</h3>
           <p className={styles.stepBody}>{step.side_panel.body_markdown}</p>

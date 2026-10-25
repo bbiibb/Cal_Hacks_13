@@ -47,7 +47,7 @@ function StepSlider({ steps, value, onChange }: Props) {
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           aria-label="Procedure step"
-          aria-valuetext={current ? `Step ${value + 1} of ${steps.length}: ${current.title}` : undefined}
+          aria-valuetext={current ? `Step ${value} of ${last}: ${current.title}` : undefined}
         />
         <ol className={styles.labels}>
           {steps.map((step) => (
@@ -65,7 +65,7 @@ function StepSlider({ steps, value, onChange }: Props) {
               >
                 <span className={styles.full}>{step.short_title}</span>
                 <span className={styles.number} aria-hidden="true">
-                  {step.index + 1}
+                  {step.index}
                 </span>
               </button>
             </li>

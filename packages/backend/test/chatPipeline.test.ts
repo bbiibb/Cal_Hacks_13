@@ -39,7 +39,7 @@ describe("runChat with a weaker model", () => {
     const reply = "Sure, here you go:\n```json\n" + json({ answer: "Here is step 4.", step: "4" }) + "\n```";
     const { result, callModel } = await run("Show me step 4", [reply]);
     expect(callModel).toHaveBeenCalledTimes(1);
-    expect(result.response.scene_actions).toEqual([{ type: "goto_step", procedure_slug: "tavr", step_index: 3 }]);
+    expect(result.response.scene_actions).toEqual([{ type: "goto_step", procedure_slug: "tavr", step_index: 4 }]);
   });
 
   it("retries once when the first reply is not JSON", async () => {

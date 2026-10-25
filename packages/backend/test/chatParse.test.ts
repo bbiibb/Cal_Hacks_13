@@ -97,7 +97,7 @@ describe("parseLlmOutput", () => {
       JSON.stringify({
         answer: "ok",
         highlight: ["aorta", 5, null, "aorta", ""],
-        step: 0,
+        step: -1,
         zoom: "sideways",
         rotate: { direction: "diagonal", degrees: 30 },
       }),
@@ -122,5 +122,12 @@ describe("parseLlmOutput", () => {
     expect(big?.rotate?.degrees).toBe(180);
     expect(small?.rotate?.degrees).toBe(5);
     expect(missing?.rotate?.degrees).toBe(45);
+  });
+});
+
+describe("parseLlmOutput step numbers", () => {
+  it("accepts step 0, the introduction", () => {
+    expect(parseLlmOutput(JSON.stringify({ answer: "ok", step: 0 }))?.step).toBe(0);
+    expect(parseLlmOutput(JSON.stringify({ answer: "ok", step: "0" }))?.step).toBe(0);
   });
 });
