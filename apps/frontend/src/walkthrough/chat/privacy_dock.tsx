@@ -226,7 +226,7 @@ export default function PrivacyDock({ guard }: { guard: PiiGuard }) {
           What left your device
           {entries.length > 0 && <span className={styles.count}> ({entries.length}{blockedCount > 0 ? `, ${blockedCount} blocked` : ''})</span>}
         </button>
-        <span className={styles.voiceNote}>Voice is off while the privacy layer is on.</span>
+        <span className={styles.voiceNote}>Spoken questions are not covered by the privacy layer.</span>
       </div>
       <div id={drawerId} hidden={!open} className={styles.drawer}>
         <p className={styles.hint}>{status.detail}</p>

@@ -82,8 +82,8 @@ Protects against:
 Does **not** protect against:
 
 - A compromised device, browser, or extension, and XSS on this origin (they can read memory and use the vault key).
-- PII in images or audio. **Voice bypass:** `askByVoice` is not forwarded by the guard, because audio is transcribed on the
-  server before any text guard can run. The microphone is therefore hidden when the guard is on. A fix needs on-device
+- PII in images or audio. **Voice bypass:** the guard passes `askByVoice` straight through, because audio is transcribed on the
+  server before any text guard can run. The microphone stays available, so spoken details are not covered by the guard (the backend still removes emails, phone numbers, ID-like numbers and birth dates, and deletes the recording at once). A fix needs on-device
   transcription.
 - PII the detectors miss (unusual formats, nicknames, misspellings, indirect identifiers, rare conditions plus a small town).
 - The user typing their own data into other fields or apps that are not guarded.
