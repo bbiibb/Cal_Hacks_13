@@ -71,6 +71,11 @@ export interface ChatClient {
   /** "demo" for the built-in answers, "live" for the backend. Shown in the panel. */
   readonly mode: 'demo' | 'live'
   ask(request: ChatRequest): Promise<ChatReply>
+  /**
+   * Answer a spoken question. Absent when the backend cannot transcribe, so the panel hides the microphone.
+   * `transcript` is what the backend heard, shown as the patient's message.
+   */
+  askByVoice?(audio: Blob, context: ChatContext): Promise<ChatReply & { transcript: string }>
 }
 
 /** An error with a stable code, so the panel can show a friendly message. */

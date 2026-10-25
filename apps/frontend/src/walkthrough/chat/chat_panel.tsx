@@ -3,12 +3,13 @@ import type { Procedure } from '@cal-hacks/shared'
 import type { ChatClient, ChatResponse, SceneAction } from './chat_types'
 import { ChatError, MAX_CHAT_MESSAGE_LENGTH } from './chat_types'
 import { STARTER_QUESTIONS } from './follow_ups'
+import { canRecordVoice, MAX_RECORDING_MS, VoiceError, VoiceRecorder } from './voice_recorder'
 import styles from './chat_panel.module.css'
 
 type Message =
   | { id: number; role: 'user'; text: string }
   | { id: number; role: 'assistant'; text: string; response?: ChatResponse; followUps: string[] }
-  | { id: number; role: 'error'; text: string; retry: string }
+  | { id: number; role: 'error'; text: string; retry: string | null }
 
 type Props = {
   client: ChatClient
@@ -37,6 +38,25 @@ function errorText(error: unknown): string {
     return error.message
   }
   return 'Something went wrong. Please try again.'
+}
+
+/** Friendly wording for a failed voice question. */
+function voiceErrorText(error: unknown): string {
+  if (error instanceof VoiceError) return error.message
+  if (error instanceof ChatError) {
+    if (error.code === 'no_speech_detected') {
+      return "I couldn't hear a question. Try again a little closer to the microphone, or type it instead."
+    }
+    if (error.code === 'server_error' || error.code === 'upload_failed') {
+      return 'Voice questions are not working right now. Please type your question instead.'
+    }
+  }
+  return errorText(error)
+}
+
+/** 0:07 style time for the recording timer. */
+function formatSeconds(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
 
 /** Parts the answer highlighted, shown as buttons that focus the 3D view on them. */
@@ -78,6 +98,8 @@ function ChatPanel({
   ])
   const [input, setInput] = useState('')
   const [pending, setPending] = useState(false)
+  const [voice, setVoice] = useState<'idle' | 'recording' | 'transcribing'>('idle')
+  const [seconds, setSeconds] = useState(0)
   const nextId = useRef(1)
   const logRef = useRef<HTMLDivElement>(null)
   const mounted = useRef(true)
@@ -88,6 +110,23 @@ function ChatPanel({
       mounted.current = false
     }
   }, [])
+
+  const voiceSupported = client.askByVoice !== undefined
+  const voiceAvailable = voiceSupported && canRecordVoice()
+  const recorderRef = useRef(new VoiceRecorder()) // construction is cheap and touches nothing until start()
+  const voiceBusy = useRef(false)
+  // Release the microphone if the panel goes away mid-recording
+  useEffect(() => {
+    const active = recorderRef.current
+    return () => active.cancel()
+  }, [])
+
+  // Count the seconds of a recording
+  useEffect(() => {
+    if (voice !== 'recording') return
+    const timer = setInterval(() => setSeconds((n) => n + 1), 1000)
+    return () => clearInterval(timer)
+  }, [voice])
 
   // Keep the newest message in view
   useEffect(() => {
@@ -130,6 +169,66 @@ function ChatPanel({
       setMessages((list) => [...list, { id: nextId.current++, role: 'error', text: errorText(error), retry: message }])
     } finally {
       if (mounted.current) setPending(false)
+    }
+  }
+
+  function currentContext() {
+    return { procedure_slug: procedure.slug, step_index: stepIndex, selected_structure_id: selectedStructureId }
+  }
+
+  async function submitVoice(audio: Blob) {
+    if (!client.askByVoice || voiceBusy.current) return
+    voiceBusy.current = true
+    setVoice('transcribing')
+    setPending(true)
+    try {
+      const { transcript, response, followUps } = await client.askByVoice(audio, currentContext())
+      if (!mounted.current) return
+      setMessages((list) => [
+        ...list,
+        { id: nextId.current++, role: 'user', text: transcript },
+        { id: nextId.current++, role: 'assistant', text: response.message, response, followUps },
+      ])
+      onSceneActions(response.scene_actions)
+    } catch (error) {
+      if (!mounted.current) return
+      console.error('Chat: the voice question could not be answered', error)
+      setMessages((list) => [...list, { id: nextId.current++, role: 'error', text: voiceErrorText(error), retry: null }])
+    } finally {
+      voiceBusy.current = false
+      if (mounted.current) {
+        setPending(false)
+        setVoice('idle')
+      }
+    }
+  }
+
+  // A recording that reaches the maximum length is sent as if the patient stopped it
+  useEffect(() => {
+    recorderRef.current.onAutoStop = (audio) => void submitVoice(audio)
+  })
+
+  async function toggleRecording() {
+    const active = recorderRef.current
+    if (pending) return
+    if (voice === 'recording') {
+      try {
+        const audio = await active.stop()
+        if (mounted.current) void submitVoice(audio) // ignored if the auto-stop already sent it
+      } catch (error) {
+        if (!mounted.current) return
+        setVoice('idle')
+        setMessages((list) => [...list, { id: nextId.current++, role: 'error', text: voiceErrorText(error), retry: null }])
+      }
+      return
+    }
+    try {
+      await active.start()
+      setSeconds(0)
+      if (mounted.current) setVoice('recording')
+    } catch (error) {
+      if (!mounted.current) return
+      setMessages((list) => [...list, { id: nextId.current++, role: 'error', text: voiceErrorText(error), retry: null }])
     }
   }
 
@@ -220,9 +319,11 @@ function ChatPanel({
             return (
               <div key={m.id} className={styles.errorBubble}>
                 <p className={styles.paragraph}>{m.text}</p>
-                <button type="button" className={styles.retry} onClick={() => void send(m.retry)} disabled={pending}>
-                  Try again
-                </button>
+                {m.retry !== null && (
+                  <button type="button" className={styles.retry} onClick={() => void send(m.retry!)} disabled={pending}>
+                    Try again
+                  </button>
+                )}
               </div>
             )
           }
@@ -315,9 +416,45 @@ function ChatPanel({
           <span className={styles.counter} aria-live="polite">
             {remaining <= 100 ? `${remaining} characters left` : ''}
           </span>
-          <button type="submit" className={styles.send} disabled={pending || input.trim() === ''}>
-            Send
-          </button>
+          <div className={styles.actions}>
+            {voiceSupported && (
+              <button
+                type="button"
+                className={voice === 'recording' ? styles.micRecording : styles.mic}
+                onClick={() => void toggleRecording()}
+                disabled={!voiceAvailable || voice === 'transcribing' || (pending && voice !== 'recording')}
+                aria-pressed={voice === 'recording'}
+                aria-label={
+                  !voiceAvailable
+                    ? 'Voice questions are not supported in this browser'
+                    : voice === 'recording'
+                      ? `Stop recording, ${formatSeconds(seconds)} so far`
+                      : voice === 'transcribing'
+                        ? 'Listening to your question'
+                        : 'Ask by voice'
+                }
+                title={voiceAvailable ? undefined : 'Voice questions are not supported in this browser'}
+              >
+                {voice === 'recording' ? (
+                  <>
+                    <span className={styles.recordDot} aria-hidden="true" />
+                    <span aria-hidden="true">
+                      {formatSeconds(seconds)} / {formatSeconds(MAX_RECORDING_MS / 1000)}
+                    </span>
+                  </>
+                ) : voice === 'transcribing' ? (
+                  <span aria-hidden="true">Transcribing…</span>
+                ) : (
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor">
+                    <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z" />
+                  </svg>
+                )}
+              </button>
+            )}
+            <button type="submit" className={styles.send} disabled={pending || voice !== 'idle' || input.trim() === ''}>
+              Send
+            </button>
+          </div>
         </div>
       </form>
 

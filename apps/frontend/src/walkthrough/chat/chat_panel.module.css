@@ -461,3 +461,64 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mic,
+.micRecording {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--panel-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--panel-ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.mic:hover:not(:disabled) {
+  border-color: var(--panel-accent);
+  color: var(--panel-accent);
+}
+
+.micRecording {
+  border-color: rgba(239, 68, 68, 0.7);
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+}
+
+.mic:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.recordDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: recordPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes recordPulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recordDot {
+    animation: none;
+  }
+}
