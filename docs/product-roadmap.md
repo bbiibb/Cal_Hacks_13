@@ -76,16 +76,15 @@ Interpretation from the backend point of view:
 
 ## 5. Heart part variables (`structure_id`) status
 
-For the 15 TAVR-related structures currently in `packages/shared/fixtures/structures.json`, see `docs/tavr-demo.md`.
+For the 19 structures currently in `packages/shared/fixtures/structures.json`, see `docs/tavr-demo.md`.
 Candidates to add when extending "a variable for each part of the heart" are listed below. Add them **after the mesh names of the real 3D model are fixed**, matching those names.
 
 | Candidate id (proposed) | Meaning | Note |
 |---|---|---|
-| `left_atrium`, `right_atrium` | Left atrium, right atrium | Not added |
-| `right_ventricle` | Right ventricle | Not added |
+| `left_atrium` | Left atrium | Not added |
+| `right_atrium`, `right_ventricle`, `superior_vena_cava`, `pulmonary_artery` | Right atrium, right ventricle, superior vena cava, pulmonary artery | ✅ Added; located inside `heart_part_2.glb` by position (`heart_regions.ts`), borders are approximate |
 | `interventricular_septum` | Interventricular septum | Not added |
 | `mitral_valve`, `tricuspid_valve`, `pulmonary_valve` | Mitral, tricuspid, and pulmonary valves | Not added (the aortic valve already exists as `aortic_valve`) |
-| `pulmonary_artery` | Pulmonary artery | Not added |
 | `left_ventricle`, `aorta`, `aortic_valve`, `left_coronary_artery`, `right_coronary_artery` | Left ventricle, aorta, aortic valve, left and right coronary arteries | ✅ Already there |
 
 ## 6. Data flow

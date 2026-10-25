@@ -60,6 +60,30 @@
     "description": "The heart chamber that pumps blood into the aorta."
   },
   {
+    "id": "right_ventricle",
+    "name_en": "Right ventricle",
+    "parent_id": null,
+    "description": "The heart chamber that pumps blood to the lungs."
+  },
+  {
+    "id": "right_atrium",
+    "name_en": "Right atrium",
+    "parent_id": null,
+    "description": "The heart chamber that receives blood returning from the body and passes it to the right ventricle."
+  },
+  {
+    "id": "superior_vena_cava",
+    "name_en": "Superior vena cava",
+    "parent_id": null,
+    "description": "The large vein that brings blood from the head and arms back to the right atrium."
+  },
+  {
+    "id": "pulmonary_artery",
+    "name_en": "Pulmonary artery",
+    "parent_id": null,
+    "description": "The large artery that carries blood from the right ventricle to the lungs."
+  },
+  {
     "id": "left_coronary_artery",
     "name_en": "Left coronary artery",
     "parent_id": null,
