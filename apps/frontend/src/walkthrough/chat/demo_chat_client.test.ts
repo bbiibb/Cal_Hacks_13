@@ -128,6 +128,21 @@ describe('view commands', () => {
     expect(reply.response.side_panel?.title).toBe('Aortic annulus')
   })
 
+  it('points at the heart chambers and vessels by name', () => {
+    const cases: [string, string][] = [
+      ['Show me the right atrium', 'right_atrium'],
+      ['Where is the right ventricle?', 'right_ventricle'],
+      ['Show me the left ventricle', 'left_ventricle'],
+      ['Where is the vena cava?', 'superior_vena_cava'],
+      ['Point at the pulmonary artery', 'pulmonary_artery'],
+    ]
+    for (const [question, id] of cases) {
+      const reply = ask(question)
+      expect(ofType(reply, 'focus')[0]?.structure_id).toBe(id)
+      expect(ofType(reply, 'highlight')[0]?.structure_ids).toEqual([id])
+    }
+  })
+
   it('explains the current step and the selected part', () => {
     const reply = ask('What is happening in this step?', 2, 'aortic_annulus')
     expect(reply.response.message).toContain('Step 3 of 5')
