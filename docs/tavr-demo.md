@@ -19,14 +19,15 @@ The valve type is decided by the explanation: a **balloon-expandable** valve.
 
 ## 3D asset status
 
-A `structure_id` must match a GLB mesh name one to one. The names below are the ones the fixtures assume, and **they must be matched with the real mesh names together with the 3D owner.**
+A `structure_id` should match a GLB mesh name one to one. The models in use are single meshes (`heart_part_2.glb`, the aortic root and the aortic arch), so `scene_bindings.ts` stands one model file in for a structure, and the heart's chambers and vessels are told apart by outlines (`heart_regions.ts`). Re-export one mesh per part to replace these stand-ins.
 
 | Subject | id | Status |
 |---|---|---|
-| Original aortic valve (three leaflets, calcification) | `aortic_valve`, `aortic_valve.leaflet_*`, `aortic_valve.calcification` | Candidate model found |
-| Aorta, aortic root, annulus, left ventricle, coronary arteries | `aorta*`, `aortic_annulus`, `left_ventricle`, `*_coronary_artery` | To be confirmed |
-| Delivery equipment | `guidewire`, `delivery_catheter` (instruments) | Candidate model found |
-| Frame of the new valve | `transcatheter_valve.frame` | To be confirmed |
+| Original aortic valve (three leaflets, calcification) | `aortic_valve`, `aortic_valve.leaflet_*`, `aortic_valve.calcification` | In the scene: the aortic root model stands for all of them |
+| Aorta, aortic root, annulus, left ventricle, coronary arteries | `aorta*`, `aortic_annulus`, `left_ventricle`, `*_coronary_artery` | Aorta (arch model and the heart's own ascending part) and left ventricle are in the scene. The annulus and coronary arteries point at the aortic root model |
+| Right atrium, right ventricle, superior vena cava, pulmonary artery | same names | In the scene, as outlines on the heart model |
+| Delivery equipment | `guidewire`, `delivery_catheter` (instruments) | Being built by a teammate |
+| Frame of the new valve | `transcatheter_valve.frame` | Not modeled yet (points at the aortic root model) |
 | **Leaflets of the new valve** | `transcatheter_valve.leaflets` | **No model yet (TODO)** |
 
 While there is no model for the leaflets of the new valve, a temporary treatment is needed: hide `transcatheter_valve.leaflets` (opacity 0) or show only the frame.

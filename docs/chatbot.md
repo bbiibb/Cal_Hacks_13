@@ -145,8 +145,9 @@ Animate these over about 0.5 to 1 second so the change is easy to follow.
 
 ## Limits and what is not built
 
-- **No rate limiting beyond one question per 1.5 seconds per session.** Anyone who knows the deployment URL could use up the free quota. Add a real limit before sharing the app.
+- **No rate limiting beyond one question per 1.5 seconds per session.** The wait only applies when a session id is sent, and creating sessions or upload URLs is not limited. Anyone who knows the deployment URL could use up the quota. Add a real limit before sharing the app, and a daily budget for fast mode.
 - The free providers return "busy" (error code `llm_rate_limited`) when too many questions arrive in a minute. The server waits up to 8 seconds once when the provider says when to retry, then gives up. The UI should show a friendly message and let the patient try again.
-- Answers are only as good as the content in the database. The dummy content is not medical advice.
-- Conversation history is kept per session in `chatMessages` (the latest 6 messages) plus a short summary (see "Conversation memory"). There is no login, so sessions are anonymous.
+- Answers are only as good as the content in the database. The TAVR facts come from the team's document and are taken as correct; none of it is medical advice.
+- **English only.** The rules that do not depend on the model (camera commands, part names, emergency symptoms, the scope gate, personal-detail removal) read English, so other languages are not supported.
+- Conversation history is kept per session in `chatMessages` (the latest 6 messages) plus a short summary (see "Conversation memory"). There is no login yet, so sessions are anonymous; they will be tied to the user database a teammate is building.
 - Sources are built (the reference facts and how they are found: [`knowledge-base.md`](knowledge-base.md)). Not built yet: the comprehension quiz and the "questions for your doctor" summary.

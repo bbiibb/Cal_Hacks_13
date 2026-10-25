@@ -2,18 +2,18 @@
 
 The chatbot answers from a small library of patient-education facts instead of from the model's memory. This document describes what the library contains, how the chatbot finds the right fact, how the prompts keep the reply in the required JSON format, and how to change the content.
 
-The first library is built from the team's document **"Information about TAVR: data for chatbot"** (18 pages). It is **not clinically reviewed** yet. All of it is educational text, never personal medical advice (see [`safety.md`](safety.md)).
+The first library is built from the team's document **"Information about TAVR: data for chatbot"** (18 pages). The project takes that document as correct and does not review it separately. Four heart-anatomy facts (right atrium, right ventricle, superior vena cava, pulmonary artery) were written by the project and are labeled that way as their source. All of it is educational text, never personal medical advice (see [`safety.md`](safety.md)).
 
 ## What is in it
 
-`packages/shared/fixtures/knowledge.tavr.json`: 80 short chunks (about 300 characters each, at most 600). One chunk answers one kind of question, with the answer first. This matters for a 3B model: it quotes a short, single-topic chunk well, and it mixes up a long chunk that lists many items (a test showed a "kidney disease" question being answered with the sentence about leg arteries from the same list, so lists were split into one chunk per item).
+`packages/shared/fixtures/knowledge.tavr.json`: 84 short chunks (about 300 characters each, at most 600). One chunk answers one kind of question, with the answer first. This matters for a 3B model: it quotes a short, single-topic chunk well, and it mixes up a long chunk that lists many items (a test showed a "kidney disease" question being answered with the sentence about leg arteries from the same list, so lists were split into one chunk per item).
 
 | Topic | Chunks | Content from the document |
 |---|---|---|
 | `overview` | 4 | What TAVR/TAVI is, how it works in principle, benefits, effectiveness |
 | `condition` | 3 | Aortic stenosis, symptoms, why TAVR is done |
 | `candidacy` | 20 | Indications, evaluation, one chunk per unsuitable factor (infection, lung, heart failure, kidney or liver, leg arteries, earlier surgery, anatomy, frailty), the heart team, and the questions on older adults, pregnancy, children, obesity, diabetes, blood pressure, earlier heart surgery |
-| `anatomy` | 6 | Femoral artery, aorta, aortic arch, aortic valve, left ventricle, left atrium |
+| `anatomy` | 10 | Femoral artery, aorta, aortic arch, aortic valve, left ventricle, left atrium, plus right atrium, right ventricle, superior vena cava and pulmonary artery (written by the project) |
 | `procedure` | 4 | How the valve is delivered, no chest incision, the approaches (transfemoral, transapical, transaortic, subclavian) |
 | `comparison` | 7 | TAVR compared with open-heart surgery (SAVR): overall, younger and older patients, life expectancy and health, anatomy and other heart problems, blood thinners, how long the valve lasts |
 | `instruments` | 6 | Introducer sheath, guidewire, delivery catheter, balloon, the new valve, temporary pacemaker |
