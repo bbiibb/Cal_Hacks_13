@@ -136,6 +136,10 @@ function Walkthroughs() {
   // Creation and disposal share one lifecycle, so every mount gets live objects
   useEffect(() => {
     const created = createSceneObjects()
+    // Open the page with ?regions to color each named part of a model, for checking where the regions lie
+    if (new URLSearchParams(window.location.search).has('regions')) {
+      for (const object of created) if (object instanceof ModelObject) object.setRegionDebug(true)
+    }
     setObjects(created)
     director.setObjects(created)
     const step = TAVI_PROCEDURE.steps[stepRef.current]

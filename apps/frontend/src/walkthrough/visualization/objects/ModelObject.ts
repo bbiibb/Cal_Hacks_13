@@ -35,6 +35,7 @@ export class ModelObject extends SceneObject {
   private readonly regionBoxes = new Map<string, { mesh: THREE.Mesh; box: THREE.Box3 }[]>()
   private readonly glowMask = { value: 0 }
   private readonly glowStrength = { value: 0 }
+  private readonly regionDebug = { value: 0 }
 
   constructor({ path, color, material, regions, ...transform }: ModelObjectOptions) {
     super({
@@ -98,6 +99,11 @@ export class ModelObject extends SceneObject {
     return bounds.isEmpty() ? null : bounds
   }
 
+  /** Tint every region in its own color, to check where the regions lie. */
+  setRegionDebug(on: boolean): void {
+    this.regionDebug.value = on ? 1 : 0
+  }
+
   /** Make exactly these regions glow. `strength` is the glow brightness, 0 to 1. */
   setRegionGlow(regionIds: ReadonlySet<string>, strength: number): void {
     let mask = 0
@@ -147,13 +153,19 @@ export class ModelObject extends SceneObject {
     material.onBeforeCompile = (shader) => {
       shader.uniforms.uGlowMask = this.glowMask
       shader.uniforms.uGlowStrength = this.glowStrength
+      shader.uniforms.uRegionDebug = this.regionDebug
       shader.vertexShader = shader.vertexShader
         .replace('#include <common>', '#include <common>\nattribute float aRegion;\nflat varying float vRegion;')
         .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRegion = aRegion;')
       shader.fragmentShader = shader.fragmentShader
         .replace(
           '#include <common>',
-          '#include <common>\nflat varying float vRegion;\nuniform int uGlowMask;\nuniform float uGlowStrength;'
+          '#include <common>\nflat varying float vRegion;\nuniform int uGlowMask;\nuniform float uGlowStrength;\nuniform float uRegionDebug;'
+        )
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+          if (uRegionDebug > 0.5 && vRegion > 0.5) diffuseColor.rgb = 0.5 + 0.5 * cos(6.2831 * (vRegion * 0.37 + vec3(0.0, 0.33, 0.67)));`
         )
         .replace(
           '#include <emissivemap_fragment>',

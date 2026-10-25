@@ -122,6 +122,8 @@ export class SceneDirector {
     const pointed = hits.flatMap((hit) => {
       const model = this.ownerOf(hit.object, candidates)
       if (!model) return []
+      // A cut-away part of a sliced model is not drawn, so the pointer must go through it
+      if (model.material?.clippingPlanes?.some((plane) => plane.distanceToPoint(hit.point) < 0)) return []
       const id = model.hasRegions ? model.regionAt(hit) : (MODEL_BINDINGS[model.path]?.primary ?? null)
       return id ? [{ model, id }] : []
     })
@@ -314,8 +316,11 @@ export class SceneDirector {
       } else {
         glow = ids.some((id) => this.highlighted.has(id) || id === this.selected)
       }
-      // Several structures share one model, so the model is as visible as its most visible structure
-      const levels = ids.flatMap((id) => {
+      // Several structures share one model, so the model is as visible as its most visible structure.
+      // A model with named regions is one see-through body: only its main part sets how visible it is.
+      const primary = MODEL_BINDINGS[model.path]?.primary
+      const opacityIds = model.hasRegions && primary ? [primary] : ids
+      const levels = opacityIds.flatMap((id) => {
         const level = this.opacity.get(id)
         return level === undefined ? [] : [level]
       })

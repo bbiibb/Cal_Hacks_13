@@ -43,6 +43,7 @@ export const MODEL_BINDINGS: Readonly<Record<string, ModelBinding>> = {
     ],
   },
   '/models/aortic_arch.glb': { primary: 'aorta', structures: ['aorta', 'aorta.ascending'] },
+  '/models/aortic_arch_fixed.glb': { primary: 'aorta', structures: ['aorta', 'aorta.ascending'] },
   '/models/heart_part_1.glb': { primary: 'left_ventricle', structures: ['left_ventricle'] },
   '/models/heart_part_2.glb': {
     primary: 'left_ventricle',

@@ -168,6 +168,7 @@ export class SlicedModelObject extends ModelObject {
     cap.name = 'slice-cap'
     cap.renderOrder = this.renderOrderBase + 1
     cap.frustumCulled = false // must always draw, so the stencil is always reset afterwards
+    cap.raycast = () => {} // a large flat plane that is mostly not drawn: never a pick target
     cap.onAfterRender = (renderer) => renderer.clearStencil()
     this.root.add(cap)
     return cap

@@ -5,6 +5,7 @@ import type { RegionMap } from './regions'
  * Use these constants instead of retyping the strings.
  */
 export const SUPERIOR_VENA_CAVA = 'superior_vena_cava'
+export const AORTA = 'aorta'
 export const PULMONARY_ARTERY = 'pulmonary_artery'
 export const RIGHT_ATRIUM = 'right_atrium'
 export const RIGHT_VENTRICLE = 'right_ventricle'
@@ -14,13 +15,17 @@ export const LEFT_VENTRICLE = 'left_ventricle'
  * Where each part sits in heart_part_2.glb (the front half of the heart, cut open), in the file's own x-y units.
  * In this file x grows toward the patient's left and y grows upward; the apex is at the lower left of the screen.
  *
- * The outlines follow the cut edge of the model, which shows the walls and chambers of a four-chamber view:
- * the superior vena cava and right atrium share the channel on the patient's right, the pulmonary artery is the
- * tube beside it, the thick septum runs diagonally down toward the apex, and the left ventricle is the large
- * cavity beyond it. The front chambers are matched to the same positions, so borders are still approximate.
+ * The outlines follow the cut edge of the model, which shows a four-chamber view. From the patient's right to left
+ * along the top: the superior vena cava, the ascending aorta (the heart's own stub of it, so it carries the id of
+ * the aorta model) and the pulmonary artery, whose lumen is the round opening. The right atrium lies under the
+ * vena cava, the thick septum runs diagonally down toward the apex, the left ventricle is the large cavity beyond
+ * it, and the right ventricle fills the space in front of the septum up to the pulmonary artery.
+ * The front chambers are matched to the same positions, so borders are still approximate.
+ *
  * To adjust one, move its corner points; the order of the entries decides who wins where outlines overlap.
+ * Open the walkthrough with ?regions in the address to see every region in its own color.
  * Not named yet, because the front half does not show them clearly: left atrium, pulmonary veins,
- * inferior vena cava and the tricuspid, mitral and pulmonary valves. The aorta and aortic valve have their own models.
+ * inferior vena cava and the tricuspid, mitral and pulmonary valves. The aortic valve has its own model.
  */
 export const HEART_PART_2_REGIONS: RegionMap = {
   [SUPERIOR_VENA_CAVA]: [
@@ -29,11 +34,23 @@ export const HEART_PART_2_REGIONS: RegionMap = {
     [-34, -100],
     [-11, -100],
   ],
-  [PULMONARY_ARTERY]: [
+  [AORTA]: [
     [-10, -47],
     [8, -47],
-    [10, -98],
-    [-9, -100],
+    [9, -103],
+    [-9, -105],
+  ],
+  [PULMONARY_ARTERY]: [
+    [7, -47],
+    [13, -50],
+    [22, -60],
+    [29, -70],
+    [30, -82],
+    [26, -90],
+    [14, -92],
+    [6, -84],
+    [5, -68],
+    [6, -55],
   ],
   [RIGHT_ATRIUM]: [
     [-11, -100],
@@ -47,9 +64,13 @@ export const HEART_PART_2_REGIONS: RegionMap = {
     [-4, -114],
   ],
   [RIGHT_VENTRICLE]: [
-    [-9, -100],
-    [10, -100],
-    [8, -125],
+    [-9, -104],
+    [9, -103],
+    [12, -96],
+    [26, -92],
+    [30, -96],
+    [24, -112],
+    [10, -126],
     [14, -150],
     [30, -172],
     [38, -185],
@@ -59,8 +80,7 @@ export const HEART_PART_2_REGIONS: RegionMap = {
     [-12, -98],
   ],
   [LEFT_VENTRICLE]: [
-    [10, -100],
-    [24, -92],
+    [30, -96],
     [40, -103],
     [60, -120],
     [72, -132],
@@ -71,6 +91,7 @@ export const HEART_PART_2_REGIONS: RegionMap = {
     [38, -185],
     [30, -172],
     [14, -150],
-    [8, -125],
+    [10, -126],
+    [24, -112],
   ],
 }
