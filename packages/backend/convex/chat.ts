@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import { action, internalMutation, mutation, type MutationCtx } from "./_generated/server";
 import { answerQuestion } from "./lib/chatRun";
 import { transcribeStoredAudio } from "./lib/speechRun";
+import { voiceQuestion } from "./lib/speechText";
 import { vChatContext, vChatResponse } from "./validators";
 
 /** Starts a conversation. The returned id is passed to `ask` so the chat keeps its history. */
@@ -88,7 +89,8 @@ export const askByVoice = action({
       throw new ConvexError({ code: "no_speech_detected", message: "I could not hear a question. Please try again." });
     }
     const response = await answerQuestion(ctx, {
-      message: heard.text,
+      // A long spoken question is cut to the length a typed one may have, instead of being rejected
+      message: voiceQuestion(heard.text),
       context: args.context,
       sessionId: args.sessionId,
     });

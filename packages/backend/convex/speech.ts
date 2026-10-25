@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, mutation } from "./_generated/server";
+import { action, internalMutation, mutation } from "./_generated/server";
 import { transcribeStoredAudio } from "./lib/speechRun";
 
 /**
@@ -37,5 +37,24 @@ export const transcribe = action({
       language: result.language,
       duration_seconds: result.durationSeconds,
     };
+  },
+});
+
+/**
+ * Deletes recordings that were uploaded but never transcribed, for example when the browser lost its connection
+ * between the upload and `chat.askByVoice`. A recording is a patient's voice, so it must not stay in storage.
+ * It runs every hour (see crons.ts). Only voice recordings are kept in file storage, so every old file is removed.
+ */
+export const purgeOldRecordings = internalMutation({
+  args: { olderThanMinutes: v.number() },
+  returns: v.number(),
+  handler: async (ctx, args) => {
+    const cutoff = Date.now() - Math.max(args.olderThanMinutes, 0) * 60_000;
+    const old = await ctx.db.system
+      .query("_storage")
+      .filter((q) => q.lt(q.field("_creationTime"), cutoff))
+      .take(100);
+    for (const file of old) await ctx.storage.delete(file._id);
+    return old.length;
   },
 });

@@ -71,7 +71,10 @@ const { text } = await transcribe({ storageId, language: "en" });
 - **Safety behavior** (see [`safety.md`](safety.md)): questions asking for medicine or personal medical decisions get a fixed reply without the model; answers with advice or facts that are not in our content are replaced; replies about risks carry the standing note in `safety`; personal details in the question are removed. `doctor_question` is a suggested question for the doctor.
 - `api.chat.deleteSession({ sessionId })` erases a conversation and its messages.
 - **Spoken question in one call**: `api.chat.askByVoice({ storageId, language?, context, sessionId? })` turns the uploaded recording into text with Cartesia (and deletes the recording), then answers it like a typed question. It returns `{ transcript, language, response }`, where `response` is the same `ChatResponse` as `chat.ask`. Show `transcript` so the patient sees what was heard. Extra error code: `no_speech_detected`, plus the speech codes listed above. In local mode (`LLM_PROVIDER=local`) the speech code `cloud_stt_disabled` is returned unless `ALLOW_CLOUD_STT=true`.
-- Flow for a microphone button: `speech.generateUploadUrl` -> upload the recording -> `chat.askByVoice`.
+- Flow for a microphone button: `speech.generateUploadUrl` -> upload the recording -> `chat.askByVoice`. This is exactly what the frontend does (`ConvexChatClient.askByVoice`, recordings of up to 30 seconds in `audio/webm;codecs=opus`, `audio/ogg`, or `audio/mp4`; no `language` is sent, so English is used).
+- **A long spoken question** (more than 500 characters, which 30 seconds of fast speech can reach) is cut at the last whole sentence that fits, instead of being rejected. `transcript` in the reply is the full text that was heard.
+- **Recordings are deleted** right after transcription, also when it fails. A recording that was uploaded but never transcribed (for example the connection dropped in between) is deleted by an hourly job (`speech.purgeOldRecordings`, scheduled in `convex/crons.ts`).
+- **Local model mode**: voice is refused with `cloud_stt_disabled` unless `ALLOW_CLOUD_STT=true` is set, because Cartesia is a cloud service. The frontend shows that message as it is.
 
 ## Internal functions (cannot be called from the frontend)
 
