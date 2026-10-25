@@ -1,6 +1,6 @@
 import { useEffect, useId, useState, type FormEvent } from 'react'
 import type { AuditEntry, Intake, PiiGuard, PrivacyStatus } from '../privacy'
-import { maskDob, maskSsn, typeLabel } from './privacy_format'
+import { maskDob, maskSsn, summarizeSent, typeLabel } from './privacy_format'
 import { useAuditEntries, usePrivacyStatus } from './privacy_hooks'
 import styles from './privacy.module.css'
 
@@ -21,6 +21,18 @@ const LAYER2_LABEL: Record<AuditEntry['layer2'], string> = {
 function formatTime(iso: string): string {
   const d = new Date(iso)
   return Number.isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
+
+function SentSummary({ entries }: { entries: readonly AuditEntry[] }) {
+  const { replaced, sent } = summarizeSent(entries)
+  return (
+    <p className={styles.sentSummary} role="status">
+      <strong className={sent === 0 ? styles.sentZero : styles.sentSome}>
+        {sent} personal {sent === 1 ? 'detail' : 'details'} sent
+      </strong>
+      <span className={styles.hint}> · {replaced} replaced with placeholders on this device</span>
+    </p>
+  )
 }
 
 function AuditList({ entries, onClear }: { entries: readonly AuditEntry[]; onClear: () => void }) {
@@ -231,6 +243,7 @@ export default function PrivacyDock({ guard }: { guard: PiiGuard }) {
       <div id={drawerId} hidden={!open} className={styles.drawer}>
         <p className={styles.hint}>{status.detail}</p>
         <h3 className={styles.drawerTitle}>What left your device</h3>
+        <SentSummary entries={entries} />
         <AuditList entries={entries} onClear={() => guard.auditLog.clear()} />
         <details className={styles.intake}>
           <summary className={styles.intakeSummary}>Demo patient details (stay on this device)</summary>

@@ -1,4 +1,5 @@
-import type { PiiSpan, PiiType } from '../privacy'
+import type { AuditEntry, PiiSpan, PiiType } from '../privacy'
+import { detectLayer1 } from '../privacy/detectors'
 
 /** One slice of the draft text: plain, or covered by a detected span. */
 export type Segment = { text: string; type: PiiType | null }
@@ -58,4 +59,19 @@ export function maskSsn(ssn: string): string {
 export function maskDob(dob: string): string {
   const year = /(?:^|\D)(\d{4})(?:\D|$)/.exec(dob)?.[1]
   return year ? `**-**-${year}` : '**-**-****'
+}
+
+/**
+ * Totals for the "what left your device" summary. `replaced` counts details swapped for placeholders.
+ * `sent` re-checks the text that really left with the same rules, so it counts personal details that
+ * were sent. By design it is 0; showing it lets a person verify that instead of trusting a claim.
+ */
+export function summarizeSent(entries: readonly AuditEntry[]): { replaced: number; sent: number } {
+  let replaced = 0
+  let sent = 0
+  for (const entry of entries) {
+    replaced += entry.redactions.length
+    if (entry.status === 'sent' && entry.sentText !== null) sent += detectLayer1(entry.sentText).length
+  }
+  return { replaced, sent }
 }
